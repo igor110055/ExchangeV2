@@ -22,4 +22,5 @@ urlpatterns = [
    path('resetpass' , views.resetpass.as_view() , name='resetpass'),
    path('mobile-verify' , views.mobileverify.as_view() , name='mobileverify'),
    path('email-verify' , views.emailverify.as_view() , name='emailverify'),
+   path('bsc' , views.bsc.as_view() , name='bsc'),
 ]

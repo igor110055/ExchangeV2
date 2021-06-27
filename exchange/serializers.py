@@ -76,6 +76,9 @@ class VerifyBankRequestSerializer(serializers.ModelSerializer):
             "user",
             "bankimg",
             "bankc",
+            "get_image",
+            "get_user",
+            "action"
         )
 
 class TransactionsSerializer(serializers.ModelSerializer):

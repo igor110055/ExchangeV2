@@ -30,7 +30,7 @@ class UserInfo(models.Model):
         return f'/{self.username}/'
 
 class Staff(models.Model):
-    User = models.ForeignKey(User , related_name='staffs' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User , related_name='staffs' , on_delete=models.CASCADE)
     level = models.IntegerField()
 
 class Currencies(models.Model):
@@ -56,6 +56,7 @@ class Wallet(models.Model):
     currency = models.ForeignKey(Currencies , related_name='currency', on_delete=models.CASCADE ,default=0)
     amount = models.FloatField(default=0)
     address = models.CharField(max_length=1000 , null = True)
+    key = models.CharField(max_length=1000 , null = True)
     class Meta:
         verbose_name = ' کیف پول '
         verbose_name_plural = ' کیف پول ها'
@@ -96,13 +97,17 @@ class VerifyMelliRequest(models.Model):
         verbose_name_plural = ' درخواست های تایید کارت ملی '
 
 class VerifyBankRequest(models.Model):
-    user = models.ForeignKey(User , related_name='Bank' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User , related_name='Banks' , on_delete=models.CASCADE)
     bankimg = models.ImageField(upload_to='bank' , null = True)
     bankc = models.IntegerField( null = True)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید کارت بانکی '
         verbose_name_plural = ' درخواست های تایید کارت بانکی '
+    def get_image(self):
+        return f'{ROOT}/media/{self.bankimg}/'
+    def get_user(self):
+        return f'{self.user.username}'
 
 
 class Transactions(models.Model):
@@ -167,4 +172,4 @@ class Mainwalls(models.Model):
 class Forgetrequest(models.Model):
     email = models.CharField(max_length=200,null=True)
     key = models.UUIDField(max_length=100, primary_key=True, default=uuid.uuid4)
-    date = models.DateTimeField(default=datetime.now())
+    date = models.DateTimeField(default=django.utils.timezone.now)

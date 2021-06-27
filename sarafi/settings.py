@@ -43,12 +43,19 @@ INSTALLED_APPS = [
     'corsheaders',
     'djoser',
     'exchange',
+    'adminpanel',
     'bitmerchant',
     'bipwallet',
     'py_crypto_hd_wallet',
     'jsonfield',
+    'coinbase',
     'pywallet',
-    'ippanel'
+    'ippanel',
+    'bit',
+    'web3',
+    'tronapi',
+    'cryptos',
+    'blockcypher'
 ]
 
 CORS_ALLOWED_ORIGINS = [

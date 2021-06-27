@@ -16,7 +16,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from pywallet import wallet as wall
-from py_crypto_hd_wallet import HdWalletFactory, HdWalletCoins, HdWalletSpecs , HdWalletWordsNum, HdWalletWordsLanguages
+from py_crypto_hd_wallet import HdWalletFactory, HdWalletCoins, HdWalletSpecs , HdWalletWordsNum, HdWalletWordsLanguages, HdWalletChanges
 import json
 from datetime import datetime ,timedelta
 from django.contrib.auth.hashers import make_password
@@ -25,6 +25,17 @@ from django.core.mail import send_mail
 from ippanel import Client
 import pytz
 from random import randrange
+import requests
+
+class bsc(APIView):
+
+    def get(self , request , format=None):
+
+        hd_wallet_fact = HdWalletFactory(HdWalletCoins.BINANCE_SMART_CHAIN)
+        hd_wallet = hd_wallet_fact.CreateRandom("my_wallet_name", HdWalletWordsNum.WORDS_NUM_12)
+        hd_wallet.Generate(account_idx = 1, change_idx = HdWalletChanges.CHAIN_EXT, addr_num = 1)
+        wallet_data = hd_wallet.ToJson()
+        return Response(wallet_data)
 
 class usersinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -103,18 +114,35 @@ class wallet(APIView):
         return Response(serializer.data)
 
     def post(self ,request , id):
-        if(id == 2 or id == 3 or id == 6 ):
-            WALLET_PUBKEY = Currencies.objects.get(id = id).key
-
-            user_addr = wall.create_address(network=Currencies.objects.get(id = id).brand, xpub=WALLET_PUBKEY, child=2)
-
-            wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = user_addr['address'])
+        if id == 5 :
+            url = "https://api.shasta.trongrid.io/wallet/generateaddress"
+            headers = {"Accept": "application/json"}
+            response = requests.request("GET", url, headers=headers)
+            print(response.json()['hexAddress'])
+            address = response.json()['hexAddress']
+            key = response.json()['privateKey']
+            wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = address , key = key)
             wa.save()
-
-        else:
+            return Response({status:200})
+        if id == 2 :
             hd_wallet = Mainwalls.objects.get(currency = id).wall
             address = hd_wallet['addresses'][f'address_{request.user.id}']['address']
-            wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = address)
+            key = hd_wallet['addresses'][f'address_{request.user.id}']['wif_priv']
+            wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = address , key = key)
+            wa.save()
+            return Response({status:200})
+        if id == 3 :
+            hd_wallet = Mainwalls.objects.get(currency = id).wall
+            address = hd_wallet['addresses'][f'address_{request.user.id}']['address']
+            key = hd_wallet['addresses'][f'address_{request.user.id}']['raw_priv']
+            wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = address , key = key)
+            wa.save()
+            return Response({status:200})
+        if id == 6 :
+            hd_wallet = Mainwalls.objects.get(currency = id).wall
+            address = hd_wallet['addresses'][f'address_{request.user.id}']['address']
+            key = hd_wallet['addresses'][f'address_{request.user.id}']['wif_priv']
+            wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = address , key = key)
             wa.save()
             return Response({status:200})
 
