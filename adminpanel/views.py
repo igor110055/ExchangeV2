@@ -7,10 +7,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import StaffSerializer, UserInfoSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from exchange.serializers import BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import Staff,  UserInfo , Currencies, VerifyBankRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
+from exchange.models import Staff,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -87,3 +87,48 @@ class bankcards(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class bankaccounts(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user.id))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user.id).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        bankcards = VerifyBankAccountsRequest.objects.all()
+        print(bankcards[0].bankc)
+        serializer = VerifyBankAccountsRequestSerializer(bankcards , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user.id))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user.id).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        request.data['user'] = request.user.id
+        serializer = BankAccountsSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            no = request.data['number']
+            req = VerifyBankAccountsRequest.objects.get(bankc = no)
+            req.delete()
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user.id))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user.id).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        no = request.data['number']
+        req = VerifyBankAccountsRequest.objects.get(bankc = no)
+        req.delete()
+        return Response(status=status.HTTP_201_CREATED)
+
+    

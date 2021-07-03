@@ -12,6 +12,7 @@ urlpatterns = [
    path('currencies/<int:id>' , views.currency.as_view() , name='currency'),
    path('verify' , views.verify.as_view() , name='Verify'),
    path('bankcards' , views.bankcards.as_view() , name='bankcards'),
+   path('bankaccounts' , views.bankaccounts.as_view() , name='bankaccounts'),
    path('transactions' , views.transactions.as_view() , name='transactions'),
    path('settings' , views.settings.as_view() , name='settings'),
    path('subjects' , views.subjects.as_view() , name='subjects'),
@@ -23,4 +24,5 @@ urlpatterns = [
    path('mobile-verify' , views.mobileverify.as_view() , name='mobileverify'),
    path('email-verify' , views.emailverify.as_view() , name='emailverify'),
    path('bsc' , views.bsc.as_view() , name='bsc'),
+   path('price' , views.price.as_view() , name='price'),
 ]

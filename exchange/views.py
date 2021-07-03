@@ -6,10 +6,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import StaffSerializer, UserInfoSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
+from .models import VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -36,6 +36,7 @@ class bsc(APIView):
         hd_wallet.Generate(account_idx = 1, change_idx = HdWalletChanges.CHAIN_EXT, addr_num = 1)
         wallet_data = hd_wallet.ToJson()
         return Response(wallet_data)
+
 
 class usersinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -97,6 +98,15 @@ class wallets(APIView):
         userinfo = self.get_object(request.user.id)
         serializer = WalletSerializer(userinfo , many=True)
         return Response(serializer.data)
+
+class price(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+            
+    def get(self , request , format=None):
+        price = Price.objects.filter(id=1)
+        serializer = PriceSerializer(price , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class wallet(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -216,6 +226,29 @@ class bankcards(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class bankaccounts(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self , user):
+        try:
+            return BankAccounts.objects.filter(user = user)
+        except BankAccounts.DoesNotExist:
+            return Http404
+            
+    def get(self , request , format=None):
+        bankaccounts = self.get_object(request.user)
+        serializer = BankAccountsSerializer(bankaccounts , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        request.data['user'] = request.user.id
+        serializer = VerifyBankAccountsRequestSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class transactions(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]

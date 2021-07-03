@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'web3',
     'tronapi',
     'cryptos',
-    'blockcypher'
+    'blockcypher',
+    'binance_chain'
 ]
 
 CORS_ALLOWED_ORIGINS = [

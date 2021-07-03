@@ -85,6 +85,13 @@ class BankCards(models.Model):
         verbose_name = ' کارت بانک '
         verbose_name_plural = ' کارت های بانک'
 
+class BankAccounts(models.Model):
+    user =  models.ForeignKey(User , related_name='accounts' , on_delete=models.CASCADE)
+    number = models.IntegerField()
+    status = models.BooleanField(default=False)
+    class meta:
+        verbose_name = ' حساب بانکی '
+        verbose_name_plural = ' حساب های بانک'
 
 class VerifyMelliRequest(models.Model):
     user = models.ForeignKey(User , related_name='melli' , on_delete=models.CASCADE)
@@ -109,6 +116,15 @@ class VerifyBankRequest(models.Model):
     def get_user(self):
         return f'{self.user.username}'
 
+class VerifyBankAccountsRequest(models.Model):
+    user = models.ForeignKey(User , related_name='BanksAccounts' , on_delete=models.CASCADE)
+    bankc = models.IntegerField( null = True)
+    action = models.BooleanField(default = False)
+    class meta:
+        verbose_name = ' درخواست تایید حساب بانکی '
+        verbose_name_plural = ' درخواست های تایید حساب بانکی '
+    def get_user(self):
+        return f'{self.user.username}'
 
 class Transactions(models.Model):
     date = models.DateField(default=timezone.now) 
@@ -173,3 +189,12 @@ class Forgetrequest(models.Model):
     email = models.CharField(max_length=200,null=True)
     key = models.UUIDField(max_length=100, primary_key=True, default=uuid.uuid4)
     date = models.DateTimeField(default=django.utils.timezone.now)
+
+class Price(models.Model):
+    rial = models.FloatField(default=1)
+    btc = models.FloatField(default=0)
+    eth = models.FloatField(default=0)
+    trx = models.FloatField(default=0)
+    usdt = models.FloatField(default=0)
+    doge = models.FloatField(default=0)
+    usd = models.FloatField(default=0)
