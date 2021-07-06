@@ -416,10 +416,15 @@ class mobileverify(APIView):
 
         sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
 
-        bulk_id = sms.send(
-        "+983000505",         
-        [f"+98{request.data['number']}"],    
-        f'به شرکت سرمایه گذاری ... خوش آمدید کد فعالسازی : {vcode} ',
+        pattern_values = {
+        "verification-code": f"{vcode}",
+        }
+
+        bulk_id = sms.send_pattern(
+            "pifmmqr30d",    # pattern code
+            "+983000505",      # originator
+            f"+98{request.data['number']}",  # recipient
+            pattern_values,  # pattern values
         )
 
         message = sms.get_message(bulk_id)
