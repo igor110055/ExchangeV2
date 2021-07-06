@@ -437,6 +437,13 @@ class mobileverify(APIView):
         if(int(request.data['code']) == int(user.mobilec)):
             user.mobilev = True
             user.save()
+            if(len(UserInfo.objects.filter(user=request.user))<1):
+                userinfo = UserInfo(user=request.user , mobile= request.data['mobile'])
+                userinfo.save()
+            else:
+                userinfo = UserInfo.objects.get(user=request.user)
+                userinfo.mobile = request.data['mobile']
+                userinfo.save()
             if (user.melliv == 3 and user.emailv == True ):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
