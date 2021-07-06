@@ -60,10 +60,10 @@ class VerifySerializer(serializers.ModelSerializer):
     class Meta:
         model = Verify
         fields = (
-            "mobileverify",
-            "emailverify",
-            "melliverify",
-            "bankverify"
+            "mobilev",
+            "emailv",
+            "melliv",
+            "bankv"
         )
 class BankCardsSerializer(serializers.ModelSerializer):
     class Meta:

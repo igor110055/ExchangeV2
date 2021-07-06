@@ -22,6 +22,7 @@ urlpatterns = [
    path('resetpass/<uuid:key>' , views.resetpass.as_view() , name='resetpass'),
    path('resetpass' , views.resetpass.as_view() , name='resetpass'),
    path('mobile-verify' , views.mobileverify.as_view() , name='mobileverify'),
+   path('bankrequests' , views.bankrequests.as_view() , name='bankrequests'),
    path('email-verify' , views.emailverify.as_view() , name='emailverify'),
    path('bsc' , views.bsc.as_view() , name='bsc'),
    path('price' , views.price.as_view() , name='price'),

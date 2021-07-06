@@ -31,7 +31,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # to:
         [reset_password_token.user.email]
     )
-    
+
 class UserInfo(models.Model):
     user = models.ForeignKey(User , related_name='userinfo', on_delete=models.CASCADE)
     first_name=models.CharField(max_length=255)
@@ -86,12 +86,12 @@ class Wallet(models.Model):
 
 class Verify(models.Model):
     user = models.ForeignKey(User , related_name='verify' , on_delete=models.CASCADE)
-    mobileverify = models.BooleanField(default = False , null = True)
-    mobilecode = models.IntegerField( null = True,default=0)
-    emailverify = models.BooleanField(default = False , null = True)
-    emailcode = models.IntegerField( null = True ,default=0)
-    melliverify = models.BooleanField(default = False , null = True)
-    bankverify = models.BooleanField(default = False , null = True)
+    mobilev = models.BooleanField(default = False , null = True)
+    mobilec = models.IntegerField( null = True,default=0)
+    emailv = models.BooleanField(default = False , null = True)
+    emailc = models.IntegerField( null = True ,default=0)
+    melliv = models.BooleanField(default = False , null = True)
+    bankv = models.BooleanField(default = False , null = True)
     class meta:
         verbose_name = ' تاییدیه '
         verbose_name_plural = ' تاییدیه ها'

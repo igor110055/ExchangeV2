@@ -9,7 +9,7 @@ from rest_framework import authentication
 from .serializers import BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
+from .models import VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -389,25 +389,6 @@ class mobileverify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     
-    def get(self , request):
-        user = Verify.objects.get(user= request.user)
-        vcode = randrange(123456,999999)
-        user.mobilec = vcode
-        user.save()
-
-        sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
-
-        bulk_id = sms.send(
-        "+983000505",         
-        [f"+98{UserInfo.objects.get(user = request.user).mobile}",],    
-        f'به شرکت سرمایه گذاری ... خوش آمدید کد فعالسازی : {vcode} ',
-        )
-
-        message = sms.get_message(bulk_id)
-        print(message)
-        print(f"+98{UserInfo.objects.get(user = request.user).mobile}")
-        return Response(status=status.HTTP_200_OK )
-
     def put(self , request):
         user = Verify.objects.get(user= request.user)
         vcode = randrange(123456,999999)
@@ -455,7 +436,7 @@ class emailverify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
 
-    def get(self , request):
+    def put(self , request):
         user = Verify.objects.get(user= request.user)
         vcode = randrange(123456, 999999)
         user.emailc = vcode
@@ -465,20 +446,37 @@ class emailverify(APIView):
             'Subject here',
             f'به شرکت سرمایه گذاری ... خوش آمدید کد فعالسازی : {vcode} ',
             'info@ramabit.com',
-            [f'{request.user.email}'],
+            [f'{request.data["email"]}'],
             fail_silently=False,
         )
         return Response(status=status.HTTP_200_OK)
 
     def post(self , request):
         user = Verify.objects.get(user= request.user)
-        if(int(request.POST['code']) == int(user.emailc)):
+        if(int(request.data['code']) == int(user.emailc)):
             user.emailv = True
             user.save()
+            mail = request.user
+            mail.email = request.data['email']
+            mail.save()
             if (user.melliv == 3 and user.mobilev == True ):
                 per = User.objects.get(id = request.user.id)
                 per.level = 1
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+class bankrequests(APIView):
+    def get_object(self , user):
+        try:
+            return VerifyBankRequest.objects.filter(user = user)
+        except UserInfo.DoesNotExist:
+            return Http404
+
+    def get(self , request , format=None):
+        if len(self.get_object(request.user)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(request.user)
+        serializer = VerifyBankRequestSerializer(userinfo , many=True)
+        return Response(serializer.data)
