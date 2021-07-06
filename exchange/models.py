@@ -10,7 +10,28 @@ from jsonfield import JSONField
 from datetime import datetime    
 import django
 from sarafi.settings import ROOT
+from django.dispatch import receiver
+from django.urls import reverse
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.core.mail import send_mail  
 
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+
+    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+
+    send_mail(
+        # title:
+        "Password Reset for {title}".format(title="Some website title"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "noreply@somehost.local",
+        # to:
+        [reset_password_token.user.email]
+    )
+    
 class UserInfo(models.Model):
     user = models.ForeignKey(User , related_name='userinfo', on_delete=models.CASCADE)
     first_name=models.CharField(max_length=255)
@@ -189,6 +210,15 @@ class Forgetrequest(models.Model):
     email = models.CharField(max_length=200,null=True)
     key = models.UUIDField(max_length=100, primary_key=True, default=uuid.uuid4)
     date = models.DateTimeField(default=django.utils.timezone.now)
+
+class Price(models.Model):
+    rial = models.FloatField(default=1)
+    btc = models.FloatField(default=0)
+    eth = models.FloatField(default=0)
+    trx = models.FloatField(default=0)
+    usdt = models.FloatField(default=0)
+    doge = models.FloatField(default=0)
+    usd = models.FloatField(default=0)
 
 class Price(models.Model):
     rial = models.FloatField(default=1)

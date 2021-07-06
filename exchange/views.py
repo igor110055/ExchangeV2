@@ -135,12 +135,23 @@ class wallet(APIView):
             wa.save()
             return Response({status:200})
         if id == 2 :
-            hd_wallet = Mainwalls.objects.get(currency = id).wall
-            address = hd_wallet['addresses'][f'address_{request.user.id}']['address']
-            key = hd_wallet['addresses'][f'address_{request.user.id}']['wif_priv']
+#            hd_wallet = Mainwalls.objects.get(currency = id).wall
+#            address = hd_wallet['addresses'][f'address_{request.user.id}']['address']
+#            key = hd_wallet['addresses'][f'address_{request.user.id}']['wif_priv']
+#            wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = address , key = key)
+#            wa.save()
+#            return Response({status:200})
+            hd_wallet_fact = HdWalletFactory(HdWalletCoins.BITCOIN_TESTNET)
+            hd_wallet = hd_wallet_fact.CreateRandom("my_wallet_name", HdWalletWordsNum.WORDS_NUM_12)
+            hd_wallet.Generate(addr_num = 1)
+            wallet_data = hd_wallet.ToDict()
+            address = wallet_data['addresses']['address_1']['address']
+            key = wallet_data['addresses']['address_1']['raw_priv']
             wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = address , key = key)
             wa.save()
-            return Response({status:200})
+            return Response(status=status.HTTP_201_CREATED)
+
+
         if id == 3 :
             hd_wallet = Mainwalls.objects.get(currency = id).wall
             address = hd_wallet['addresses'][f'address_{request.user.id}']['address']
@@ -186,7 +197,7 @@ class currencies(APIView):
 
 
 class verify(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def get_object(self , user):
         if(len(Verify.objects.filter(user = user))<1):
@@ -251,7 +262,7 @@ class bankaccounts(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class transactions(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def get_object(self , user):
         try:
@@ -266,7 +277,7 @@ class transactions(APIView):
 
 
 class settings(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def get_object(self):
         try:
@@ -287,7 +298,7 @@ class settings(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class subjects(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def get_object(self , user):
         try:
@@ -301,7 +312,7 @@ class subjects(APIView):
         return Response(serializer.data)
 
 class tickets(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def get_object(self , subject):
         try:
@@ -317,7 +328,7 @@ class tickets(APIView):
 
 
 class pages(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def get_object(self):
         try:
@@ -375,9 +386,9 @@ class resetpass(APIView):
             return redirect(f"http://localhost:8080/login")
 
 class mobileverify(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
-
+    
     def get(self , request):
         user = Verify.objects.get(user= request.user)
         vcode = randrange(123456,999999)
@@ -396,6 +407,26 @@ class mobileverify(APIView):
         print(message)
         print(f"+98{UserInfo.objects.get(user = request.user).mobile}")
         return Response(status=status.HTTP_200_OK )
+
+    def put(self , request):
+        user = Verify.objects.get(user= request.user)
+        vcode = randrange(123456,999999)
+        user.mobilec = vcode
+        user.save()
+
+        sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+
+        bulk_id = sms.send(
+        "+983000505",         
+        [f"+98{request.data['number']}"],    
+        f'به شرکت سرمایه گذاری ... خوش آمدید کد فعالسازی : {vcode} ',
+        )
+
+        message = sms.get_message(bulk_id)
+        print(message)
+        print(f"+98{request.data['number']}")
+        return Response(status=status.HTTP_200_OK )
+
     def post(self , request):
         user = Verify.objects.get(user= request.user)
         if(int(request.data['code']) == int(user.mobilec)):
@@ -409,7 +440,7 @@ class mobileverify(APIView):
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
 
 class emailverify(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
 
     def get(self , request):

@@ -13,6 +13,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "mobile",
+            "level"
         )
 
 class PriceSerializer(serializers.ModelSerializer):

