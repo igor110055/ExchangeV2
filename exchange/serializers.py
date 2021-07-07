@@ -2,7 +2,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,6 +65,21 @@ class VerifySerializer(serializers.ModelSerializer):
             "melliv",
             "bankv"
         )
+
+
+class VerifyMelliRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VerifyMelliRequest
+        fields = (
+            "user",
+            "melliimg",
+            "mellic",
+            "action",
+            "get_image",
+            "get_user"
+        )
+
+
 class BankCardsSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankCards

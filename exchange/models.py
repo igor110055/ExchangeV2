@@ -100,7 +100,7 @@ class Verify(models.Model):
 class BankCards(models.Model):
     user =  models.ForeignKey(User , related_name='cards' , on_delete=models.CASCADE)
     image = models.ImageField(upload_to='bank')
-    number = models.IntegerField()
+    number = models.BigIntegerField()
     status = models.BooleanField(default=False)
     class meta:
         verbose_name = ' کارت بانک '
@@ -108,7 +108,7 @@ class BankCards(models.Model):
 
 class BankAccounts(models.Model):
     user =  models.ForeignKey(User , related_name='accounts' , on_delete=models.CASCADE)
-    number = models.IntegerField()
+    number = models.BigIntegerField()
     status = models.BooleanField(default=False)
     class meta:
         verbose_name = ' حساب بانکی '
@@ -116,18 +116,21 @@ class BankAccounts(models.Model):
 
 class VerifyMelliRequest(models.Model):
     user = models.ForeignKey(User , related_name='melli' , on_delete=models.CASCADE)
-    verify = models.ForeignKey(Verify , on_delete=models.CASCADE)
     melliimg = models.ImageField(upload_to='melli' , null = True)
-    mellic = models.IntegerField( null = True)
+    mellic = models.BigIntegerField( null = True)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید کارت ملی '
         verbose_name_plural = ' درخواست های تایید کارت ملی '
+    def get_image(self):
+        return f'{ROOT}/media/{self.melliimg}/'
+    def get_user(self):
+        return f'{self.user.username}'
 
 class VerifyBankRequest(models.Model):
     user = models.ForeignKey(User , related_name='Banks' , on_delete=models.CASCADE)
     bankimg = models.ImageField(upload_to='bank' , null = True)
-    bankc = models.IntegerField( null = True)
+    bankc = models.BigIntegerField( null = True)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید کارت بانکی '
@@ -139,7 +142,7 @@ class VerifyBankRequest(models.Model):
 
 class VerifyBankAccountsRequest(models.Model):
     user = models.ForeignKey(User , related_name='BanksAccounts' , on_delete=models.CASCADE)
-    bankc = models.IntegerField( null = True)
+    bankc = models.BigIntegerField( null = True)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید حساب بانکی '
