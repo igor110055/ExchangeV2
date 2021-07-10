@@ -26,4 +26,7 @@ urlpatterns = [
    path('verifymelli' , views.verifymelli.as_view() , name='verifymelli'),
    path('bsc' , views.bsc.as_view() , name='bsc'),
    path('price' , views.price.as_view() , name='price'),
+   path('bankrequests' , views.bankrequests.as_view() , name='bankrequests'),
+   path('notifications' , views.notifications.as_view() , name='notifications'),
+
 ]

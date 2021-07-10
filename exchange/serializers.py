@@ -2,7 +2,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -194,4 +194,14 @@ class ForgetSerializer(serializers.ModelSerializer):
         model = Forgetrequest
         fields = (
             "email",
+        )
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = (
+            "title",
+            "text",
+            "seen",
+            "get_age"
         )

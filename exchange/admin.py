@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Staff, UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages ,Mainwalls, Forgetrequest, VerifyBankRequest
+from .models import Notification, VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Staff, UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages ,Mainwalls, Forgetrequest, VerifyBankRequest
 # Register your models here.
 
 admin.site.register(UserInfo)
@@ -20,3 +20,4 @@ admin.site.register(Price)
 admin.site.register(VerifyMelliRequest)
 admin.site.register(VerifyBankAccountsRequest)
 admin.site.register(BankAccounts)
+admin.site.register(Notification)

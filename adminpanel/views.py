@@ -179,17 +179,3 @@ class verifymelli(APIView):
         req = VerifyMelliRequest.objects.get(mellic = no)
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
-
-class bankrequests(APIView):
-    def get_object(self , user):
-        try:
-            return VerifyBankRequest.objects.filter(user = user)
-        except UserInfo.DoesNotExist:
-            return Http404
-
-    def get(self , request , format=None):
-        if len(self.get_object(request.user)) < 1 :
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        userinfo =  self.get_object(request.user)
-        serializer = VerifyBankRequestSerializer(userinfo , many=True)
-        return Response(serializer.data)

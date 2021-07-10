@@ -1,3 +1,4 @@
+from typing import Text
 from django import http
 from django.db.models.fields import EmailField
 from django.http.response import JsonResponse
@@ -6,10 +7,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
+from .models import Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -41,6 +42,7 @@ class bsc(APIView):
 class usersinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
+
     def get_object(self , user):
         try:
             return UserInfo.objects.filter(user = user)
@@ -48,6 +50,9 @@ class usersinfo(APIView):
             return Http404
 
     def get(self , request , format=None):
+        if len(Notification.objects.filter(user = request.user)) < 1 : 
+            note = Notification(user = request.user , title = 'خوش آمدید' , text = 'به ... خوش آمدید') 
+            note.save()
         if len(self.get_object(request.user)) < 1 :
             return Response(status=status.HTTP_400_BAD_REQUEST)
         userinfo =  self.get_object(request.user)
@@ -60,6 +65,9 @@ class usersinfo(APIView):
         if serializer.is_valid():
             if len(UserInfo.objects.filter(user = request.user.id))<1:
                 serializer.save()
+                note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
+                note.save()
+
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 user = UserInfo.objects.get(user = request.user.id)
@@ -478,3 +486,40 @@ class verifymelli(APIView):
             return Response(status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class bankrequests(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self , user):
+        return VerifyBankRequest.objects.filter(user = user)
+
+    def get(self , request , format=None):
+        if len(self.get_object(request.user)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(request.user)
+        serializer = VerifyBankRequestSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+class notifications(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self , user):
+        return Notification.objects.filter(user = user)
+
+    def get(self , request , format=None):
+        if len(self.get_object(request.user)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(request.user)
+        serializer = NotificationSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        if len(self.get_object(request.user)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(request.user)
+        for item in userinfo :
+            item.seen = True
+            item.save()
+        return Response(serializer.data)

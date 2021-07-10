@@ -1,3 +1,4 @@
+from typing import Text
 from django.db import models
 from io import BytesIO
 from PIL import Image
@@ -14,7 +15,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail  
-
+from django.utils.timezone import utc
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -185,6 +186,8 @@ class Subjects(models.Model):
     class meta:
         verbose_name = 'سر تیتر تیکت'
         verbose_name_plural = ' سرتیتر های تیکت '
+    def get_lastticket(self):
+        return Tickets.objects.filter(subid = self)[0]
     
 class Tickets(models.Model):
     date = models.DateField(default=timezone.now) 
@@ -194,6 +197,43 @@ class Tickets(models.Model):
     class meta:
         verbose_name = ' تیکت '
         verbose_name_plural = 'تیکت ها'
+
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f'{hours} + ساعت و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f'{minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days} روز و '
+        else:
+            days = ''
+
+
+        return minutes + hours + days
 
 
 class Pages(models.Model):
@@ -231,3 +271,46 @@ class Price(models.Model):
     usdt = models.FloatField(default=0)
     doge = models.FloatField(default=0)
     usd = models.FloatField(default=0)
+
+class Notification(models.Model):
+    user = models.ForeignKey(User , related_name='notifications' , on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    text = models.CharField(max_length=300)
+    seen = models.BooleanField(default=False)
+    date = models.DateTimeField(default=timezone.now)
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f'{hours} + ساعت و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f'{minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days} روز و '
+        else:
+            days = ''
+
+
+        return minutes + hours + days
