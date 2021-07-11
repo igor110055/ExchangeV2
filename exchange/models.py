@@ -176,8 +176,7 @@ class Settings(models.Model):
 
 
 class Subjects(models.Model):
-    date = models.DateField(default=timezone.now) 
-    lastdate = models.DateField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User , related_name='Subject' , on_delete=models.CASCADE)
     act = models.IntegerField(null=True , default = 0)
     read = models.BooleanField(default = True)
@@ -187,10 +186,47 @@ class Subjects(models.Model):
         verbose_name = 'سر تیتر تیکت'
         verbose_name_plural = ' سرتیتر های تیکت '
     def get_lastticket(self):
-        return Tickets.objects.filter(subid = self)[0]
+        return self.ticket.all().order_by('-date').first().text
+
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes
     
 class Tickets(models.Model):
-    date = models.DateField(default=timezone.now) 
+    date = models.DateTimeField(default=timezone.now)
     subid = models.ForeignKey(Subjects , related_name='ticket' , on_delete=models.CASCADE)
     text = models.CharField(max_length = 1000)
     pic = models.ImageField(upload_to='ticket' , null = True)
@@ -215,25 +251,30 @@ class Tickets(models.Model):
 
 
         if hours > 0:
-            hours = f'{hours} + ساعت و'
+            hours = f' {hours}  ساعت  و'
         else:
             hours = ''
 
 
         if minutes > 0:
-            minutes = f'{minutes} دقیقه  '
+            minutes = f' {minutes} دقیقه  '
         else:
             minutes = ''
 
 
 
         if days > 0:
-            days = f'{days} روز و '
+            days = f'{days}  روز و '
         else:
             days = ''
 
 
-        return minutes + hours + days
+        return  days + hours + minutes 
+
+    def get_title(self):
+        return self.subid.title
+    def get_user(self):
+        return self.subid.user.username
 
 
 class Pages(models.Model):
@@ -295,22 +336,45 @@ class Notification(models.Model):
 
 
         if hours > 0:
-            hours = f'{hours} + ساعت و'
+            hours = f' {hours}  ساعت  و'
         else:
             hours = ''
 
 
         if minutes > 0:
-            minutes = f'{minutes} دقیقه  '
+            minutes = f' {minutes} دقیقه  '
         else:
             minutes = ''
 
 
 
         if days > 0:
-            days = f'{days} روز و '
+            days = f'{days}  روز و '
         else:
             days = ''
 
 
-        return minutes + hours + days
+        return  days + hours + minutes 
+
+class MainTrades(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100 ,verbose_name=" نام ارز")
+    brand = models.CharField(max_length=100 ,null=True,verbose_name=" نماد ارز")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'{ROOT}/trades/{self.name}/'
+
+
+class ProTrades(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100 ,verbose_name=" نام ارز")
+    brand = models.CharField(max_length=100 ,null=True,verbose_name=" نماد ارز")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'{ROOT}/trades/{self.name}/'

@@ -305,36 +305,6 @@ class settings(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class subjects(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
-    def get_object(self , user):
-        try:
-            return Subjects.objects.filter(user = user)
-        except Wallet.DoesNotExist:
-            return Http404
-            
-    def get(self , request , format=None):
-        subjects = self.get_object(request.user)
-        serializer = SubjectsSerializer(subjects , many=True)
-        return Response(serializer.data)
-
-class tickets(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
-    def get_object(self , subject):
-        try:
-            return Tickets.objects.filter(subid = subject)
-        except Wallet.DoesNotExist:
-            return Http404
-            
-    def get(self , request, subject , format=None):
-        tickets = self.get_object(subject)
-        serializer = TicketsSerializer(tickets , many=True)
-        return Response(serializer.data)
-    
-
-
 class pages(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
@@ -522,4 +492,54 @@ class notifications(APIView):
         for item in userinfo :
             item.seen = True
             item.save()
+            return Response(status=status.HTTP_201_CREATED)
+
+class subject(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self , user):
+        return Subjects.objects.filter(user = user)
+
+    def get(self , request , format=None):
+        if len(self.get_object(request.user)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(request.user)
+        serializer = SubjectsSerializer(userinfo , many=True)
         return Response(serializer.data)
+
+    def post(self , request , format=None):
+        request.data['user'] = request.user.id
+        sub = Subjects(user = request.user , title = request.data['title'])
+        sub.save()
+        request.data['subid'] = Subjects.objects.filter(user = request.user).order_by('-date')[0].id
+        serializer = TicketsSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+class ticket(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self , id):
+        return Tickets.objects.filter(subid = id)
+
+    def get(self , request , id , format=None):
+        if len(self.get_object(id)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(id)
+        serializer = TicketsSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        request.data['user'] = request.user.id
+        serializer = TicketsSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

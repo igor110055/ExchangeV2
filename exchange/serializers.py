@@ -162,13 +162,15 @@ class SubjectsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subjects
         fields = (
+            "id",
             "date",
-            "lastdate",
             "user",
             "act",
             "read",
             "title",
             "aread",
+            "get_age",
+            "get_lastticket"
         )
 class TicketsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -177,7 +179,9 @@ class TicketsSerializer(serializers.ModelSerializer):
             "date",
             "subid",
             "text",
-            "pic",
+            "get_age",
+            "get_title",
+            "get_user"
         )
 
 
@@ -203,5 +207,5 @@ class NotificationSerializer(serializers.ModelSerializer):
             "title",
             "text",
             "seen",
-            "get_age"
+            "get_age",
         )
