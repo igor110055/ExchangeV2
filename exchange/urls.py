@@ -29,4 +29,12 @@ urlpatterns = [
    path('subject' , views.subject.as_view() , name='subject'),
    path('ticket/<int:id>' , views.ticket.as_view() , name='ticket'),
    path('ticket' , views.ticket.as_view() , name='ticket'),
+   path('maintrades' , views.maintrades.as_view() , name='maintrades'),
+   path('maintrades/<int:id>' , views.maintrades.as_view() , name='maintrades'),
+   path('fasttorial/<int:id>' , views.fasttorial.as_view() , name='fasttorial'),
+   path('maintradebuyorders/<int:id>' , views.maintradebuyorders.as_view() , name='maintradebuyorders'),
+   path('maintradesellorders/<int:id>' , views.maintradesellorders.as_view() , name='maintradesellorders'),
+   path('maintradesinfo/<int:id>' , views.maintradesinfo.as_view() , name='maintradesinfo'),
+   path('fasttradesbuyinfo/<int:id>' , views.fasttradesbuyinfo.as_view() , name='fasttradesbuyinfo'),
+   path('fasttradessellinfo/<int:id>' , views.fasttradessellinfo.as_view() , name='fasttradessellinfo'),
 ]

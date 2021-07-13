@@ -7,10 +7,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
+from .models import ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -194,7 +194,7 @@ class currencies(APIView):
 
     def get_object_all(self):
         try:
-            return Currencies.objects.all()
+            return Currencies.objects.all().order_by('id')
         except Wallet.DoesNotExist:
             return Http404
             
@@ -543,3 +543,298 @@ class ticket(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class maintrades(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        return MainTrades.objects.all()
+
+    def get(self , request , format=None):
+        if len(self.get_object()) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object()
+        serializer = MainTradesSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+    def post(self , request, id , format=None):
+        if len(self.get_object()) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  MainTrades.objects.filter(id = id)
+        serializer = MainTradesSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+class fasttorial(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self , request , id , format=None):
+        uprice = price = Price.objects.get(id = 1).usd
+        if (Currencies.objects.get(id = id).brand == 'BTC'):
+            price = Price.objects.get(id = 1).btc
+        if (Currencies.objects.get(id = id).brand == 'ETH'):
+            price = Price.objects.get(id = 1).eth
+        if (Currencies.objects.get(id = id).brand == 'USDT'):
+            price = Price.objects.get(id = 1).usdt
+        if (Currencies.objects.get(id = id).brand == 'TRX'):
+            price = Price.objects.get(id = 1).trx
+        if (Currencies.objects.get(id = id).brand == 'DOGE'):
+            price = Price.objects.get(id = 1).doge
+        wallet = Wallet.objects.get(user=request.user , currency = Currencies.objects.get(id = id))
+        amount = wallet.amount
+        return Response({'price': price*amount*uprice} , status=status.HTTP_201_CREATED)
+
+    def post(self , request , id , format=None):
+        uprice = price = Price.objects.get(id = 1).usd
+        if (Currencies.objects.get(id = id).brand == 'BTC'):
+            price = Price.objects.get(id = 1).btc
+        if (Currencies.objects.get(id = id).brand == 'ETH'):
+            price = Price.objects.get(id = 1).eth
+        if (Currencies.objects.get(id = id).brand == 'USDT'):
+            price = Price.objects.get(id = 1).usdt
+        if (Currencies.objects.get(id = id).brand == 'TRX'):
+            price = Price.objects.get(id = 1).trx
+        if (Currencies.objects.get(id = id).brand == 'DOGE'):
+            price = Price.objects.get(id = 1).doge
+        wallet = Wallet.objects.get(user=request.user , currency = Currencies.objects.get(id = id))
+        amount = wallet.amount
+        ramount = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 1))
+        ramount.amount += price*amount*uprice
+        ramount.save()
+        wallet.amount = 0
+        wallet.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+class maintradebuyorders(APIView):
+
+    def get_object(self , id):
+        return MainTradesBuyOrder.objects.filter(trade = MainTrades.objects.get(id = id))
+
+    def get(self, request, id, format=None):
+        if len(self.get_object(id)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(id)
+        serializer = MainTradesBuyOrderSerializer(userinfo , many=True)
+        return Response(serializer.data)
+    
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self , request ,id , format=None):
+        amount = float(request.data['amount'])
+        price = float(request.data['price'])
+        trade = id
+        user = request.user
+        sells = MainTradesSellOrder.objects.filter(price__lte = request.data['price'] , trade = MainTrades.objects.get(id = id)).order_by('-price')
+        i=0
+        if amount * price > Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).scurrency).amount :
+            return Response({
+            'error' : "موجودی کافی نیست"
+        }, status=status.HTTP_400_BAD_REQUEST)
+        if len(sells) > 0 :
+            while i < len(sells):
+                item = sells[i]
+                if amount < item.amount :
+                    wal = Wallet.objects.get(user = item.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal.amount = wal.amount + (amount * item.price)
+                    wal.save()
+                    wal2 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal2.amount = wal.amount - (amount * item.price)
+                    wal2.save()
+                    wal3 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal3.amount = wal.amount + amount
+                    wal3.save()
+                    amount = item.amount - amount
+                    item.save()
+                    amount = 0
+
+                elif amount == item.amount :
+                    wal = Wallet.objects.get(user = item.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal.amount = wal.amount + (amount * item.price)
+                    wal.save()
+                    wal2 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal2.amount = wal.amount - (amount * item.price)
+                    wal2.save()
+                    wal3 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal3.amount = wal.amount + amount
+                    wal3.save()
+                    item.delete()
+                    amount = 0
+
+                else :
+
+                    wal = Wallet.objects.get(user = item.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal.amount = wal.amount + (amount * item.price)
+                    wal.save()
+                    wal2 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal2.amount = wal.amount - (amount * item.price)
+                    wal2.save()
+                    wal3 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal3.amount = wal.amount + amount
+                    wal3.save()
+                    amount = amount - item.amount
+                    item.delete()
+                    i = i +1
+            if amount > 0 :
+                add = MainTradesBuyOrder(trade = MainTrades.objects.get(id = trade) ,user = request.user, amount = amount , price = price)
+                add.save()
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_201_CREATED)
+        else:
+            add = MainTradesBuyOrder(trade = MainTrades.objects.get(id = trade) ,user = request.user, amount = amount , price = price)
+            add.save()
+            return Response(status=status.HTTP_201_CREATED)
+    
+
+class maintradesellorders(APIView):
+
+    def get_object(self , id):
+        return MainTradesSellOrder.objects.filter(trade = MainTrades.objects.get(id = id))
+
+    def get(self, request, id, format=None):
+        if len(self.get_object(id)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(id)
+        serializer = MainTradesSellOrderSerializer(userinfo , many=True)
+        return Response(serializer.data)
+    
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self , request, id , format=None):
+        amount = float(request.data['amount'])
+        price = float(request.data['price'])
+        trade = id
+        user = request.user
+        buys = MainTradesBuyOrder.objects.filter(price__gte = request.data['price'], trade = MainTrades.objects.get(id = trade)).order_by('price')
+        i=0
+        if amount > Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).bcurrency).amount :
+            return Response({
+            'error' : "موجودی کافی نیست"
+        }, status=status.HTTP_400_BAD_REQUEST)
+        if len(buys) > 0 :
+            while i < len(buys):
+                item = buys[i]
+                if amount < item.amount :
+                    wal = Wallet.objects.get(user = item.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal.amount = wal.amount + amount
+                    wal.save()
+                    wal2 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal2.amount = wal.amount + (amount * item.price)
+                    wal2.save()
+                    wal3 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal3.amount = wal.amount - amount
+                    wal3.save()
+                    item.amount = item.amount - amount
+                    item.save()
+                    amount = 0
+
+                elif amount == item.amount :
+                    wal = Wallet.objects.get(user = item.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal.amount = wal.amount + amount
+                    wal.save()
+                    wal2 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal2.amount = wal.amount + (amount * item.price)
+                    wal2.save()
+                    wal3 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal3.amount = wal.amount - amount
+                    wal3.save()
+                    item.delete()
+                    amount = 0
+                
+                else :
+
+                    wal = Wallet.objects.get(user = item.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal.amount = wal.amount + amount
+                    wal.save()
+                    wal2 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).scurrency)
+                    wal2.amount = wal.amount + (amount * item.price)
+                    wal2.save()
+                    wal3 = Wallet.objects.get(user = request.user , currency = MainTrades.objects.get(id = trade).bcurrency)
+                    wal3.amount = wal.amount - amount
+                    wal3.save()
+                    amount = amount - item.amount
+                    item.delete()
+                    i = i +1
+                    
+            if amount > 0 :
+                add = MainTradesSellOrder(trade = MainTrades.objects.get(id = trade) ,user = request.user, amount = amount , price = price)
+                add.save()
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_201_CREATED)
+        else:
+            add = MainTradesSellOrder(trade = MainTrades.objects.get(id = trade) ,user = request.user, amount = amount , price = price)
+            add.save()
+            return Response(status=status.HTTP_201_CREATED)
+
+class maintradesinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, id):
+        return MainTrades.objects.get(id = id)
+
+    def get(self , request, id, format=None):
+        maintrade =  self.get_object(id)
+        if len(MainTradesSellOrder.objects.filter(trade = maintrade).order_by('price')) > 0:
+            minsell = MainTradesSellOrder.objects.filter(trade = maintrade).order_by('price')[0].price
+        else:
+            minsell = 0
+        if len(MainTradesBuyOrder.objects.filter(trade = maintrade).order_by('-price')) > 0:
+            maxbuy = MainTradesBuyOrder.objects.filter(trade = maintrade).order_by('-price')[0].price
+        else:
+            maxbuy = 0
+        sbalance = Wallet.objects.get(user = request.user , currency = maintrade.scurrency).amount
+        bbalance = Wallet.objects.get(user = request.user , currency = maintrade.bcurrency).amount
+        serializer = {'smin': minsell, 'bmax': maxbuy, 'sbalance': sbalance, 'bbalance': bbalance}
+        print(serializer)
+        return Response(serializer)
+
+class fasttradesbuyinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, id):
+        return MainTrades.objects.get(id = id)
+
+    def get(self , request, id, format=None):
+        maintrade =  self.get_object(id)
+        if len(MainTradesSellOrder.objects.filter(trade = maintrade).order_by('price')) > 0:
+            minsell = MainTradesSellOrder.objects.filter(trade = maintrade).order_by('price')[0].price
+        else:
+            minsell = 0
+        if len(MainTradesBuyOrder.objects.filter(trade = maintrade).order_by('-price')) > 0:
+            maxbuy = MainTradesBuyOrder.objects.filter(trade = maintrade).order_by('-price')[0].price
+        else:
+            maxbuy = 0
+        sbalance = Wallet.objects.get(user = request.user , currency = maintrade.scurrency).amount
+        bbalance = Wallet.objects.get(user = request.user , currency = maintrade.bcurrency).amount
+        serializer = {'smin': minsell, 'bmax': maxbuy, 'sbalance': sbalance, 'bbalance': bbalance}
+        print(serializer)
+        return Response(serializer)
+    
+class fasttradessellinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, id):
+        return MainTrades.objects.get(id = id)
+
+    def get(self , request, id, format=None):
+        maintrade =  self.get_object(id)
+        if len(MainTradesSellOrder.objects.filter(trade = maintrade).order_by('price')) > 0:
+            minsell = MainTradesSellOrder.objects.filter(trade = maintrade).order_by('price')[0].price
+        else:
+            minsell = 0
+        if len(MainTradesBuyOrder.objects.filter(trade = maintrade).order_by('-price')) > 0:
+            maxbuy = MainTradesBuyOrder.objects.filter(trade = maintrade).order_by('-price')[0].price
+        else:
+            maxbuy = 0
+        sbalance = Wallet.objects.get(user = request.user , currency = maintrade.scurrency).amount
+        bbalance = Wallet.objects.get(user = request.user , currency = maintrade.bcurrency).amount
+        serializer = {'smin': minsell, 'bmax': maxbuy, 'sbalance': sbalance, 'bbalance': bbalance}
+        print(serializer)
+        return Response(serializer)

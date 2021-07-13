@@ -8,7 +8,7 @@ import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
 from jsonfield import JSONField
-from datetime import datetime    
+from datetime import date, datetime    
 import django
 from sarafi.settings import ROOT
 from django.dispatch import receiver
@@ -304,15 +304,6 @@ class Price(models.Model):
     doge = models.FloatField(default=0)
     usd = models.FloatField(default=0)
 
-class Price(models.Model):
-    rial = models.FloatField(default=1)
-    btc = models.FloatField(default=0)
-    eth = models.FloatField(default=0)
-    trx = models.FloatField(default=0)
-    usdt = models.FloatField(default=0)
-    doge = models.FloatField(default=0)
-    usd = models.FloatField(default=0)
-
 class Notification(models.Model):
     user = models.ForeignKey(User , related_name='notifications' , on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
@@ -357,9 +348,10 @@ class Notification(models.Model):
         return  days + hours + minutes 
 
 class MainTrades(models.Model):
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100 ,verbose_name=" نام ارز")
     brand = models.CharField(max_length=100 ,null=True,verbose_name=" نماد ارز")
+    scurrency = models.ForeignKey(Currencies , related_name='sellcurrency', on_delete=models.CASCADE , null=True)
+    bcurrency = models.ForeignKey(Currencies , related_name='buycurrency' , on_delete=models.CASCADE , null=True)
 
     def __str__(self):
         return self.name
@@ -369,7 +361,6 @@ class MainTrades(models.Model):
 
 
 class ProTrades(models.Model):
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100 ,verbose_name=" نام ارز")
     brand = models.CharField(max_length=100 ,null=True,verbose_name=" نماد ارز")
 
@@ -378,3 +369,31 @@ class ProTrades(models.Model):
 
     def get_absolute_url(self):
         return f'{ROOT}/trades/{self.name}/'
+
+class MainTradesBuyOrder(models.Model):
+    trade = models.ForeignKey(MainTrades, related_name='buyorders' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='maintradebuyorders' , on_delete=models.CASCADE)
+    amount = models.FloatField()
+    price = models.FloatField()
+    date = models.DateTimeField(default=timezone.now)
+
+class MainTradesSellOrder(models.Model):
+    trade = models.ForeignKey(MainTrades, related_name='sellorders' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='maintradesellorders' , on_delete=models.CASCADE)
+    amount = models.FloatField()
+    price = models.FloatField()
+    date = models.DateTimeField(default=timezone.now)
+
+class ProTradesBuyOrder(models.Model):
+    trade = models.ForeignKey(ProTrades, related_name='buyorders' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='protradebuyorders' , on_delete=models.CASCADE)
+    amount = models.FloatField()
+    price = models.FloatField()
+    date = models.DateTimeField(default=timezone.now)
+
+class ProTradesSellOrder(models.Model):
+    trade = models.ForeignKey(ProTrades, related_name='sellorders' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='protradesellorders' , on_delete=models.CASCADE)
+    amount = models.FloatField()
+    price = models.FloatField()
+    date = models.DateTimeField(default=timezone.now)

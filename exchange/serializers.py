@@ -2,7 +2,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import MainTradesBuyOrder, MainTradesSellOrder, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -208,4 +208,58 @@ class NotificationSerializer(serializers.ModelSerializer):
             "text",
             "seen",
             "get_age",
+        )
+
+class MainTradesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainTrades
+        fields = (
+            "id",
+            "name",
+            "brand",
+        )
+
+class ProTradesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProTrades
+        fields = (
+            "id",
+            "name",
+            "brand",
+        )
+
+class ProTradesSellOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProTradesSellOrder
+        fields = (
+            "trade",
+            "amount",
+            "price"
+        )
+
+class ProTradesBuyOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProTradesBuyOrder
+        fields = (
+            "trade",
+            "amount",
+            "price"
+        )
+
+class MainTradesSellOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainTradesSellOrder
+        fields = (
+            "trade",
+            "amount",
+            "price"
+        )
+
+class MainTradesBuyOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainTradesBuyOrder
+        fields = (
+            "trade",
+            "amount",
+            "price"
         )
