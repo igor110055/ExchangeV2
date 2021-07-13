@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ra$$l%4d2y4i!5#=(n58_u988+gdn8$st2^rtx-l0buiwhi7kc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://138.201.116.39']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'blockcypher',
     'binance_chain',
     'django_rest_passwordreset',
+    'django_crontab'
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -167,3 +168,8 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+CRONJOBS = [
+    ('* * * * *', 'exchange.cron.TICKER')
+]
