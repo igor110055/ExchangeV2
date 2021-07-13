@@ -77,8 +77,8 @@ class Wallet(models.Model):
     user = models.ForeignKey(User , related_name='wallet' , on_delete=models.CASCADE)
     currency = models.ForeignKey(Currencies , related_name='currency', on_delete=models.CASCADE ,default=0)
     amount = models.FloatField(default=0)
-    address = models.CharField(max_length=1000 , null = True)
-    key = models.CharField(max_length=1000 , null = True)
+    address = models.CharField(max_length=1000 , null = True, blank=True)
+    key = models.CharField(max_length=1000 , null = True ,blank=True)
     class Meta:
         verbose_name = ' کیف پول '
         verbose_name_plural = ' کیف پول ها'
