@@ -1,3 +1,4 @@
+from exchange.views import currencies, currency, price, usersinfo
 from django.shortcuts import render
 from django import http
 from django.db.models.fields import EmailField
@@ -7,10 +8,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from exchange.serializers import  VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import Staff,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
+from exchange.models import  Price, Staff,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -60,6 +61,50 @@ class staff(APIView):
             serializer.level = request.data['level']
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class user(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user.id))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user.id).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        users = []
+        userinfo =  User.objects.all()
+        for item in userinfo :
+            if len(UserInfo.objects.filter(user = item)) > 0:
+                userinfos = UserInfo.objects.get(user = item)
+                wallet= 0
+                price = 0
+                for itemm in Wallet.objects.filter(user = item):
+                    if itemm.currency.id == 1:
+                        price = 1
+                    elif itemm.currency.id == 2:
+                        price = Price.objects.get(id = 1).btc * Price.objects.get(id = 1).usd
+                    elif itemm.currency.id == 3:
+                        price = Price.objects.get(id = 1).eth * Price.objects.get(id = 1).usd
+                    elif itemm.currency.id == 4:
+                        price = Price.objects.get(id = 1).usdt * Price.objects.get(id = 1).usd
+                    elif itemm.currency.id == 5:
+                        price = Price.objects.get(id = 1).trx * Price.objects.get(id = 1).usd
+                    elif itemm.currency.id == 6:
+                        price = Price.objects.get(id = 1).doge * Price.objects.get(id = 1).usd
+                    wallet = wallet + (itemm.amount * price)
+                users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': userinfos.is_admin, 'id': item.id })
+        return Response(users)
+    def post(self , request , format=None):
+        user = UserInfo.objects.get(user = User.objects.get(id = request.data['id']))
+        if request.data['act'] == 1:
+            if user.is_active == True:
+                user.is_active = False
+            elif user.is_active == False:
+                user.is_active = True
+        user.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 class bankcards(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]

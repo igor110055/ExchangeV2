@@ -34,12 +34,16 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     )
 
 class UserInfo(models.Model):
-    user = models.ForeignKey(User , related_name='userinfo', on_delete=models.CASCADE)
+    user = models.OneToOneField(User , related_name='userinfo', on_delete=models.CASCADE)
     first_name=models.CharField(max_length=255)
     last_name=models.CharField(max_length=255)
     mobile = models.CharField(max_length=10,)
     email = models.EmailField()
     level = models.IntegerField(default= 0)
+    is_active = models.BooleanField(default=True)
+    is_verify = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    complete = models.BooleanField(default=False)
     class meta:
         ordering = ('-date_joined',)
         verbose_name = ' کاربر '
@@ -358,11 +362,18 @@ class MainTrades(models.Model):
 
     def get_absolute_url(self):
         return f'{ROOT}/trades/{self.name}/'
+    
+    def get_bname(self):
+        return self.bcurrency.name
+    def get_sname(self):
+        return self.scurrency.name
 
 
 class ProTrades(models.Model):
     name = models.CharField(max_length=100 ,verbose_name=" نام ارز")
     brand = models.CharField(max_length=100 ,null=True,verbose_name=" نماد ارز")
+    scurrency = models.ForeignKey(Currencies , related_name='prosellcurrency', on_delete=models.CASCADE , null=True)
+    bcurrency = models.ForeignKey(Currencies , related_name='probuycurrency' , on_delete=models.CASCADE , null=True)
 
     def __str__(self):
         return self.name
@@ -375,25 +386,186 @@ class MainTradesBuyOrder(models.Model):
     user = models.ForeignKey(User, related_name='maintradebuyorders' , on_delete=models.CASCADE)
     amount = models.FloatField()
     price = models.FloatField()
+    start = models.FloatField(null=True)
     date = models.DateTimeField(default=timezone.now)
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes 
+
+
+
+    def get_brand(self):
+        return self.trade.bcurrency.brand
 
 class MainTradesSellOrder(models.Model):
     trade = models.ForeignKey(MainTrades, related_name='sellorders' , on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='maintradesellorders' , on_delete=models.CASCADE)
     amount = models.FloatField()
     price = models.FloatField()
+    start = models.FloatField(null=True)
     date = models.DateTimeField(default=timezone.now)
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
 
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes 
+
+
+    def get_brand(self):
+        return self.trade.bcurrency.brand
 class ProTradesBuyOrder(models.Model):
     trade = models.ForeignKey(ProTrades, related_name='buyorders' , on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='protradebuyorders' , on_delete=models.CASCADE)
     amount = models.FloatField()
     price = models.FloatField()
+    start = models.FloatField(null=True)
     date = models.DateTimeField(default=timezone.now)
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
 
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes 
+
+    def get_brand(self):
+        return self.trade.bcurrency.brand
 class ProTradesSellOrder(models.Model):
     trade = models.ForeignKey(ProTrades, related_name='sellorders' , on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='protradesellorders' , on_delete=models.CASCADE)
     amount = models.FloatField()
     price = models.FloatField()
+    start = models.FloatField(null=True)
     date = models.DateTimeField(default=timezone.now)
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes 
+
+    def get_brand(self):
+        return self.trade.bcurrency.brand

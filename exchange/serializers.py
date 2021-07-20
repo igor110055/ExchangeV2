@@ -2,7 +2,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import MainTradesBuyOrder, MainTradesSellOrder, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import  MainTradesBuyOrder, MainTradesSellOrder, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,7 +13,9 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "mobile",
-            "level"
+            "level",
+            "is_active",
+            "is_admin"
         )
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -35,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             "username",
             "email",
+            "get_userinfo"
         )
 
 class WalletSerializer(serializers.ModelSerializer):
@@ -217,6 +220,8 @@ class MainTradesSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "brand",
+            "get_bname",
+            "get_sname"
         )
 
 class ProTradesSerializer(serializers.ModelSerializer):
@@ -234,7 +239,11 @@ class ProTradesSellOrderSerializer(serializers.ModelSerializer):
         fields = (
             "trade",
             "amount",
-            "price"
+            "price",
+            "start",
+            "date",
+            "get_age",
+            "get_brand"
         )
 
 class ProTradesBuyOrderSerializer(serializers.ModelSerializer):
@@ -243,7 +252,11 @@ class ProTradesBuyOrderSerializer(serializers.ModelSerializer):
         fields = (
             "trade",
             "amount",
-            "price"
+            "price",
+            "start",
+            "date",
+            "get_age",
+            "get_brand"
         )
 
 class MainTradesSellOrderSerializer(serializers.ModelSerializer):
@@ -252,7 +265,11 @@ class MainTradesSellOrderSerializer(serializers.ModelSerializer):
         fields = (
             "trade",
             "amount",
-            "price"
+            "price",
+            "start",
+            "date",
+            "get_age",
+            "get_brand"
         )
 
 class MainTradesBuyOrderSerializer(serializers.ModelSerializer):
@@ -261,5 +278,9 @@ class MainTradesBuyOrderSerializer(serializers.ModelSerializer):
         fields = (
             "trade",
             "amount",
-            "price"
+            "price",
+            "start",
+            "date",
+            "get_age",
+            "get_brand"
         )

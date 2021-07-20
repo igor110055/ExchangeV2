@@ -8,4 +8,5 @@ urlpatterns = [
    path('bankcards' , views.bankcards.as_view() , name='bankcards'),
    path('bankaccounts' , views.bankaccounts.as_view() , name='bankaccounts'),
    path('verifymelli' , views.verifymelli.as_view() , name='verifymelli'),
+   path('user' , views.user.as_view() , name='user'),
 ]
