@@ -68,7 +68,6 @@ class usersinfo(APIView):
                 serializer.save()
                 note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
                 note.save()
-
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 user = UserInfo.objects.get(user = request.user.id)
