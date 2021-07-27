@@ -159,16 +159,16 @@ class bankaccounts(APIView):
         return Response(serializer.data)
 
     def post(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         serializer = BankAccountsSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
-            no = request.data['number']
-            req = VerifyBankAccountsRequest.objects.get(bankc = no)
+            id = request.data['id']
+            req = VerifyBankAccountsRequest.objects.get(id = id)
             req.delete()
             return Response(status=status.HTTP_201_CREATED)
         else:
@@ -180,8 +180,8 @@ class bankaccounts(APIView):
         else:
             if Staff.objects.get(user = request.user.id).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
-        no = request.data['number']
-        req = VerifyBankAccountsRequest.objects.get(bankc = no)
+        id = request.data['id']
+        req = VerifyBankAccountsRequest.objects.get(id = id)
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
 
