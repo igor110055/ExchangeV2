@@ -104,6 +104,7 @@ class Verify(models.Model):
 
 class BankCards(models.Model):
     user =  models.ForeignKey(User , related_name='cards' , on_delete=models.CASCADE)
+    image = models.CharField(max_length=5000 , null=True)
     number = models.CharField(max_length=16 , null=True)
     status = models.BooleanField(default=False)
     class meta:

@@ -86,6 +86,7 @@ class BankCardsSerializer(serializers.ModelSerializer):
         model = BankCards
         fields = (
             "user",
+            "image",
             "number",
             "status"
         )
