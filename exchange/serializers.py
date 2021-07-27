@@ -9,7 +9,6 @@ class UserInfoSerializer(serializers.ModelSerializer):
         model = UserInfo
         fields = (
             "id",
-            "user",
             "first_name",
             "last_name",
             "mobile",

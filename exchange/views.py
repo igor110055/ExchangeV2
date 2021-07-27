@@ -64,7 +64,7 @@ class usersinfo(APIView):
         request.data['user'] = request.user
         serializer = UserInfoSerializer(data=request.data)
         if serializer.is_valid():
-            if len(UserInfo.objects.filter(user = request.user))<1:
+            if len(UserInfo.objects.filter(user = request.user)) < 1:
                 serializer.save()
                 note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
                 note.save()
