@@ -134,7 +134,7 @@ class VerifyMelliRequest(models.Model):
 
 class VerifyBankRequest(models.Model):
     user = models.ForeignKey(User , related_name='Banks' , on_delete=models.CASCADE)
-    bankimg = models.ImageField(upload_to='bank')
+    bankimg = models.ImageField(upload_to='bank' , null=True)
     bankc = models.CharField(max_length=16 , null=True)
     action = models.BooleanField(default = False)
     class meta:
