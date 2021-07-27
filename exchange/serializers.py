@@ -125,6 +125,7 @@ class VerifyBankAccountsRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = VerifyBankAccountsRequest
         fields = (
+            "id",
             "user",
             "bankc",
             "get_user",
