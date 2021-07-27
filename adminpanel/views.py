@@ -126,6 +126,7 @@ class bankcards(APIView):
         else:
             if Staff.objects.get(user = request.user).level < 1 :
                 return Response({'message': 'not admin'}, status= status.HTTP_400_BAD_REQUEST)
+        request.data['user'] = VerifyBankRequest.objects.get(id = request.data['id']).user
         serializer = BankCardsSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
