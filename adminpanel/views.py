@@ -155,7 +155,6 @@ class bankaccounts(APIView):
             if Staff.objects.get(user = request.user.id).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         bankcards = VerifyBankAccountsRequest.objects.all()
-        print(bankcards[0].bankc)
         serializer = VerifyBankAccountsRequestSerializer(bankcards , many=True)
         return Response(serializer.data)
 
