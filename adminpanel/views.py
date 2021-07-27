@@ -212,7 +212,7 @@ class verifymelli(APIView):
         req = VerifyMelliRequest.objects.get(mellic = no)
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
-
+ 
     def put(self , request , format=None):
         if len(Staff.objects.filter(user = request.user.id))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
