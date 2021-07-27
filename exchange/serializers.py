@@ -37,7 +37,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             "username",
             "email",
-            "get_userinfo"
         )
 
 class WalletSerializer(serializers.ModelSerializer):

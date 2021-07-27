@@ -102,7 +102,7 @@ class dashboardinfo(APIView):
 
 
 
-    def post(self , request , format=None):
+    def post(self, request , format=None):
         request.data['user'] = request.user.id
         serializer = UserInfoSerializer(data=request.data)
         if serializer.is_valid():
@@ -943,42 +943,66 @@ class protradebuyorders(APIView):
             while i < len(sells) or amount == 0:
                 item = sells[i]
                 if amount < item.amount :
-                    wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal.amount = wal.amount + (amount * item.price)
-                    wal.save()
-                    wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal2.amount = wal.amount - (amount * item.price)
-                    wal2.save()
+                    if Wallet.objects.filter(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal.amount = wal.amount + (amount * item.price)
+                        wal.save()
+                    else:
+                        wal = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal.save()
+                    if Wallet.objects.filter(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal2.amount = wal2.amount - (amount * item.price)
+                        wal2.save()
+                    else:
+                        wal2 = Wallet(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal2.save()
                     wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal3.amount = wal.amount + amount
+                    wal3.amount = wal3.amount + amount
                     wal3.save()
                     amount = item.amount - amount
                     item.save()
                     amount = 0
 
                 elif amount == item.amount :
-                    wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal.amount = wal.amount + (amount * item.price)
-                    wal.save()
-                    wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal2.amount = wal.amount - (amount * item.price)
-                    wal2.save()
+                    if Wallet.objects.filter(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal.amount = wal.amount + (amount * item.price)
+                        wal.save()
+                    else:
+                        wal = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal.save()
+                    if Wallet.objects.filter(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal2.amount = wal2.amount - (amount * item.price)
+                        wal2.save()
+                    else:
+                        wal2 = Wallet(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal2.save()
                     wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal3.amount = wal.amount + amount
+                    wal3.amount = wal3.amount + amount
                     wal3.save()
                     item.delete()
                     amount = 0
 
                 else :
 
-                    wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal.amount = wal.amount + (amount * item.price)
-                    wal.save()
-                    wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal2.amount = wal.amount - (amount * item.price)
-                    wal2.save()
+                    if Wallet.objects.filter(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal.amount = wal.amount + (amount * item.price)
+                        wal.save()
+                    else:
+                        wal = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal.save()
+                    if Wallet.objects.filter(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal2.amount = wal2.amount - (amount * item.price)
+                        wal2.save()
+                    else:
+                        wal2 = Wallet(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal2.save()
                     wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal3.amount = wal.amount + amount
+                    wal3.amount = wal3.amount + amount
                     wal3.save()
                     amount = amount - item.amount
                     item.delete()
@@ -986,12 +1010,18 @@ class protradebuyorders(APIView):
             if amount > 0 :
                 add = ProTradesBuyOrder(trade = ProTrades.objects.get(id = trade) ,user = request.user, amount = amount , price = price , start = amountstart)
                 add.save()
+                wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
+                wal3.amount = wal3.amount + amount
+                wal3.save()
                 return Response(status=status.HTTP_201_CREATED)
             else:
                 return Response(status=status.HTTP_201_CREATED)
         else:
             add = ProTradesBuyOrder(trade = ProTrades.objects.get(id = trade) ,user = request.user, amount = amount , price = price, start = amountstart)
             add.save()
+            wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
+            wal3.amount = wal3.amount + amount
+            wal3.save()
             return Response(status=status.HTTP_201_CREATED)
     
 
@@ -1026,42 +1056,69 @@ class protradesellorders(APIView):
             while i < len(buys) or amount == 0:
                 item = buys[i]
                 if amount < item.amount :
-                    wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal.amount = wal.amount + amount
-                    wal.save()
-                    wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal2.amount = wal.amount + (amount * item.price)
-                    wal2.save()
+                    if Wallet.objects.filter(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency):
+                        wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency)
+                        wal.amount = wal.amount + amount
+                        wal.save()
+                    else:
+                        wal = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency, amount = amount)
+                        wal.save()
+
+                    if Wallet.objects.filter(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal2.amount = wal2.amount + (amount * item.price)
+                        wal2.save()
+                    else:
+                        wal2 = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal2.save()
                     wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal3.amount = wal.amount - amount
+                    wal3.amount = wal3.amount - amount
                     wal3.save()
                     item.amount = item.amount - amount
                     item.save()
                     amount = 0
 
                 elif amount == item.amount :
-                    wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal.amount = wal.amount + amount
-                    wal.save()
-                    wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal2.amount = wal.amount + (amount * item.price)
-                    wal2.save()
+                    if Wallet.objects.filter(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency):
+                        wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency)
+                        wal.amount = wal.amount + amount
+                        wal.save()
+                    else:
+                        wal = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency, amount = amount)
+                        wal.save()
+
+                    if Wallet.objects.filter(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal2.amount = wal2.amount + (amount * item.price)
+                        wal2.save()
+                    else:
+                        wal2 = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal2.save()
                     wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal3.amount = wal.amount - amount
+                    wal3.amount = wal3.amount - amount
                     wal3.save()
                     item.delete()
                     amount = 0
                 
                 elif amount > item.amount :
 
-                    wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal.amount = wal.amount + amount
-                    wal.save()
-                    wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
-                    wal2.amount = wal.amount + (amount * item.price)
-                    wal2.save()
+                    if Wallet.objects.filter(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency):
+                        wal = Wallet.objects.get(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency)
+                        wal.amount = wal.amount + amount
+                        wal.save()
+                    else:
+                        wal = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).bcurrency, amount = amount)
+                        wal.save()
+
+                    if Wallet.objects.filter(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency):
+                        wal2 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).scurrency)
+                        wal2.amount = wal2.amount + (amount * item.price)
+                        wal2.save()
+                    else:
+                        wal2 = Wallet(user = item.user , currency = ProTrades.objects.get(id = trade).scurrency, amount = (amount * item.price))
+                        wal2.save()
                     wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
-                    wal3.amount = wal.amount - amount
+                    wal3.amount = wal3.amount - amount
                     wal3.save()
                     amount = amount - item.amount
                     item.delete()
@@ -1070,12 +1127,18 @@ class protradesellorders(APIView):
             if amount > 0 :
                 add = ProTradesSellOrder(trade = ProTrades.objects.get(id = trade) ,user = request.user, amount = amount , price = price, start = amountstart)
                 add.save()
+                wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
+                wal3.amount = wal3.amount - amount
+                wal3.save()
                 return Response(status=status.HTTP_201_CREATED)
             else:
                 return Response(status=status.HTTP_201_CREATED)
         else:
             add = ProTradesSellOrder(trade = ProTrades.objects.get(id = trade) ,user = request.user, amount = amount , price = price , start = amountstart)
             add.save()
+            wal3 = Wallet.objects.get(user = request.user , currency = ProTrades.objects.get(id = trade).bcurrency)
+            wal3.amount = wal3.amount - amount
+            wal3.save()
             return Response(status=status.HTTP_201_CREATED)
 
 
