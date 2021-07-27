@@ -48,9 +48,9 @@ class staff(APIView):
         return Response(serializer.data)
 
     def post(self , request , format=None):
-        if Staff.objects.get(user = request.user.id).level < 3 :
+        if Staff.objects.get(user = request.user).level < 3 :
             return Response(status= status.HTTP_400_BAD_REQUEST)
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             serializer = StaffSerializer(data = request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -68,10 +68,10 @@ class user(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         users = []
         userinfo =  User.objects.all()
@@ -111,20 +111,20 @@ class bankcards(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         bankcards = VerifyBankRequest.objects.all()
         serializer = VerifyBankRequestSerializer(bankcards , many=True)
         return Response(serializer.data)
 
     def post(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         serializer = BankCardsSerializer(data = request.data)
         if serializer.is_valid():
@@ -134,10 +134,10 @@ class bankcards(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         id = request.data['id']
         req = VerifyBankRequest.objects.get(id = id)
@@ -149,10 +149,10 @@ class bankaccounts(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         bankcards = VerifyBankAccountsRequest.objects.all()
         serializer = VerifyBankAccountsRequestSerializer(bankcards , many=True)
@@ -175,10 +175,10 @@ class bankaccounts(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         id = request.data['id']
         req = VerifyBankAccountsRequest.objects.get(id = id)
@@ -190,20 +190,20 @@ class verifymelli(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         bankcards = VerifyMelliRequest.objects.all()
         serializer = VerifyMelliRequestSerializer(bankcards , many=True)
         return Response(serializer.data)
 
     def post(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         verify = Verify.objects.get(user = request.data['user'])
         verify.melliv = True
@@ -214,10 +214,10 @@ class verifymelli(APIView):
         return Response(status=status.HTTP_201_CREATED)
  
     def put(self , request , format=None):
-        if len(Staff.objects.filter(user = request.user.id))<1:
+        if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            if Staff.objects.get(user = request.user.id).level < 1 :
+            if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         no = request.data['number']
         req = VerifyMelliRequest.objects.get(mellic = no)
