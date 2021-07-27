@@ -61,16 +61,16 @@ class usersinfo(APIView):
         return Response(serializer.data)
     
     def post(self, request , format=None):
-        request.data['user'] = request.user.id
+        request.data['user'] = request.user
         serializer = UserInfoSerializer(data=request.data)
         if serializer.is_valid():
-            if len(UserInfo.objects.filter(user = request.user.id))<1:
+            if len(UserInfo.objects.filter(user = request.user))<1:
                 serializer.save()
                 note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
                 note.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
-                user = UserInfo.objects.get(user = request.user.id)
+                user = UserInfo.objects.get(user = request.user)
                 user.first_name = request.data['first_name']
                 user.last_name = request.data['last_name']
                 user.mobile = request.data['mobile']
