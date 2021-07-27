@@ -105,7 +105,7 @@ class Verify(models.Model):
 class BankCards(models.Model):
     user =  models.ForeignKey(User , related_name='cards' , on_delete=models.CASCADE)
     image = models.ImageField(upload_to='bank')
-    number = models.BigIntegerField()
+    number = models.CharField(max_length=16)
     status = models.BooleanField(default=False)
     class meta:
         verbose_name = ' کارت بانک '
@@ -113,7 +113,7 @@ class BankCards(models.Model):
 
 class BankAccounts(models.Model):
     user =  models.ForeignKey(User , related_name='accounts' , on_delete=models.CASCADE)
-    number = models.BigIntegerField()
+    number = models.CharField(max_length=16)
     status = models.BooleanField(default=False)
     class meta:
         verbose_name = ' حساب بانکی '
@@ -122,7 +122,7 @@ class BankAccounts(models.Model):
 class VerifyMelliRequest(models.Model):
     user = models.ForeignKey(User , related_name='melli' , on_delete=models.CASCADE)
     melliimg = models.ImageField(upload_to='melli' , null = True)
-    mellic = models.BigIntegerField( null = True)
+    mellic = models.CharField(max_length=16)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید کارت ملی '
@@ -134,8 +134,8 @@ class VerifyMelliRequest(models.Model):
 
 class VerifyBankRequest(models.Model):
     user = models.ForeignKey(User , related_name='Banks' , on_delete=models.CASCADE)
-    bankimg = models.ImageField(upload_to='bank' , null = True)
-    bankc = models.BigIntegerField( null = True)
+    bankimg = models.ImageField(upload_to='bank')
+    bankc = models.CharField(max_length=16)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید کارت بانکی '
@@ -147,7 +147,7 @@ class VerifyBankRequest(models.Model):
 
 class VerifyBankAccountsRequest(models.Model):
     user = models.ForeignKey(User , related_name='BanksAccounts' , on_delete=models.CASCADE)
-    bankc = models.BigIntegerField( null = True)
+    bankc = models.CharField(max_length=16)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید حساب بانکی '
