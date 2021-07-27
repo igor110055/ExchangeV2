@@ -139,8 +139,8 @@ class bankcards(APIView):
         else:
             if Staff.objects.get(user = request.user.id).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
-        no = request.data['number']
-        req = VerifyBankRequest.objects.get(bankc = no)
+        id = request.data['id']
+        req = VerifyBankRequest.objects.get(id = id)
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
 
