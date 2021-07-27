@@ -59,6 +59,25 @@ class usersinfo(APIView):
         userinfo =  self.get_object(request.user)
         serializer = UserInfoSerializer(userinfo , many=True)
         return Response(serializer.data)
+    
+    def post(self, request , format=None):
+        request.data['user'] = request.user.id
+        serializer = UserInfoSerializer(data=request.data)
+        if serializer.is_valid():
+            if len(UserInfo.objects.filter(user = request.user.id))<1:
+                serializer.save()
+                note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
+                note.save()
+
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                user = UserInfo.objects.get(user = request.user.id)
+                user.first_name = request.data['first_name']
+                user.last_name = request.data['last_name']
+                user.mobile = request.data['mobile']
+                user.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -99,27 +118,6 @@ class dashboardinfo(APIView):
                     wallets.append({'brand': itemm.currency.brand, 'amount': itemm.amount * price})
                 users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': userinfos.is_admin, 'id': item.id, 'openorder': openorder, 'unread': unread, 'openorders': openorders, 'wallets': wallets})
         return Response(users)
-
-
-
-    def post(self, request , format=None):
-        request.data['user'] = request.user.id
-        serializer = UserInfoSerializer(data=request.data)
-        if serializer.is_valid():
-            if len(UserInfo.objects.filter(user = request.user.id))<1:
-                serializer.save()
-                note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
-                note.save()
-
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                user = UserInfo.objects.get(user = request.user.id)
-                user.first_name = request.data['first_name']
-                user.last_name = request.data['last_name']
-                user.mobile = request.data['mobile']
-                user.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class user(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
