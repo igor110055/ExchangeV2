@@ -130,7 +130,7 @@ class VerifyMelliRequest(models.Model):
     def get_image(self):
         return f'{ROOT}/media/{self.melliimg}/'
     def get_user(self):
-        return f'{self.user.username}'
+        return self.user.id
 
 class VerifyBankRequest(models.Model):
     user = models.ForeignKey(User , related_name='Banks' , on_delete=models.CASCADE)
