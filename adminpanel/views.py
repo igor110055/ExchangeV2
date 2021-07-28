@@ -216,7 +216,7 @@ class verifymelli(APIView):
         verify.melliv = True
         verify.save()
         if verify.bankv == True and verify.melliv == True and verify.mobilev == True and verify.emailv == True :
-                UserInfo.objects.get(user = request.data['user']).level = 1
+            UserInfo.objects.get(user = request.data['user']).level = 1
         id = request.data['id']
         req = VerifyMelliRequest.objects.get(id = id)
         req.delete()
