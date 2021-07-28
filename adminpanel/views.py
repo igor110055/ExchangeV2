@@ -210,8 +210,8 @@ class verifymelli(APIView):
         verify = Verify.objects.get(user = request.data['user'])
         verify.melliv = True
         verify.save()
-        no = request.data['number']
-        req = VerifyMelliRequest.objects.get(mellic = no)
+        id = request.data['id']
+        req = VerifyMelliRequest.objects.get(id = id)
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
  

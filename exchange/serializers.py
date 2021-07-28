@@ -72,6 +72,7 @@ class VerifyMelliRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = VerifyMelliRequest
         fields = (
+            "id",
             "user",
             "melliimg",
             "mellic",
