@@ -134,7 +134,7 @@ class bankcards(APIView):
             verify = Verify.objects.get(user = request.data['user'])
             verify.bankv = True
             verify.save()
-            if verify.bankv == True and verify.melliv == True and verify.mobilev == True and verify.emailv == True :
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv :
                 UserInfo.objects.get(user = request.data['user']).level = 1
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
