@@ -137,7 +137,7 @@ class bankcards(APIView):
             if verify.bankv and verify.melliv and verify.mobilev and verify.emailv :
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
-                user.save
+                user.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -220,7 +220,7 @@ class verifymelli(APIView):
         if verify.bankv and verify.melliv and verify.mobilev and verify.emailv :
             user = UserInfo.objects.get(user = request.data['user'])
             user.level = 1
-            user.save
+            user.save()
         id = request.data['id']
         req = VerifyMelliRequest.objects.get(id = id)
         req.delete()
