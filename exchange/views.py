@@ -625,6 +625,13 @@ class maintrades(APIView):
         serializer = MainTradesSerializer(userinfo , many=True)
         return Response(serializer.data)
 
+    def post(self , request, id , format=None):
+        if len(self.get_object()) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  MainTrades.objects.filter(id = id)
+        serializer = MainTradesSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
 class protrades(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
