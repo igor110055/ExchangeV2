@@ -63,7 +63,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "138.201.116.39"
+    "http://138.201.116.39"
 ]
 
 MIDDLEWARE = [
