@@ -240,10 +240,14 @@ class wallet(APIView):
 
         if id == 4 :
             if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = 5))) > 0 :
-                wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
-                wa.key = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).key
-                wa.address = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).address
-                wa.save()
+                if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
+                    wa = Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))
+                    wa.key = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).key
+                    wa.address = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).address
+                    wa.save()
+                else:
+                    wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).address , key = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).key)
+                    wa.save()
             else:
                 url = "https://api.shasta.trongrid.io/wallet/generateaddress"
                 headers = {"Accept": "application/json"}
@@ -256,6 +260,8 @@ class wallet(APIView):
                     wa.key = key
                     wa.address = address
                     wa.save()
+                    wa2 = Wallet(user = request.user , currency = Currencies.objects.get(id = 5) , amount = 0 , address = address , key = key)
+                    wa2.save()
                 else:
                     wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = address , key = key)
                     wa.save()
