@@ -39,6 +39,8 @@ class Command(BaseCommand):
         for item in Wallet.objects.filter(currency = Currencies.objects.get(id = 4)):
             ADDRESS = item.address
             PRIV_KEY = item.key
+            def amount_to_parameter(amount):
+                return '%064x' % amount
             def address_to_parameter(addr):
                 return "0" * 24 + base58.b58decode_check(addr)[1:].hex()
 
