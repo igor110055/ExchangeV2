@@ -252,8 +252,8 @@ class wallet(APIView):
                 url = "https://api.shasta.trongrid.io/wallet/generateaddress"
                 headers = {"Accept": "application/json"}
                 response = requests.request("GET", url, headers=headers)
-                print(response.json()['hexAddress'])
-                address = response.json()['hexAddress']
+                print(response.json()['address'])
+                address = response.json()['address']
                 key = response.json()['privateKey']
                 if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
                     wa = Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))
