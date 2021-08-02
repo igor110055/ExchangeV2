@@ -45,7 +45,8 @@ class WalletSerializer(serializers.ModelSerializer):
             "id",
             "currency",
             "amount",
-            "address"
+            "address",
+            "address2",
         )
 class CurrenciesSerializer(serializers.ModelSerializer):
     class Meta:

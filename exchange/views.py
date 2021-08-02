@@ -241,13 +241,14 @@ class wallet(APIView):
         if id == 4 :
             if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = 5))) > 0 :
                 if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
-                    wa = Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))
+                    wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
                     wa.key = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).key
                     wa.address = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).address
                     wa.save()
                 else:
                     wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).address , key = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 5)).key)
                     wa.save()
+                return Response(status=status.HTTP_201_CREATED)
             else:
                 url = "https://api.shasta.trongrid.io/wallet/generateaddress"
                 headers = {"Accept": "application/json"}
@@ -256,7 +257,7 @@ class wallet(APIView):
                 address = response.json()['address']
                 key = response.json()['privateKey']
                 if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
-                    wa = Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))
+                    wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
                     wa.key = key
                     wa.address = address
                     wa.save()
@@ -269,6 +270,39 @@ class wallet(APIView):
                     wa2.save()
                 return Response(status=status.HTTP_201_CREATED)
 
+        if id == 41 :
+            id = 4
+            if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = 3))) > 0 :
+                if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
+                    wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
+                    wa.key2 = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 3)).key
+                    wa.address2 = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 3)).address
+                    wa.save()
+                else:
+                    wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address2 = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 3)).address , key2 = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 3)).key)
+                    wa.save()
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                priv = secrets.token_hex(32)
+                private_key = "0x" + priv
+                acct = Account.from_key(private_key)
+                address = acct.address
+                key = private_key
+                if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
+                    wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
+                    wa.key2 = key
+                    wa.address2 = address
+                    wa.save()
+                    wa2 = Wallet(user = request.user , currency = Currencies.objects.get(id = 3) , amount = 0 , address = address , key = key)
+                    wa2.save()
+                else:
+                    wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address2 = address , key2 = key)
+                    wa.save()
+                    wa2 = Wallet(user = request.user , currency = Currencies.objects.get(id = 3) , amount = 0 , address = address , key = key)
+                    wa2.save()
+                return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class currency(APIView):
