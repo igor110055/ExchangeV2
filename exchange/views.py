@@ -1,5 +1,9 @@
 from typing import Text
 from django import http
+from django.http import response
+import requests
+from coinex.coinex import CoinEx
+import time
 from django.db.models.fields import EmailField
 from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
@@ -10,13 +14,12 @@ from rest_framework import authentication
 from .serializers import ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
+from .models import mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
-from pywallet import wallet as wall
 from py_crypto_hd_wallet import HdWalletFactory, HdWalletCoins, HdWalletSpecs , HdWalletWordsNum, HdWalletChanges
 import json
 from datetime import datetime ,timedelta
@@ -30,6 +33,13 @@ import requests
 from itertools import chain
 from eth_account import Account
 import secrets
+import logging
+import copy
+import hashlib
+import time
+import traceback
+
+
 
 class bsc(APIView):
 
@@ -63,22 +73,20 @@ class usersinfo(APIView):
         return Response(serializer.data)
     
     def post(self, request , format=None):
-        request.data['user'] = request.user
-        serializer = UserInfoSerializer(data=request.data)
-        if serializer.is_valid():
-            if len(UserInfo.objects.filter(user = request.user)) < 1:
-                serializer.save()
-                note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
-                note.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                user = UserInfo.objects.get(user = request.user)
-                user.first_name = request.data['first_name']
-                user.last_name = request.data['last_name']
-                user.mobile = request.data['mobile']
-                user.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if len(UserInfo.objects.filter(user = request.user)) < 1:
+            u = UserInfo(user = request.user, first_name = request.data['first_name'], last_name = request.data['last_name'], mobile = request.data['mobile'], email = request.data['email'])
+            u.save()
+            note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
+            note.save()
+            return Response( status=status.HTTP_201_CREATED)
+        else:
+            user = UserInfo.objects.get(user = request.user)
+            user.first_name = request.data['first_name']
+            user.last_name = request.data['last_name']
+            user.mobile = request.data['mobile']
+            user.email = request.data['email']
+            user.save()
+            return Response( status=status.HTTP_201_CREATED)
 
 
 
@@ -492,14 +500,11 @@ class resetpass(APIView):
             return redirect(f"http://localhost:8080/login")
 
 class mobileverify(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
     
     def put(self , request):
-        user = Verify.objects.get(user= request.user)
         vcode = randrange(123456,999999)
-        user.mobilec = vcode
-        user.save()
+        c = mobilecodes(number = request.data['number'], code = vcode)
+        c.save()
 
         sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
 
@@ -520,20 +525,8 @@ class mobileverify(APIView):
         return Response(status=status.HTTP_200_OK )
 
     def post(self , request):
-        user = Verify.objects.get(user= request.user)
-        if(int(request.data['code']) == int(user.mobilec)):
-            user.mobilev = True
-            user.save()
-            if(len(UserInfo.objects.filter(user=request.user))<1):
-                userinfo = UserInfo(user=request.user , mobile= request.data['mobile'])
-                userinfo.save()
-            else:
-                userinfo = UserInfo.objects.get(user=request.user)
-                userinfo.mobile = request.data['mobile']
-                userinfo.save()
-            if (user.melliv == 3 and user.emailv == True ):
-                per = UserInfo.objects.get(user = request.user)
-                per.level = 1
+        c = mobilecodes.objects.get(number= request.data['number'])
+        if(int(request.data['code']) == int(c.code)):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -1304,3 +1297,206 @@ class fasttradesinfo(APIView):
         sellmaintrades = MainTradesSellOrderSerializer(MainTradesSellOrder.objects.filter(trade = maintrade).order_by('price'),many=True)
         serializer = {'maxsell': maxsell, 'maxbuy': maxbuy, 'sbalance': sbalance, 'bbalance': bbalance, 'buymaintrades': buymaintrades.data,'sellmaintrades': sellmaintrades.data}
         return Response(serializer)
+
+class indexprice(APIView):
+    def get(self , request, format=None):
+        response = requests.get('https://api.nomics.com/v1/currencies/ticker?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=BTC,ETH,TRX,DOGE,USDT')
+        return HttpResponse(response) 
+
+class indexhistory(APIView):
+    def post(self , request, format=None):
+        start = request.data['start']
+        end = request.data['end']
+        r = requests.get(f'https://api.nomics.com/v1/currencies/sparkline?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=BTC,ETH,TRX,DOGE,USDT&start={start}&end={end}')
+        return HttpResponse(r) 
+        
+
+class oltradeinfo(APIView):
+    def get(self , request, format=None):   
+        list = {} 
+        r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
+        list['BTCUSDT'] = r.json()['data']['ticker']['BTCUSDT']
+        list['ETHUSDT'] = r.json()['data']['ticker']['ETHUSDT']
+        list['TRXUSDT'] = r.json()['data']['ticker']['TRXUSDT']
+        list['DOGEUSDT']= r.json()['data']['ticker']['DOGEUSDT']
+        list['BNBUSDT']= r.json()['data']['ticker']['BNBUSDT']
+        list['XRPUSDT']= r.json()['data']['ticker']['XRPUSDT']
+        list['BCHUSDT']= r.json()['data']['ticker']['BCHUSDT']
+        list['ADAUSDT']= r.json()['data']['ticker']['ADAUSDT']
+        return Response(list)
+
+class olboardinfo(APIView):
+    def get(self , request, format=None):   
+        list = {} 
+        r = requests.get(url = 'https://api.coinex.com/perpetual/v1/market/depth?market=BTCUSDT&merge=0.01&limit=10')
+        return Response(r.json())
+        
+class cp_balance(APIView):
+    __headers = {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Accept': 'application/json',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36'
+    }
+    access_id = '56255CA42286443EB7D3F6DB44633C25'
+    secret_key = '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7'
+    headers = __headers
+    host = 'https://api.coinex.com/perpetual'
+    session = requests.Session()
+    session.mount('http://', requests.adapters.HTTPAdapter())
+    session.mount('https://', requests.adapters.HTTPAdapter())
+    http_client = session
+    logger = logging
+    path = '/v1/asset/query'
+
+    @staticmethod
+    def get_sign(params, secret_key):
+        data = ['='.join([str(k), str(v)]) for k, v in params.items()]
+
+        str_params = "{0}&secret_key={1}".format(
+            '&'.join(data), secret_key).encode()
+
+        token = hashlib.sha256(str_params).hexdigest()
+        return token
+
+    def set_authorization(self, params, headers):
+        headers['AccessId'] = self.access_id
+        headers['Authorization'] = self.get_sign(params, self.secret_key)
+
+    def get(self , params=None, sign=True):
+        url = self.host + self.path
+        params = {}
+        params['timestamp'] = int(time.time()*1000)
+        headers = copy.copy(self.headers)
+        if sign:
+            self.set_authorization(params, headers)
+        try:
+            response = self.http_client.get(
+                url, params=params, headers=headers, timeout=5)
+            if response.status_code == requests.codes.ok:
+                return Response(response.json()['data']['USDT'])
+            else:
+                self.logger.error(
+                    'URL: {0}\nSTATUS_CODE: {1}\nResponse: {2}'.format(
+                        response.request.url,
+                        response.status_code,
+                        response.text
+                    )
+                )
+                return Response()
+        except Exception as ex:
+            trace_info = traceback.format_exc()
+            self.logger.error('GET {url} failed: \n{trace_info}'.format(
+                url=url, trace_info=trace_info))
+            return None
+
+    def post(self, path, data=None):
+        url = self.host + path
+        data = data or {}
+        data['timestamp'] = int(time.time()*1000)
+        headers = copy.copy(self.headers)
+        self.set_authorization(data, headers)
+        try:
+            response = self.http_client.post(
+                url, data=data, headers=headers, timeout=10)
+            # self.logger.info(response.request.url)
+            if response.status_code == requests.codes.ok:
+                return response.json()
+            else:
+                self.logger.error(
+                    'URL: {0}\nSTATUS_CODE: {1}\nResponse: {2}'.format(
+                        response.request.url,
+                        response.status_code,
+                        response.text
+                    )
+                )
+                return None
+        except Exception as ex:
+            trace_info = traceback.format_exc()
+            self.logger.error('POST {url} failed: \n{trace_info}'.format(
+                url=url, trace_info=trace_info))
+            return None
+
+class cp_order(APIView):
+    __headers = {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Accept': 'application/json',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36'
+    }
+    access_id = '56255CA42286443EB7D3F6DB44633C25'
+    secret_key = '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7'
+    headers = __headers
+    host = 'https://api.coinex.com/perpetual'
+    session = requests.Session()
+    session.mount('http://', requests.adapters.HTTPAdapter())
+    session.mount('https://', requests.adapters.HTTPAdapter())
+    http_client = session
+    logger = logging
+    path = '/v1/asset/query'
+
+    @staticmethod
+    def get_sign(params, secret_key):
+        data = ['='.join([str(k), str(v)]) for k, v in params.items()]
+
+        str_params = "{0}&secret_key={1}".format(
+            '&'.join(data), secret_key).encode()
+
+        token = hashlib.sha256(str_params).hexdigest()
+        return token
+
+    def set_authorization(self, params, headers):
+        headers['AccessId'] = self.access_id
+        headers['Authorization'] = self.get_sign(params, self.secret_key)
+
+    def get(self , params=None, sign=True):
+        url = self.host + self.path
+        params = {}
+        params['timestamp'] = int(time.time()*1000)
+        headers = copy.copy(self.headers)
+        if sign:
+            self.set_authorization(params, headers)
+        try:
+            response = self.http_client.get(
+                url, params=params, headers=headers, timeout=5)
+            if response.status_code == requests.codes.ok:
+                return Response(response.json()['data']['USDT'])
+            else:
+                self.logger.error(
+                    'URL: {0}\nSTATUS_CODE: {1}\nResponse: {2}'.format(
+                        response.request.url,
+                        response.status_code,
+                        response.text
+                    )
+                )
+                return Response()
+        except Exception as ex:
+            trace_info = traceback.format_exc()
+            self.logger.error('GET {url} failed: \n{trace_info}'.format(
+                url=url, trace_info=trace_info))
+            return None
+
+    def post(self, path, data=None):
+        url = self.host + path
+        data = data or {}
+        data['timestamp'] = int(time.time()*1000)
+        headers = copy.copy(self.headers)
+        self.set_authorization(data, headers)
+        try:
+            response = self.http_client.post(
+                url, data=data, headers=headers, timeout=10)
+            # self.logger.info(response.request.url)
+            if response.status_code == requests.codes.ok:
+                return response.json()
+            else:
+                self.logger.error(
+                    'URL: {0}\nSTATUS_CODE: {1}\nResponse: {2}'.format(
+                        response.request.url,
+                        response.status_code,
+                        response.text
+                    )
+                )
+                return None
+        except Exception as ex:
+            trace_info = traceback.format_exc()
+            self.logger.error('POST {url} failed: \n{trace_info}'.format(
+                url=url, trace_info=trace_info))
+            return None

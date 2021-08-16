@@ -48,4 +48,10 @@ urlpatterns = [
 
    path('fasttradesinfo/<int:id>' , views.fasttradesinfo.as_view() , name='fasttradesinfo'),
    path('dashboardinfo' , views.dashboardinfo.as_view() , name='dashboardinfo'),
+   path('oltradeinfo' , views.oltradeinfo.as_view() , name='oltradeinfo'),
+   path('olboardinfo' , views.olboardinfo.as_view() , name='olboardinfo'),
+   path('cp_balance' , views.cp_balance.as_view() , name='cp_balance'),
+
+   path('indexprice' , views.indexprice.as_view() , name='indexprice'),
+   path('indexhistory' , views.indexhistory.as_view() , name='indexhistory'),
 ]

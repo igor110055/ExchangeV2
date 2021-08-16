@@ -55,6 +55,11 @@ class UserInfo(models.Model):
     def get_absolute_url(self):
         return f'/{self.username}/'
 
+class mobilecodes(models.Model):
+    number = models.CharField(max_length=15)
+    code = models.CharField(max_length=15)
+
+    
 class Staff(models.Model):
     user = models.ForeignKey(User , related_name='staffs' , on_delete=models.CASCADE)
     level = models.IntegerField()
