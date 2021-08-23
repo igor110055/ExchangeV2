@@ -1339,8 +1339,8 @@ class cp_balance(APIView):
     'Accept': 'application/json',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36'
     }
-    access_id = '56255CA42286443EB7D3F6DB44633C25'
-    secret_key = '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7'
+    access_id = '641A03D0C52B4CE89EC78A77D0289E42'
+    secret_key = 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF'
     headers = __headers
     host = 'https://api.coinex.com/perpetual'
     session = requests.Session()
@@ -1420,7 +1420,7 @@ class cp_balance(APIView):
 
 class cp_market_order(APIView):
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
 
         result = robot.put_market_order(
             'ETHUSDT',
@@ -1431,7 +1431,7 @@ class cp_market_order(APIView):
 
 class cp_market_order(APIView):
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
 
         result = robot.put_market_order(
             'ETHUSDT',
@@ -1442,14 +1442,14 @@ class cp_market_order(APIView):
 
 class cp_pending(APIView):
     def get(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
 
         result = robot.query_position_pending()
         return Response(result)
 
 class cp_close(APIView):
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
 
         result = robot.close_market(
             request.data['market'],
@@ -1459,7 +1459,7 @@ class cp_close(APIView):
 
 class cp_finished(APIView):
     def get(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
 
         result = robot.query_order_finished(
             'ETHUSDT',
@@ -1474,8 +1474,8 @@ class cp_transfer(APIView):
     'Accept': 'application/json',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36'
     }
-    access_id = '56255CA42286443EB7D3F6DB44633C25'
-    secret_key = '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7'
+    access_id = '641A03D0C52B4CE89EC78A77D0289E42'
+    secret_key = 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF'
     headers = __headers
     host = 'https://api.coinex.com/'
     session = requests.Session()
@@ -1483,7 +1483,7 @@ class cp_transfer(APIView):
     session.mount('https://', requests.adapters.HTTPAdapter())
     http_client = session
     logger = logging
-    path = 'v1/sub_account/transfer?access_id=56255CA42286443EB7D3F6DB44633C25&tonce=1513746038205'
+    path = 'v1/sub_account/transfer?access_id=641A03D0C52B4CE89EC78A77D0289E42&tonce=1513746038205'
 
     @staticmethod
     def get_sign(params, secret_key):
@@ -1502,7 +1502,7 @@ class cp_transfer(APIView):
     def get(self , params=None, sign=True):
         url = self.host + self.path
         params = {
-            'access_id': '56255CA42286443EB7D3F6DB44633C25'
+            'access_id': '641A03D0C52B4CE89EC78A77D0289E42'
         }
         params['timestamp'] = int(time.time()*1000)
         headers = copy.copy(self.headers)
@@ -1530,7 +1530,7 @@ class cp_transfer(APIView):
 
 class cp_market_order_buy(APIView):
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
 
         result = robot.put_market_order(
             'ETHUSDT',
@@ -1540,7 +1540,7 @@ class cp_market_order_buy(APIView):
         return HttpResponse(json.dumps(result, indent=4))
 class cp_market_order_sell(APIView):
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
 
         result = robot.put_market_order(
             'ETHUSDT',
