@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ra$$l%4d2y4i!5#=(n58_u988+gdn8$st2^rtx-l0buiwhi7kc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['138.201.116.39']
+ALLOWED_HOSTS = ['http://138.201.116.39']
 
 
 # Application definition
@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'blockcypher',
     'binance_chain',
     'django_rest_passwordreset',
-    'django_crontab'
+    'django_crontab',
+    'websockets',
 ]
 
 CORS_ALLOWED_ORIGINS = [

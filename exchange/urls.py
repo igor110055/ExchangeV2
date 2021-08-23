@@ -51,6 +51,11 @@ urlpatterns = [
    path('oltradeinfo' , views.oltradeinfo.as_view() , name='oltradeinfo'),
    path('olboardinfo' , views.olboardinfo.as_view() , name='olboardinfo'),
    path('cp_balance' , views.cp_balance.as_view() , name='cp_balance'),
+   path('cp_market_order' , views.cp_market_order.as_view() , name='cp_market_order'),
+   path('cp_pending' , views.cp_pending.as_view() , name='cp_pending'),
+   path('cp_close' , views.cp_close.as_view() , name='cp_close'),
+   path('cp_finished' , views.cp_finished.as_view() , name='cp_finished'),
+   path('cp_transfer' , views.cp_transfer.as_view() , name='cp_transfer'),
 
    path('indexprice' , views.indexprice.as_view() , name='indexprice'),
    path('indexhistory' , views.indexhistory.as_view() , name='indexhistory'),

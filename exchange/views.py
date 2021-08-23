@@ -3,6 +3,7 @@ from django import http
 from django.http import response
 import requests
 from coinex.coinex import CoinEx
+from bitmerchant.wallet import Wallet as Wall
 import time
 from django.db.models.fields import EmailField
 from django.http.response import JsonResponse
@@ -38,7 +39,7 @@ import copy
 import hashlib
 import time
 import traceback
-
+from .lib import CoinexPerpetualApi
 
 
 class bsc(APIView):
@@ -204,9 +205,9 @@ class wallet(APIView):
                 wa.save()
             return Response(status=status.HTTP_201_CREATED)
         if id == 2 :
-            hd_wallet = Mainwalls.objects.get(currency = id).wall
-            address = hd_wallet['addresses'][f'address_{request.user.id}']['address']
-            key = hd_wallet['addresses'][f'address_{request.user.id}']['wif_priv']
+            my_wallet = Wall.new_random_wallet() 
+            key = my_wallet.serialize()
+            address = my_wallet.to_address()
             if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
                 wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
                 wa.key = key
@@ -233,9 +234,10 @@ class wallet(APIView):
                 wa.save()
             return Response(status=status.HTTP_201_CREATED)
         if id == 6 :
-            hd_wallet = Mainwalls.objects.get(currency = id).wall
-            address = hd_wallet['addresses'][f'address_{request.user.id}']['address']
-            key = hd_wallet['addresses'][f'address_{request.user.id}']['wif_priv']
+            seed = Wal.generate_mnemonic()
+            w = Wal.create_wallet(network="DOGE", seed=seed, children=1)
+            address = w['address']
+            key = w['wif']
             if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
                 wa = Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))
                 wa.key = key
@@ -1416,7 +1418,57 @@ class cp_balance(APIView):
                 url=url, trace_info=trace_info))
             return None
 
-class cp_order(APIView):
+class cp_market_order(APIView):
+    def post(self , request, format=None):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.put_market_order(
+            'ETHUSDT',
+            2,
+            0.01,
+        )
+        return HttpResponse(json.dumps(result, indent=4))
+
+class cp_market_order(APIView):
+    def post(self , request, format=None):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.put_market_order(
+            'ETHUSDT',
+            2,
+            0.01,
+        )
+        return HttpResponse(json.dumps(result, indent=4))
+
+class cp_pending(APIView):
+    def get(self , request, format=None):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.query_position_pending()
+        return Response(result)
+
+class cp_close(APIView):
+    def post(self , request, format=None):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.close_market(
+            request.data['market'],
+            request.data['id']
+        )
+        return HttpResponse(json.dumps(result, indent=4))
+
+class cp_finished(APIView):
+    def get(self , request, format=None):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.query_order_finished(
+            'ETHUSDT',
+            2,
+            'offset',
+        )
+        return Response(result)
+
+class cp_transfer(APIView):
     __headers = {
     'Content-Type': 'application/json; charset=utf-8',
     'Accept': 'application/json',
@@ -1425,13 +1477,13 @@ class cp_order(APIView):
     access_id = '56255CA42286443EB7D3F6DB44633C25'
     secret_key = '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7'
     headers = __headers
-    host = 'https://api.coinex.com/perpetual'
+    host = 'https://api.coinex.com/'
     session = requests.Session()
     session.mount('http://', requests.adapters.HTTPAdapter())
     session.mount('https://', requests.adapters.HTTPAdapter())
     http_client = session
     logger = logging
-    path = '/v1/asset/query'
+    path = 'v1/sub_account/transfer?access_id=56255CA42286443EB7D3F6DB44633C25&tonce=1513746038205'
 
     @staticmethod
     def get_sign(params, secret_key):
@@ -1449,16 +1501,18 @@ class cp_order(APIView):
 
     def get(self , params=None, sign=True):
         url = self.host + self.path
-        params = {}
+        params = {
+            'access_id': '56255CA42286443EB7D3F6DB44633C25'
+        }
         params['timestamp'] = int(time.time()*1000)
         headers = copy.copy(self.headers)
         if sign:
             self.set_authorization(params, headers)
         try:
-            response = self.http_client.get(
+            response = self.http_client.post(
                 url, params=params, headers=headers, timeout=5)
             if response.status_code == requests.codes.ok:
-                return Response(response.json()['data']['USDT'])
+                return Response(response.json())
             else:
                 self.logger.error(
                     'URL: {0}\nSTATUS_CODE: {1}\nResponse: {2}'.format(
@@ -1467,36 +1521,9 @@ class cp_order(APIView):
                         response.text
                     )
                 )
-                return Response()
+                return Response(response.text)
         except Exception as ex:
             trace_info = traceback.format_exc()
             self.logger.error('GET {url} failed: \n{trace_info}'.format(
-                url=url, trace_info=trace_info))
-            return None
-
-    def post(self, path, data=None):
-        url = self.host + path
-        data = data or {}
-        data['timestamp'] = int(time.time()*1000)
-        headers = copy.copy(self.headers)
-        self.set_authorization(data, headers)
-        try:
-            response = self.http_client.post(
-                url, data=data, headers=headers, timeout=10)
-            # self.logger.info(response.request.url)
-            if response.status_code == requests.codes.ok:
-                return response.json()
-            else:
-                self.logger.error(
-                    'URL: {0}\nSTATUS_CODE: {1}\nResponse: {2}'.format(
-                        response.request.url,
-                        response.status_code,
-                        response.text
-                    )
-                )
-                return None
-        except Exception as ex:
-            trace_info = traceback.format_exc()
-            self.logger.error('POST {url} failed: \n{trace_info}'.format(
                 url=url, trace_info=trace_info))
             return None
