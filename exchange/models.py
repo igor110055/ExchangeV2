@@ -80,7 +80,7 @@ class Currencies(models.Model):
     def get_absolute_url(self):
         return f'currencies/{self.name}/'
     def get_image(self):
-        return f'{ROOT}/media/{self.pic}/'
+        return f'{ROOT}/media/{self.pic}'
 
 class Wallet(models.Model):
     user = models.ForeignKey(User , related_name='wallet' , on_delete=models.CASCADE)
