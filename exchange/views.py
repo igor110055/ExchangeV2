@@ -1544,7 +1544,7 @@ class cp_market_order_sell(APIView):
 
         result = robot.put_market_order(
             'ETHUSDT',
-            2,
+            1,
             0.01,
         )
         return HttpResponse(json.dumps(result, indent=4))
