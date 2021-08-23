@@ -165,7 +165,7 @@ DEFAULT_FROM_EMAIL = 'default from email'
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = ''
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
