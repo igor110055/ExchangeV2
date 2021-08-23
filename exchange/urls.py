@@ -56,6 +56,8 @@ urlpatterns = [
    path('cp_close' , views.cp_close.as_view() , name='cp_close'),
    path('cp_finished' , views.cp_finished.as_view() , name='cp_finished'),
    path('cp_transfer' , views.cp_transfer.as_view() , name='cp_transfer'),
+   path('cp_market_order_buy' , views.cp_market_order_buy.as_view() , name='cp_market_order_buy'),
+   path('cp_market_order_sell' , views.cp_market_order_sell.as_view() , name='cp_market_order_sell'),
 
    path('indexprice' , views.indexprice.as_view() , name='indexprice'),
    path('indexhistory' , views.indexhistory.as_view() , name='indexhistory'),

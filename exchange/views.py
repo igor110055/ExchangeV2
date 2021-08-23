@@ -1527,3 +1527,24 @@ class cp_transfer(APIView):
             self.logger.error('GET {url} failed: \n{trace_info}'.format(
                 url=url, trace_info=trace_info))
             return None
+
+class cp_market_order_buy(APIView):
+    def post(self , request, format=None):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.put_market_order(
+            'ETHUSDT',
+            2,
+            0.01,
+        )
+        return HttpResponse(json.dumps(result, indent=4))
+class cp_market_order_sell(APIView):
+    def post(self , request, format=None):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.put_market_order(
+            'ETHUSDT',
+            2,
+            0.01,
+        )
+        return HttpResponse(json.dumps(result, indent=4))
