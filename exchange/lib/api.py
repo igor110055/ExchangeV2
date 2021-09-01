@@ -424,51 +424,6 @@ class CoinexPerpetualApi(object):
         return self.request_client.post(path, data)
 
     def put_market_order(self, market, side, amount):
-        """
-        # params:
-            market	String	Yes	合约市场
-            side	Integer	Yes	委托类型 1表示卖空，2表示买多
-            amount	String	Yes	委托数量
-
-        # Request
-        POST https://api.coinex.com/perpetual/v1/order/put_market
-        {
-            "access_id" : "BFFA64957AA240F6BBEA26FXXXX",
-            "market": "BTCUSD",
-            "amount": "5",
-            "side": 2,
-            "time": 1550743431
-        }
-
-        # Response
-        {
-            "code": 0,
-            "data": {
-                "source": "API",
-                "order_id": 424,
-                "side": 1,
-                "user_id": 12,
-                "position_id": 0,
-                "left": "0",
-                "update_time": 1568192886.694576,
-                "market": "BTCUSD",
-                "effect_type": 0,
-                "maker_fee": "0",
-                "position_type": 2,
-                "deal_stock": "0.00010000000000000000",
-                "create_time": 1568192886.694551,
-                "target": 0,
-                "type": 2,
-                "price": "0",
-                "taker_fee": "0.00075",
-                "deal_profit": "0",
-                "amount": "1",
-                "deal_fee": "0.00000007500000000000",
-                "leverage": "3"
-            },
-            "message": "ok"
-        }
-        """
         path = '/v1/order/put_market'
         data = {
             'market': market,
@@ -864,6 +819,17 @@ class CoinexPerpetualApi(object):
         }
         return self.request_client.get(path, params)
 
+
+    def margin_transfer(self, from_account, to_account, coin_type,amount, limit=100):
+        path = '/v1/margin/transfer'
+        data = {
+            'from_account':from_account,
+            'to_account':to_account,
+            'coin_type':coin_type,
+            'amount':amount
+        }
+        return self.request_client.post(path, data)
+        
     def query_position_pending(self, market=''):
         """
         # params:

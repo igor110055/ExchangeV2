@@ -37,7 +37,7 @@ class UserInfo(models.Model):
     user = models.OneToOneField(User , related_name='userinfo', on_delete=models.CASCADE)
     first_name=models.CharField(max_length=255)
     last_name=models.CharField(max_length=255)
-    mobile = models.CharField(max_length=10,)
+    mobile = models.CharField(max_length=100,)
     email = models.EmailField()
     level = models.IntegerField(default= 0)
     is_active = models.BooleanField(default=True)
