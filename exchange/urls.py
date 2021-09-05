@@ -112,4 +112,21 @@ urlpatterns = [
 
 #  Perpetual Trades  ------------ >
 
+
+
+   path('olmtradeinfo' , views.olmtradeinfo.as_view() , name='olmtradeinfo'),
+   path('olmboardinfo' , views.olmboardinfo.as_view() , name='olmboardinfo'),
+   path('cpm_balance' , views.cpm_balance.as_view() , name='cpm_balance'),
+   path('cpm_market_order' , views.cpm_market_order.as_view() , name='cpm_market_order'),
+   path('cpm_limit_order' , views.cpm_limit_order.as_view() , name='cpm_limit_order'),
+   path('cpm_stop_limit_order' , views.cpm_stop_limit_order.as_view() , name='cpm_stop_limit_order'),
+   path('cpm_cancel_order' , views.cpm_cancel_order.as_view() , name='cpm_cancel_order'),
+   path('cpm_pending' , views.cpm_pending.as_view() , name='cpm_pending'),
+   path('cpm_stop_pending' , views.cpm_stop_pending.as_view() , name='cpm_stop_pending'),
+   path('cpm_close' , views.cpm_close.as_view() , name='cpm_close'),
+   path('cpm_finished' , views.cpm_finished.as_view() , name='cpm_finished'),
+   path('cpm_stop_finished' , views.cpm_stop_finished.as_view() , name='cpm_stop_finished'),
+   path('cpm_transfer' , views.cpm_transfer.as_view() , name='cpm_transfer'),
+   path('cpm_mg_transfer' , views.cpm_mg_transfer.as_view() , name='cpm_mg_transfer'),
+
 ]
