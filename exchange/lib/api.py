@@ -202,7 +202,7 @@ class CoinexPerpetualApi(object):
         path = '/v1/market/ticker/all'
         return self.request_client.get(path, sign=False)
 
-    def depth(self, market, merge=0, limit=50):
+    def depth(self, market, merge=0, limit=10):
         """
         # params merge: '0', '0.1', '0.01'
         # params limit: 5/10/20/50
@@ -811,6 +811,67 @@ class CoinexPerpetualApi(object):
         }
         """
         path = '/v1/order/stop_pending'
+        params = {
+            'market': market,
+            'side': side,
+            'offset': offset,
+            'limit': limit
+        }
+        return self.request_client.get(path, params)
+
+    def query_stop_finished(self, market, side, offset, limit=100):
+        """
+        # params:
+            market	String	Yes	合约市场，例如BTCUSD, ALL：表示所有市场
+            side	Integer	Yes	委托类型 0:全部(买与卖) 1:卖, 2: 买
+            offset	Integer	Yes	偏移量，即从哪条开始获取
+            limit	Integer	Yes	一次获取记录数，默认为20条，最大为100条
+
+        # Request
+        POST https://api.coinex.com/perpetual/v1/order/stop_pending
+        {
+            'access_id': 'BFFA64957AA240F6BBEA26FXXXX',
+            'market': 'BTCUSD',
+            'side': 2,
+            'offset': 0,
+            'limit': 100,
+            'time': 1550748047
+        }
+
+        # Response
+        {
+            "code": 0,
+            "data": {
+                "total": 1,   #返回数据的总条数
+                "offset": 0,  #与请求字段的offset相同
+                "limit": 100, #与请求字段的limit相同
+                "records":
+                [
+                    {
+                        "market": "btcusd",
+                        "create_time": 1568205393.025454,
+                        "stop_type": 3,
+                        "order_id": 694,
+                        "effect_type": 1,
+                        "amount": "10",
+                        "stop_price": "3.0000",
+                        "state": 1,
+                        "source": "API",
+                        "user_id": 12,
+                        "type": 1,
+                        "side": 2,
+                        "maker_fee": "0.00000",
+                        "update_time": 1568205393.025454,
+                        "price": "8000.0000",
+                        "taker_fee": "0.00075",
+                        "direction": "buy"
+                    }
+                ]
+            }
+            "message": "ok"
+        }
+        """
+        path = '/v1/order/stop_finished'
         params = {
             'market': market,
             'side': side,

@@ -50,7 +50,7 @@ class RequestClient(object):
         if sign:
             self.set_authorization(params, headers)
         try:
-            response = self.http_client.post(
+            response = self.http_client.get(
                 url, params=params, headers=headers, timeout=5)
             # self.logger.info(response.request.url)
             if response.status_code == requests.codes.ok:
@@ -68,7 +68,7 @@ class RequestClient(object):
             trace_info = traceback.format_exc()
             self.logger.error('GET {url} failed: \n{trace_info}'.format(
                 url=url, trace_info=trace_info))
-            return 'None'
+            return None
 
     def post(self, path, data=None):
         url = self.host + path
@@ -81,7 +81,7 @@ class RequestClient(object):
                 url, data=data, headers=headers, timeout=10)
             # self.logger.info(response.request.url)
             if response.status_code == requests.codes.ok:
-                return response
+                return response.json()
             else:
                 self.logger.error(
                     'URL: {0}\nSTATUS_CODE: {1}\nResponse: {2}'.format(
@@ -90,9 +90,9 @@ class RequestClient(object):
                         response.text
                     )
                 )
-                return response.text
+                return None
         except Exception as ex:
             trace_info = traceback.format_exc()
             self.logger.error('POST {url} failed: \n{trace_info}'.format(
                 url=url, trace_info=trace_info))
-            return 'Hi'
+            return None

@@ -473,7 +473,7 @@ class addforget(APIView):
             response_data['result'] = 'Create post successful!'
             send_mail(
             'Subject here',
-            f'لینک بازیابی رمز عبور شما : http://127.0.0.1:8000/api/v1/resetpass/{key} ',
+            f' ',
             'info@ramabit.com',
             [f'{email}'],
             fail_silently=False,
@@ -1314,14 +1314,14 @@ class indexhistory(APIView):
         return HttpResponse(r) 
         
 
+# < ------------   Margin Trades 
+
+
 class oltradeinfo(APIView):
     def get(self , request, format=None):   
         list = {} 
         r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
-        list['BTCUSDT'] = r.json()['data']['ticker']['BTCUSDT']
-        list['ETHUSDT'] = r.json()['data']['ticker']['ETHUSDT']
-        list['TRXUSDT'] = r.json()['data']['ticker']['TRXUSDT']
-        list['DOGEUSDT']= r.json()['data']['ticker']['DOGEUSDT']
+        list = r.json()['data']['ticker']
         return Response(list)
 
 class olboardinfo(APIView):
@@ -1341,9 +1341,15 @@ class cp_mg_transfer(APIView):
         return Response(coinex.margin_transfer(from_account=0, to_account=27, coin_type='USDT', amount='23'))
 
 class cp_pending(APIView):
-    def get(self , request, format=None):   
+    def post(self , request, format=None):   
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.order_pending(market =  'TRXUSDT'))
+        return Response(coinex.order_pending(market =  request.data['sym'],account_id=request.data['mid']))
+
+class cp_stop_pending(APIView):
+    def post(self , request, format=None):   
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.order_stop_pending(market =  request.data['sym'],account_id=request.data['mid']))
+
 
 class cp_close(APIView):
     def post(self , request, format=None):
@@ -1356,15 +1362,15 @@ class cp_close(APIView):
         return HttpResponse(json.dumps(result, indent=4))
 
 class cp_finished(APIView):
-    def get(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+    def post(self , request, format=None):   
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.order_finished(market = request.data['sym'],account_id=request.data['mid']))
 
-        result = robot.query_order_finished(
-            'ETHUSDT',
-            2,
-            'offset',
-        )
-        return Response(result)
+
+class cp_stop_finished(APIView):
+    def post(self , request, format=None):   
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.order_stop_finished(market = request.data['sym'],account_id=request.data['mid']))
 
 class cp_transfer(APIView):
     
@@ -1376,5 +1382,145 @@ class cp_transfer(APIView):
 class cp_market_order(APIView):
     def post(self , request):
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.order_market(account_id=27,access_id='56255CA42286443EB7D3F6DB44633C25',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],tonce=time.time()*1000,))
+        return Response(coinex.order_market(account_id=request.data['mid'],access_id='56255CA42286443EB7D3F6DB44633C25',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],tonce=time.time()*1000,))
         
+
+class cp_limit_order(APIView):
+    def post(self , request):
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.order_limit(account_id=request.data['mid'],access_id='56255CA42286443EB7D3F6DB44633C25',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],tonce=time.time()*1000,))
+
+
+class cp_stop_limit_order(APIView):
+    def post(self , request):
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.order_stop_limit(account_id=request.data['mid'],access_id='56255CA42286443EB7D3F6DB44633C25',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'],tonce=time.time()*1000,))
+
+
+
+class cp_cancel_order(APIView):
+    def post(self , request):
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.order_pending_cancel(market = request.data['market'],id = request.data['id']))
+        
+class cp_stop_cancel_order(APIView):
+    def post(self , request):
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.order_stop_pending_cancel( account_id=request.data['mid'],market = request.data['market'],id = request.data['id']))
+        
+
+#  Margin Trades ------------ >
+
+
+#  < ------------ Perpetual Trades 
+
+
+
+class olptradeinfo(APIView):
+    def get(self , request, format=None):   
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = {}
+        tick = robot.tickers()
+        for key in tick['data']['ticker']:
+            if not '_' in key and 'USDT' in key :
+                result[f'{key}'] = tick['data']['ticker'][key]['last']
+        return Response(result)
+
+class olpboardinfo(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.depth(market = request.data['sym'])
+        return Response(result)
+        
+class cpp_balance(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.query_account()
+        return Response(result)
+
+class cpp_mg_transfer(APIView):
+    def get(self , request, format=None):   
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.margin_transfer(from_account=0, to_account=request.data['mid'], coin_type='USDT', amount='23'))
+
+class cpp_pending(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.query_order_pending(market=request.data['sym'], side = 0, offset=False)
+        return Response(result)
+
+
+class cpp_stop_pending(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.query_stop_pending(market=request.data['sym'], side = 0, offset=False)
+        return Response(result)
+
+class cpp_close(APIView):
+    def post(self , request, format=None):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.close_market(
+            request.data['market'],
+            request.data['id']
+        )
+        return HttpResponse(json.dumps(result, indent=4))
+
+class cpp_finished(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.query_order_finished(market=request.data['sym'], side = 0, offset=False)
+        return Response(result)
+
+class cpp_stop_finished(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.query_stop_finished(market=request.data['sym'], side = 0, offset=False)
+        return Response(result)
+
+
+class cpp_transfer(APIView):
+    def get(self , request):
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.margin_account(access_id='56255CA42286443EB7D3F6DB44633C25',market = 'TRXUSDT',tonce=time.time()*1000,))
+
+
+
+class cpp_market_order(APIView):
+    def post(self , request):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.put_market_order(market=request.data['sym'], amount= request.data['amount'], side=request.data['type'])
+        return Response(result)
+
+
+class cpp_limit_order(APIView):
+    def post(self , request):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.put_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'])
+        return Response(result)
+
+
+class cpp_stop_limit_order(APIView):
+    def post(self , request):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.put_stop_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'])
+        return Response(result)
+
+
+
+class cpp_cancel_order(APIView):
+    def post(self , request):
+        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+
+        result = robot.close_market(market = request.data['market'],id = request.data['id'])
+        return Response(result)

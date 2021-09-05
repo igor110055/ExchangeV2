@@ -4,6 +4,10 @@ from rest_framework import views
 from . import views
 
 urlpatterns = [
+
+#  < ------------ General
+
+
    path('userinfo' , views.usersinfo.as_view() , name='userinfo'),
    path('user' , views.user.as_view() , name='user'),
    path('wallet' , views.wallets.as_view() , name='wallet'),
@@ -34,11 +38,18 @@ urlpatterns = [
    path('maintrades/<int:id>' , views.maintrades.as_view() , name='maintrades'),
    path('protrades/<int:id>' , views.protrades.as_view() , name='protrades'),
    path('fasttorial/<int:id>' , views.fasttorial.as_view() , name='fasttorial'),
+
+#  General  ------------ >   
+#  < ------------ Main Trades 
+
    path('maintradebuyorders/<int:id>' , views.maintradebuyorders.as_view() , name='maintradebuyorders'),
    path('maintradesellorders/<int:id>' , views.maintradesellorders.as_view() , name='maintradesellorders'),
    path('maintradesinfo/<int:id>' , views.maintradesinfo.as_view() , name='maintradesinfo'),
    path('maintradesselllist' , views.maintradesselllist.as_view() , name='maintradesselllist'),
    path('maintradesbuylist' , views.maintradesbuylist.as_view() , name='maintradesbuylist'),
+   
+#  Main Trades  ------------ >   
+#  < ------------ Pro Trades 
    
    path('protradebuyorders/<int:id>' , views.protradebuyorders.as_view() , name='protradebuyorders'),
    path('protradesellorders/<int:id>' , views.protradesellorders.as_view() , name='protradesellorders'),
@@ -46,18 +57,59 @@ urlpatterns = [
    path('protradesselllist' , views.protradesselllist.as_view() , name='protradesselllist'),
    path('protradesbuylist' , views.protradesbuylist.as_view() , name='protradesbuylist'),
 
+#  Pro Trades  ------------ >
+#  < ------------ Dashboard Info
+
    path('fasttradesinfo/<int:id>' , views.fasttradesinfo.as_view() , name='fasttradesinfo'),
    path('dashboardinfo' , views.dashboardinfo.as_view() , name='dashboardinfo'),
+   path('indexprice' , views.indexprice.as_view() , name='indexprice'),
+   path('indexhistory' , views.indexhistory.as_view() , name='indexhistory'),
+
+#  Dashboard Info  ------------ >
+#  < ------------ Margin Trades 
+
+
    path('oltradeinfo' , views.oltradeinfo.as_view() , name='oltradeinfo'),
    path('olboardinfo' , views.olboardinfo.as_view() , name='olboardinfo'),
    path('cp_balance' , views.cp_balance.as_view() , name='cp_balance'),
    path('cp_market_order' , views.cp_market_order.as_view() , name='cp_market_order'),
+   path('cp_limit_order' , views.cp_limit_order.as_view() , name='cp_limit_order'),
+   path('cp_stop_limit_order' , views.cp_stop_limit_order.as_view() , name='cp_stop_limit_order'),
+   path('cp_cancel_order' , views.cp_cancel_order.as_view() , name='cp_cancel_order'),
+   path('cp_stop_cancel_order' , views.cp_stop_cancel_order.as_view() , name='cp_stop_cancel_order'),
    path('cp_pending' , views.cp_pending.as_view() , name='cp_pending'),
+   path('cp_stop_pending' , views.cp_stop_pending.as_view() , name='cp_stop_pending'),
    path('cp_close' , views.cp_close.as_view() , name='cp_close'),
    path('cp_finished' , views.cp_finished.as_view() , name='cp_finished'),
+   path('cp_stop_finished' , views.cp_stop_finished.as_view() , name='cp_stop_finished'),
    path('cp_transfer' , views.cp_transfer.as_view() , name='cp_transfer'),
    path('cp_mg_transfer' , views.cp_mg_transfer.as_view() , name='cp_mg_transfer'),
 
-   path('indexprice' , views.indexprice.as_view() , name='indexprice'),
-   path('indexhistory' , views.indexhistory.as_view() , name='indexhistory'),
+
+#  Margin Trades  ------------ >
+
+
+#  < ------------ Perpetual Trades 
+
+
+
+   path('olptradeinfo' , views.olptradeinfo.as_view() , name='olptradeinfo'),
+   path('olpboardinfo' , views.olpboardinfo.as_view() , name='olpboardinfo'),
+   path('cpp_balance' , views.cpp_balance.as_view() , name='cpp_balance'),
+   path('cpp_market_order' , views.cpp_market_order.as_view() , name='cpp_market_order'),
+   path('cpp_limit_order' , views.cpp_limit_order.as_view() , name='cpp_limit_order'),
+   path('cpp_stop_limit_order' , views.cpp_stop_limit_order.as_view() , name='cpp_stop_limit_order'),
+   path('cpp_cancel_order' , views.cpp_cancel_order.as_view() , name='cpp_cancel_order'),
+   path('cpp_pending' , views.cpp_pending.as_view() , name='cpp_pending'),
+   path('cpp_stop_pending' , views.cpp_stop_pending.as_view() , name='cpp_stop_pending'),
+   path('cpp_close' , views.cpp_close.as_view() , name='cpp_close'),
+   path('cpp_finished' , views.cpp_finished.as_view() , name='cpp_finished'),
+   path('cpp_stop_finished' , views.cpp_stop_finished.as_view() , name='cpp_stop_finished'),
+   path('cpp_transfer' , views.cpp_transfer.as_view() , name='cpp_transfer'),
+   path('cpp_mg_transfer' , views.cpp_mg_transfer.as_view() , name='cpp_mg_transfer'),
+
+
+
+#  Perpetual Trades  ------------ >
+
 ]

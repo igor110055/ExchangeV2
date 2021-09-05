@@ -107,17 +107,27 @@ class CoinEx:
     def order_limit(self, market, type, amount, price, **params):
         return self._v1('order/limit', method='post', auth=True, market=market, type=type, amount=amount, price=price, **params)
 
+    def order_stop_limit(self, market, type, amount, price,stop_price, **params):
+        return self._v1('order/stop/limit', method='post', auth=True, market=market, type=type, amount=amount, price=price, stop_price=stop_price, **params)
+
     def order_market(self, market, type, amount, **params):
         return self._v1('order/market', method='post', auth=True, market=market, type=type, amount=amount, **params)
 
     def order_ioc(self, market, type, amount, price, **params):
         return self._v1('order/ioc', method='post', auth=True, market=market, type=type, amount=amount, price=price, **params)
 
-    def order_pending(self, market, page=1, limit=100):
-        return self._v1('order/pending', method='get', auth=True, market=market, page=page, limit=limit)
+    def order_pending(self, market,account_id, page=1, limit=100):
+        return self._v1('order/pending', method='get', auth=True, market=market, page=page, limit=limit,account_id=account_id)
 
-    def order_finished(self, market, page=1, limit=100):
-        return self._v1('order/finished', method='get', auth=True, market=market, page=page, limit=limit)
+    def order_stop_pending(self, market,account_id, page=1, limit=100):
+        return self._v1('order/stop/pending', method='get', auth=True, market=market, page=page, limit=limit,account_id=account_id)
+
+    def order_finished(self, market,account_id, page=1, limit=100):
+        return self._v1('order/finished', method='get', auth=True, market=market, page=page, limit=limit,account_id=account_id)
+
+    def order_stop_finished(self, market,account_id, page=1, limit=100):
+        return self._v1('order/stop/finished', method='get', auth=True, market=market, page=page, limit=limit,account_id=account_id)
+
 
     def order_status(self, market, id):
         return self._v1('order/status', method='get', auth=True, market=market, id=id)
@@ -125,11 +135,14 @@ class CoinEx:
     def order_deals(self, id, page=1, limit=100):
         return self._v1('order/deals', method='get', auth=True, id=id, page=page, limit=limit)
 
-    def order_user_deals(self, market, page=1, limit=100):
-        return self._v1('order/user/deals', method='get', auth=True, market=market, page=page, limit=limit)
+    def order_user_deals(self, market,account_id, page=1, limit=100):
+        return self._v1('order/user/deals', method='get', auth=True, market=market, page=page, limit=limit, account_id=account_id)
 
     def order_pending_cancel(self, market, id):
         return self._v1('order/pending', method='delete', auth=True, market=market, id=id)
+    
+    def order_stop_pending_cancel(self, market, account_id, id):
+        return self._v1('order/stop/pending', method='delete', auth=True, market=market, account_id=account_id, id=id)
 
     def order_pending_cancel_all(self, account_id, market):
         return self._v1('order/pending', method='delete', auth=True, account_id=account_id, market=market)
