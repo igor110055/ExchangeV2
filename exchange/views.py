@@ -1524,3 +1524,119 @@ class cpp_cancel_order(APIView):
 
         result = robot.close_market(market = request.data['market'],id = request.data['id'])
         return Response(result)
+
+
+
+
+# Moms
+
+
+
+class olmtradeinfo(APIView):
+    def get(self , request, format=None):   
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = {}
+        tick = robot.tickers()
+        for key in tick['data']['ticker']:
+            if not '_' in key and 'USDT' in key :
+                result[f'{key}'] = tick['data']['ticker'][key]['last']
+        return Response(result)
+
+class olmboardinfo(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.depth(market = request.data['sym'])
+        return Response(result)
+        
+class cpm_balance(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.query_account()
+        return Response(result)
+
+class cpm_mg_transfer(APIView):
+    def get(self , request, format=None):   
+        coinex = CoinEx('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF' )
+        return Response(coinex.margin_transfer(from_account=0, to_account=request.data['mid'], coin_type='USDT', amount='23'))
+
+class cpm_pending(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.query_order_pending(market=request.data['sym'], side = 0, offset=False)
+        return Response(result)
+
+
+class cpm_stop_pending(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.query_stop_pending(market=request.data['sym'], side = 0, offset=False)
+        return Response(result)
+
+class cpm_close(APIView):
+    def post(self , request, format=None):
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.close_market(
+            request.data['market'],
+            request.data['id']
+        )
+        return HttpResponse(json.dumps(result, indent=4))
+
+class cpm_finished(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.query_order_finished(market=request.data['sym'], side = 0, offset=False)
+        return Response(result)
+
+class cpm_stop_finished(APIView):
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.query_stop_finished(market=request.data['sym'], side = 0, offset=False)
+        return Response(result)
+
+
+class cpm_transfer(APIView):
+    def get(self , request):
+        coinex = CoinEx('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF' )
+        return Response(coinex.margin_account(access_id='641A03D0C52B4CE89EC78A77D0289E42',market = 'TRXUSDT',tonce=time.time()*1000,))
+
+
+
+class cpm_market_order(APIView):
+    def post(self , request):
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.put_market_order(market=request.data['sym'], amount= request.data['amount'], side=request.data['type'])
+        return Response(result)
+
+
+class cpm_limit_order(APIView):
+    def post(self , request):
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.put_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'])
+        return Response(result)
+
+
+class cpm_stop_limit_order(APIView):
+    def post(self , request):
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.put_stop_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'])
+        return Response(result)
+
+
+
+class cpm_cancel_order(APIView):
+    def post(self , request):
+        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
+
+        result = robot.close_market(market = request.data['market'],id = request.data['id'])
+        return Response(result)
