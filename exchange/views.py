@@ -15,10 +15,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import LeverageSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import PriceHistory, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
+from .models import Leverage, PriceHistory, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -68,7 +68,7 @@ class usersinfo(APIView):
 
     def get(self , request , format=None):
         if len(Notification.objects.filter(user = request.user)) < 1 : 
-            note = Notification(user = request.user , title = 'خوش آمدید' , text = 'به ... خوش آمدید') 
+            note = Notification(user = request.user , title = 'خوش آمدید' , text = 'به AMIZAX خوش آمدید') 
             note.save()
         if len(self.get_object(request.user)) < 1 :
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -174,6 +174,17 @@ class price(APIView):
         price = Price.objects.filter(id=1)
         serializer = PriceSerializer(price , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class leverages(APIView):
+            
+    def get(self , request , format=None):
+        price = Leverage.objects.all()
+        list={}
+        for item in price :
+            list[f'{item.symbol}'] = item.leverage
+        return Response(list , status=status.HTTP_201_CREATED)
+
+
 
 class pricehistory(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -522,9 +533,13 @@ class resetpass(APIView):
             return redirect(f"http://localhost:8080/login")
 
 class mobileverify(APIView):
-    
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def put(self , request):
         vcode = randrange(123456,999999)
+        a = mobilecodes.objects.filter(number = request.data['number'])
+        for item in a:
+            item.delete()
         c = mobilecodes(number = request.data['number'], code = vcode)
         c.save()
 
@@ -547,8 +562,17 @@ class mobileverify(APIView):
         return Response(status=status.HTTP_200_OK )
 
     def post(self , request):
+        user = Verify.objects.get(user= request.user)
         c = mobilecodes.objects.get(number= request.data['number'])
         if(int(request.data['code']) == int(c.code)):
+            user.mobilev = True
+            user.save()
+            mobile = UserInfo.objects.get(user = request.user)
+            mobile.mobile = request.data['number']
+            mobile.save()
+            if (user.melliv == 3 and user.mobilev == True ):
+                per = User.objects.get(id = request.user.id)
+                per.level = 1
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -1341,7 +1365,10 @@ class oltradeinfo(APIView):
         list = {} 
         r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
         list = r.json()['data']['ticker']
-        return Response(list)
+        list2 = {}
+        for item in Leverage.objects.all():
+            list2[item.symbol] = list[item.symbol]
+        return Response(list2)
 
 class olboardinfo(APIView):
     def post(self , request, format=None):   

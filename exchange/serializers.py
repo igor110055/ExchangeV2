@@ -2,7 +2,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import  MainTradesBuyOrder, MainTradesSellOrder, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import  Leverage, MainTradesBuyOrder, MainTradesSellOrder, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,6 +29,14 @@ class PriceSerializer(serializers.ModelSerializer):
             "usdt",
             "doge",
             "usd",
+        )
+
+class LeverageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Leverage
+        fields = (
+            "symbol",
+            "leverage",
         )
 
 class UserSerializer(serializers.ModelSerializer):
@@ -90,7 +98,6 @@ class BankCardsSerializer(serializers.ModelSerializer):
         model = BankCards
         fields = (
             "user",
-            "image",
             "number",
             "status"
         )
@@ -118,9 +125,7 @@ class VerifyBankRequestSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "user",
-            "bankimg",
             "bankc",
-            "get_image",
             "get_user",
             "action"
         )

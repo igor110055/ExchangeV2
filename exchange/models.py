@@ -113,7 +113,6 @@ class Verify(models.Model):
 
 class BankCards(models.Model):
     user =  models.ForeignKey(User , related_name='cards' , on_delete=models.CASCADE)
-    image = models.CharField(max_length=5000 , null=True)
     number = models.CharField(max_length=16 , null=True)
     status = models.BooleanField(default=False)
     class meta:
@@ -143,14 +142,11 @@ class VerifyMelliRequest(models.Model):
 
 class VerifyBankRequest(models.Model):
     user = models.ForeignKey(User , related_name='Banks' , on_delete=models.CASCADE)
-    bankimg = models.ImageField(upload_to='bank' , null=True)
     bankc = models.CharField(max_length=16 , null=True)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید کارت بانکی '
         verbose_name_plural = ' درخواست های تایید کارت بانکی '
-    def get_image(self):
-        return f'{ROOT}/media/{self.bankimg}/'
     def get_user(self):
         return f'{self.user.username}'
 
@@ -316,6 +312,10 @@ class Price(models.Model):
     usdt = models.FloatField(default=0)
     doge = models.FloatField(default=0)
     usd = models.FloatField(default=0)
+
+class Leverage(models.Model):
+    symbol = models.CharField(max_length=100)
+    leverage = models.IntegerField(default=0)
 
 class PriceHistory(models.Model):
     rial = models.FloatField(default=1)

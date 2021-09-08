@@ -28,6 +28,7 @@ urlpatterns = [
    path('verifymelli' , views.verifymelli.as_view() , name='verifymelli'),
    path('bsc' , views.bsc.as_view() , name='bsc'),
    path('price' , views.price.as_view() , name='price'),
+   path('leverages' , views.leverages.as_view() , name='leverages'),
    path('pricehistory' , views.pricehistory.as_view() , name='pricehistory'),
    path('bankrequests' , views.bankrequests.as_view() , name='bankrequests'),
    path('notifications' , views.notifications.as_view() , name='notifications'),
