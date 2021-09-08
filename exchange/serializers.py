@@ -48,6 +48,7 @@ class WalletSerializer(serializers.ModelSerializer):
             "amount",
             "address",
             "address2",
+            "get_currency"
         )
 class CurrenciesSerializer(serializers.ModelSerializer):
     class Meta:

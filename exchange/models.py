@@ -93,7 +93,9 @@ class Wallet(models.Model):
     class Meta:
         verbose_name = ' کیف پول '
         verbose_name_plural = ' کیف پول ها'
-
+    
+    def get_currency(self) :
+        return f'{self.currency.name}'
 
 
 class Verify(models.Model):
@@ -314,6 +316,16 @@ class Price(models.Model):
     usdt = models.FloatField(default=0)
     doge = models.FloatField(default=0)
     usd = models.FloatField(default=0)
+
+class PriceHistory(models.Model):
+    rial = models.FloatField(default=1)
+    btc = models.FloatField(default=0)
+    eth = models.FloatField(default=0)
+    trx = models.FloatField(default=0)
+    usdt = models.FloatField(default=0)
+    doge = models.FloatField(default=0)
+    usd = models.FloatField(default=0)
+
 
 class Notification(models.Model):
     user = models.ForeignKey(User , related_name='notifications' , on_delete=models.CASCADE)

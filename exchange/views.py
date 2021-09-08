@@ -1,3 +1,4 @@
+from requests.sessions import Request
 from exchange.lib import request_client
 from typing import Text
 from django import http
@@ -17,7 +18,7 @@ from rest_framework import authentication
 from .serializers import ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
+from .models import PriceHistory, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -42,6 +43,7 @@ import hashlib
 import time
 import traceback
 from .lib import CoinexPerpetualApi
+from django.db.models import Q
 
 class bsc(APIView):
 
@@ -172,6 +174,23 @@ class price(APIView):
         price = Price.objects.filter(id=1)
         serializer = PriceSerializer(price , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class pricehistory(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+            
+    def get(self , request , format=None):
+        pricehis = {'rial': [],'btc': [],'eth': [],'trx': [],'usdt': [],'doge': [],'usd': [], }
+        price = PriceHistory.objects.all().order_by('-id')[:7]
+        for item in price:
+            pricehis['rial'].append(item.rial)
+            pricehis['btc'].append(item.btc)
+            pricehis['eth'].append(item.eth)
+            pricehis['trx'].append(item.trx)
+            pricehis['usdt'].append(item.usdt)
+            pricehis['doge'].append(item.doge)
+            pricehis['usd'].append(item.usd)
+        return Response(pricehis , status=status.HTTP_201_CREATED)
 
 class wallet(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -1373,11 +1392,9 @@ class cp_stop_finished(APIView):
         return Response(coinex.order_stop_finished(market = request.data['sym'],account_id=request.data['mid']))
 
 class cp_transfer(APIView):
-    
-
-    def get(self , request):
+    def post(self , request):
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.margin_account(access_id='56255CA42286443EB7D3F6DB44633C25',market = 'TRXUSDT',tonce=time.time()*1000,))
+        return Response(coinex.margin_transfer(from_account=request.data['from_account'], to_account=request.data['to_account'], coin_type=request.data['coin_type'] , amount=request.data['amount']))
 
 class cp_market_order(APIView):
     def post(self , request):
@@ -1407,6 +1424,30 @@ class cp_stop_cancel_order(APIView):
     def post(self , request):
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
         return Response(coinex.order_stop_pending_cancel( account_id=request.data['mid'],market = request.data['market'],id = request.data['id']))
+        
+class cp_mg_market(APIView):
+    def get(self , request):
+        r = requests.get('https://api.coinex.com/v1/margin/market')
+        r = r.json()
+        result = []
+        for item in r['data'] :
+            if 'USDT' in item :
+                result.append([item, r['data'][item]])
+        return Response(result)
+
+class cp_mg_usdt(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get(self , request):
+        usdt = Wallet.objects.filter( Q(user = request.user, currency = Currencies.objects.get(id = 4)) | Q(user = request.user, currency = Currencies.objects.get(id = 41)))
+        serializer = WalletSerializer(usdt , many = True)
+        return Response(serializer.data)
+
+
+class cp_mg_main(APIView):
+    def get(self , request):
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return HttpResponse(coinex.balance_info()['USDT']['available'])
         
 
 #  Margin Trades ------------ >

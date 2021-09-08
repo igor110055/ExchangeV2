@@ -28,6 +28,7 @@ urlpatterns = [
    path('verifymelli' , views.verifymelli.as_view() , name='verifymelli'),
    path('bsc' , views.bsc.as_view() , name='bsc'),
    path('price' , views.price.as_view() , name='price'),
+   path('pricehistory' , views.pricehistory.as_view() , name='pricehistory'),
    path('bankrequests' , views.bankrequests.as_view() , name='bankrequests'),
    path('notifications' , views.notifications.as_view() , name='notifications'),
    path('subject' , views.subject.as_view() , name='subject'),
@@ -84,8 +85,9 @@ urlpatterns = [
    path('cp_stop_finished' , views.cp_stop_finished.as_view() , name='cp_stop_finished'),
    path('cp_transfer' , views.cp_transfer.as_view() , name='cp_transfer'),
    path('cp_mg_transfer' , views.cp_mg_transfer.as_view() , name='cp_mg_transfer'),
-
-
+   path('cp_mg_market' , views.cp_mg_market.as_view() , name='cp_mg_market'),
+   path('cp_mg_usdt' , views.cp_mg_usdt.as_view() , name='cp_mg_usdt'),
+   path('cp_mg_main' , views.cp_mg_main.as_view() , name='cp_mg_main'),
 #  Margin Trades  ------------ >
 
 

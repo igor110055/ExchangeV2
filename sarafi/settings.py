@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'django_crontab',
     'websockets',
+    'chat'
 ]
 
 CORS_ALLOWED_ORIGINS = [
