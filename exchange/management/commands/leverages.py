@@ -9,6 +9,21 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         Lev = Leverage.objects.all()
         for item in Lev:
+            if 'USDT' in item.symbol :
                 coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-                item.leverage = (coinex.margin_account(access_id='56255CA42286443EB7D3F6DB44633C25',market =  item.symbol,tonce=time.time()*1000,)['leverage'])
+                coin = coinex.margin_config(access_id='56255CA42286443EB7D3F6DB44633C25',market =  item.symbol,tonce=time.time()*1000,)
+                item.leverage = (coin['leverage'])
+                item.buymin = (coin[item.symbol.replace('USDT' , '')]['min_amount'])
+                item.buymax = (coin[item.symbol.replace('USDT' , '')]['max_amount'])
+                item.sellmin =(coin['USDT']['min_amount'])
+                item.sellmax =(coin['USDT']['max_amount'])
+                item.save()
+            elif 'BTC' in item.symbol :
+                coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+                coin = coinex.margin_config(access_id='56255CA42286443EB7D3F6DB44633C25',market =  item.symbol,tonce=time.time()*1000,)
+                item.leverage = (coin['leverage'])
+                item.buymin = (coin[item.symbol.replace('BTC' , '')]['min_amount'])
+                item.buymax = (coin[item.symbol.replace('BTC' , '')]['max_amount'])
+                item.sellmin =(coin['BTC']['min_amount'])
+                item.sellmax =(coin['BTC']['max_amount'])
                 item.save()

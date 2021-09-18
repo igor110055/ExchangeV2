@@ -89,6 +89,13 @@ urlpatterns = [
    path('cp_mg_market' , views.cp_mg_market.as_view() , name='cp_mg_market'),
    path('cp_mg_usdt' , views.cp_mg_usdt.as_view() , name='cp_mg_usdt'),
    path('cp_mg_main' , views.cp_mg_main.as_view() , name='cp_mg_main'),
+   path('cp_mg_settings' , views.cp_mg_settings.as_view() , name='cp_mg_settings'),
+   path('cp_withdraw/<str:id>' , views.cp_withdraw.as_view() , name='cp_withdraw'),
+   path('cp_deposit/<int:id>' , views.cp_deposit.as_view() , name='cp_deposit'),
+   path('cp_wallets' , views.cp_wallets.as_view() , name='cp_wallets'),
+   path('cp_wallet/<str:id>' , views.cp_wallet.as_view() , name='cp_wallet'),
+   path('cp_currencies' , views.cp_currencies.as_view() , name='cp_currencies'),
+   path('cp_currencies/<str:id>' , views.cp_currency.as_view() , name='cp_currency'),
 #  Margin Trades  ------------ >
 
 

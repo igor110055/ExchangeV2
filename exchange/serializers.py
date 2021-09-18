@@ -2,7 +2,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import  Leverage, MainTradesBuyOrder, MainTradesSellOrder, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import  Cp_Currencies, Cp_Wallet, Leverage, MainTradesBuyOrder, MainTradesSellOrder, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,6 +47,28 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
         )
 
+class CpWalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cp_Wallet
+        fields = (
+            "id",
+            "currency",
+            "address",
+        )
+class CpCurrenciesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cp_Currencies
+        fields = (
+            "id",
+            "name",
+            "brand",
+            "chain",
+            "can_deposit",
+            "can_withdraw",
+            "deposit_least_amount",
+            "withdraw_least_amount",
+            "withdraw_tx_fee",
+        )
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
@@ -55,7 +77,6 @@ class WalletSerializer(serializers.ModelSerializer):
             "currency",
             "amount",
             "address",
-            "address2",
             "get_currency"
         )
 class CurrenciesSerializer(serializers.ModelSerializer):
@@ -67,7 +88,6 @@ class CurrenciesSerializer(serializers.ModelSerializer):
             "brand",
             "get_image"
         )
-
 class VerifySerializer(serializers.ModelSerializer):
     class Meta:
         model = Verify

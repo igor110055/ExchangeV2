@@ -10,6 +10,9 @@ class Command(BaseCommand):
         r = requests.get(url = 'https://api.coinex.com/v1/margin/market')
         list = r.json()['data'].keys()
         for item in list :
-            if 'USDT' in item:
+            if ('USDT' in item) :
+                lev = Leverage(symbol=item)
+                lev.save()
+            elif ('BTC' in item) :
                 lev = Leverage(symbol=item)
                 lev.save()

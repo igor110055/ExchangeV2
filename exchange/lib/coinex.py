@@ -86,7 +86,7 @@ class CoinEx:
     def balance_coin_withdraw_list(self, **params):
         return self._v1('balance/coin/withdraw', auth=True, **params)
 
-    def balance_coin_withdraw(self, coin_type, coin_address, actual_amount, transfer_method, **params):
+    def balance_coin_withdraw(self, coin_type, coin_address, actual_amount, transfer_method, smart_contract_name, **params):
         return self._v1('balance/coin/withdraw', method='post', auth=True, coin_type=coin_type, coin_address=coin_address, actual_amount=actual_amount, transfer_method=transfer_method, **params)
 
     def balance_coin_withdraw_cancel(self, coin_withdraw_id, **params):
@@ -178,8 +178,7 @@ class CoinEx:
 
         data = resp.json()
         if data['code'] is not 0:
-            raise CoinExApiError(data['message'])
-
+            return data['message']
         return data['data']
 
     def _sign(self, params):

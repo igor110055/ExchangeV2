@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Text
 from django.db import models
 from io import BytesIO
@@ -46,8 +47,6 @@ class UserInfo(models.Model):
     complete = models.BooleanField(default=False)
     class meta:
         ordering = ('-date_joined',)
-        verbose_name = ' کاربر '
-        verbose_name_plural = ' کاربر ها'
         
     def __str__(self):
         return self.user.username
@@ -69,7 +68,6 @@ class Currencies(models.Model):
     name = models.CharField(max_length=100 ,verbose_name=" نام ارز")
     brand = models.CharField(max_length=100 ,null=True,verbose_name=" نماد ارز")
     pic = models.ImageField(upload_to='cur' , null = True)
-    key = models.CharField(max_length=1000, null=True)
     class Meta:
         verbose_name = ' ارز '
         verbose_name_plural = ' ارز ها'
@@ -83,13 +81,12 @@ class Currencies(models.Model):
         return f'{ROOT}/media/{self.pic}'
 
 class Wallet(models.Model):
-    user = models.ForeignKey(User , related_name='wallet' , on_delete=models.CASCADE)
-    currency = models.ForeignKey(Currencies , related_name='currency', on_delete=models.CASCADE ,default=0)
+    user = models.ForeignKey(User  , on_delete=models.CASCADE)
+    currency = models.ForeignKey(Currencies , on_delete=models.CASCADE ,default=0)
     amount = models.FloatField(default=0)
     address = models.CharField(max_length=1000 , null = True, blank=True)
     key = models.CharField(max_length=1000 , null = True ,blank=True)
-    address2 = models.CharField(max_length=1000 , null = True, blank=True)
-    key2 = models.CharField(max_length=1000 , null = True ,blank=True)
+    accid = models.CharField(max_length=100 , null = True ,blank=True)
     class Meta:
         verbose_name = ' کیف پول '
         verbose_name_plural = ' کیف پول ها'
@@ -97,6 +94,43 @@ class Wallet(models.Model):
     def get_currency(self) :
         return f'{self.currency.name}'
 
+
+class Cp_Currencies(models.Model):
+    name = models.CharField(max_length=100 ,)
+    brand = models.CharField(max_length=100 ,null=True,)
+    chain = models.CharField(max_length=100 ,null=True,)
+    can_deposit = models.CharField(max_length=100 ,null=True,)
+    can_withdraw = models.CharField(max_length=100 ,null=True,)
+    deposit_least_amount = models.CharField(max_length=100 ,null=True,)
+    withdraw_least_amount = models.CharField(max_length=100 ,null=True,)
+    withdraw_tx_fee = models.CharField(max_length=100 ,null=True,)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'currencies/{self.name}/'
+    def get_image(self):
+        return f'{ROOT}/media/{self.pic}'
+
+class Cp_Wallet(models.Model):
+    user = models.ForeignKey(User , on_delete=models.CASCADE)
+    currency = models.ForeignKey(Cp_Currencies , on_delete=models.CASCADE ,default=0)
+    address = models.CharField(max_length=1000 , null = True, blank=True)
+    
+    def get_currency(self) :
+        return f'{self.currency.name}'
+
+class Cp_Withdraw(models.Model):
+    date = models.DateTimeField(default=timezone.now())
+    user = models.ForeignKey(User , on_delete=models.CASCADE)
+    currency = models.ForeignKey(Cp_Currencies , on_delete=models.CASCADE ,default=0)
+    chain = models.CharField(max_length=10)
+    amount = models.FloatField()
+    address = models.CharField(max_length=1000 , null = True, blank=True)
+    
+    def get_currency(self) :
+        return f'{self.currency.name}'
 
 class Verify(models.Model):
     user = models.ForeignKey(User , related_name='verify' , on_delete=models.CASCADE)
@@ -161,7 +195,7 @@ class VerifyBankAccountsRequest(models.Model):
         return f'{self.user.username}'
 
 class Transactions(models.Model):
-    date = models.DateField(default=timezone.now) 
+    date = models.DateField(default=timezone.now()) 
     amount = models.FloatField()
     user = models.ForeignKey(User , related_name='transaction' , on_delete=models.CASCADE)
     currency = models.ForeignKey(Currencies , related_name='transaction' , on_delete=models.CASCADE)
@@ -185,7 +219,7 @@ class Settings(models.Model):
 
 
 class Subjects(models.Model):
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now())
     user = models.ForeignKey(User , related_name='Subject' , on_delete=models.CASCADE)
     act = models.IntegerField(null=True , default = 0)
     read = models.BooleanField(default = True)
@@ -201,7 +235,7 @@ class Subjects(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now() - self.date).total_seconds()
+        dif = (timezone.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -235,7 +269,7 @@ class Subjects(models.Model):
         return  days + hours + minutes
     
 class Tickets(models.Model):
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now())
     subid = models.ForeignKey(Subjects , related_name='ticket' , on_delete=models.CASCADE)
     text = models.CharField(max_length = 1000)
     pic = models.ImageField(upload_to='ticket' , null = True)
@@ -294,15 +328,10 @@ class Pages(models.Model):
         verbose_name = ' صفحه '
         verbose_name_plural = 'صفحات '
 
-class Mainwalls(models.Model):
-    name = models.CharField(max_length=100)
-    currency = models.ForeignKey(Currencies , related_name='mainwalls' , on_delete=models.CASCADE, null=True)
-    wall = JSONField()
-
 class Forgetrequest(models.Model):
     email = models.CharField(max_length=200,null=True)
     key = models.UUIDField(max_length=100, primary_key=True, default=uuid.uuid4)
-    date = models.DateTimeField(default=django.utils.timezone.now)
+    date = models.DateTimeField(default=django.utils.timezone.now())
 
 class Price(models.Model):
     rial = models.FloatField(default=1)
@@ -316,6 +345,10 @@ class Price(models.Model):
 class Leverage(models.Model):
     symbol = models.CharField(max_length=100)
     leverage = models.IntegerField(default=0)
+    buymin = models.FloatField(null=True)
+    buymax = models.FloatField(null=True)
+    sellmin = models.FloatField(null=True)
+    sellmax = models.FloatField(null=True)
 
 class PriceHistory(models.Model):
     rial = models.FloatField(default=1)
@@ -332,7 +365,7 @@ class Notification(models.Model):
     title = models.CharField(max_length=100)
     text = models.CharField(max_length=300)
     seen = models.BooleanField(default=False)
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now())
     def get_age(self):
         days=0
         hours=0
@@ -406,7 +439,7 @@ class MainTradesBuyOrder(models.Model):
     amount = models.FloatField()
     price = models.FloatField()
     start = models.FloatField(null=True)
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now())
     def get_age(self):
         days=0
         hours=0
@@ -455,7 +488,7 @@ class MainTradesSellOrder(models.Model):
     amount = models.FloatField()
     price = models.FloatField()
     start = models.FloatField(null=True)
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now())
     def get_age(self):
         days=0
         hours=0
@@ -502,7 +535,7 @@ class ProTradesBuyOrder(models.Model):
     amount = models.FloatField()
     price = models.FloatField()
     start = models.FloatField(null=True)
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now())
     def get_age(self):
         days=0
         hours=0
@@ -548,7 +581,7 @@ class ProTradesSellOrder(models.Model):
     amount = models.FloatField()
     price = models.FloatField()
     start = models.FloatField(null=True)
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(default=timezone.now())
     def get_age(self):
         days=0
         hours=0

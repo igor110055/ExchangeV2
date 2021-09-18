@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.core import mail
-from .models import Leverage, MainTradesBuyOrder, MainTradesSellOrder , MainTrades, ProTrades, Notification, VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Staff, UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages ,Mainwalls, Forgetrequest, VerifyBankRequest
+from .models import Cp_Withdraw, Leverage, MainTradesBuyOrder, MainTradesSellOrder , MainTrades, ProTrades, Notification, VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Staff, UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Forgetrequest, VerifyBankRequest
 # Register your models here.
-
+admin.site.register(Cp_Withdraw)
 admin.site.register(Leverage)
 admin.site.register(UserInfo)
 admin.site.register(Wallet)
@@ -14,7 +14,6 @@ admin.site.register(Settings)
 admin.site.register(Subjects)
 admin.site.register(Tickets)
 admin.site.register(Pages)
-admin.site.register(Mainwalls)
 admin.site.register(Forgetrequest)
 admin.site.register(VerifyBankRequest)
 admin.site.register(Staff)

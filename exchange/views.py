@@ -1,3 +1,4 @@
+import re
 from requests.sessions import Request
 from exchange.lib import request_client
 from typing import Text
@@ -6,19 +7,22 @@ from django.http import response
 import requests
 from .lib.request_client import RequestClient
 from .lib.coinex import CoinEx
+from .lib.TRON import Tron
+from .lib.BTC import BTC
+from .lib.ETH import ETH
 from bitmerchant.wallet import Wallet as Wall
 import time
 from django.db.models.fields import EmailField
 from django.http.response import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import LeverageSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import CpCurrenciesSerializer, CpWalletSerializer, LeverageSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import Leverage, PriceHistory, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest , VerifyBankRequest
+from .models import Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, PriceHistory, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -44,6 +48,7 @@ import time
 import traceback
 from .lib import CoinexPerpetualApi
 from django.db.models import Q
+
 
 class bsc(APIView):
 
@@ -114,21 +119,7 @@ class dashboardinfo(APIView):
                 for items in Subjects.objects.filter(user = request.user):
                     if not items.read :
                         unread = unread + 1
-                for itemm in Wallet.objects.filter(user = request.user):
-                    if itemm.currency.id == 1:
-                        price = 1
-                    elif itemm.currency.id == 2:
-                        price = Price.objects.get(id = 1).btc * Price.objects.get(id = 1).usd
-                    elif itemm.currency.id == 3:
-                        price = Price.objects.get(id = 1).eth * Price.objects.get(id = 1).usd
-                    elif itemm.currency.id == 4:
-                        price = Price.objects.get(id = 1).usdt * Price.objects.get(id = 1).usd
-                    elif itemm.currency.id == 5:
-                        price = Price.objects.get(id = 1).trx * Price.objects.get(id = 1).usd
-                    elif itemm.currency.id == 6:
-                        price = Price.objects.get(id = 1).doge * Price.objects.get(id = 1).usd
-                    wallet = wallet + (itemm.amount * price)
-                    wallets.append({'brand': itemm.currency.brand, 'amount': itemm.amount * price})
+                wallet = 0
                 users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': userinfos.is_admin, 'id': item.id, 'openorder': openorder, 'unread': unread, 'openorders': openorders, 'wallets': wallets})
         return Response(users)
 
@@ -151,20 +142,6 @@ class user(APIView):
         serializer = UserSerializer(userinfo , many=True)
         return Response(serializer.data)
 
-class wallets(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self , user):
-        try:
-            return Wallet.objects.filter(user = user)
-        except Wallet.DoesNotExist:
-            return Http404
-            
-    def get(self , request , format=None):
-        userinfo = self.get_object(request.user.id)
-        serializer = WalletSerializer(userinfo , many=True)
-        return Response(serializer.data)
 
 class price(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -181,7 +158,7 @@ class leverages(APIView):
         price = Leverage.objects.all()
         list={}
         for item in price :
-            list[f'{item.symbol}'] = item.leverage
+            list[f'{item.symbol}'] = {'leverage': item.leverage, 'bmin': item.buymin, 'bmax': item.buymax, 'smin': item.sellmin, 'smax': item.sellmax}
         return Response(list , status=status.HTTP_201_CREATED)
 
 
@@ -203,6 +180,23 @@ class pricehistory(APIView):
             pricehis['usd'].append(item.usd)
         return Response(pricehis , status=status.HTTP_201_CREATED)
 
+
+class wallets(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self , user):
+        try:
+            return Wallet.objects.filter(user = user)
+        except Wallet.DoesNotExist:
+            return Http404
+            
+    def get(self , request , format=None):
+        userinfo = self.get_object(request.user.id)
+        serializer = WalletSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+
 class wallet(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
@@ -220,11 +214,11 @@ class wallet(APIView):
 
     def post(self ,request , id):
         if id == 5 :
-            url = "https://api.shasta.trongrid.io/wallet/generateaddress"
+            url = "https://api.trongrid.io/wallet/generateaddress"
             headers = {"Accept": "application/json"}
             response = requests.request("GET", url, headers=headers)
-            print(response.json()['hexAddress'])
-            address = response.json()['hexAddress']
+            print(response.json())
+            address = response.json()['Address']
             key = response.json()['privateKey']
             if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
                 wa = Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))
@@ -236,9 +230,12 @@ class wallet(APIView):
                 wa.save()
             return Response(status=status.HTTP_201_CREATED)
         if id == 2 :
-            my_wallet = Wall.new_random_wallet() 
-            key = my_wallet.serialize()
-            address = my_wallet.to_address()
+            hd_wallet_fact = HdWalletFactory(HdWalletCoins.BITCOIN)
+            hd_wallet = hd_wallet_fact.CreateRandom("my_wallet_name", HdWalletWordsNum.WORDS_NUM_12)
+            hd_wallet.Generate(addr_num = 1)
+            walls = hd_wallet.ToDict()['addresses']['address_1']
+            key = walls['wif_priv']
+            address =  walls['address']
             if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
                 wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
                 wa.key = key
@@ -294,7 +291,7 @@ class wallet(APIView):
                 url = "https://api.shasta.trongrid.io/wallet/generateaddress"
                 headers = {"Accept": "application/json"}
                 response = requests.request("GET", url, headers=headers)
-                print(response.json()['address'])
+                print(response.json())
                 address = response.json()['address']
                 key = response.json()['privateKey']
                 if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
@@ -311,43 +308,9 @@ class wallet(APIView):
                     wa2.save()
                 return Response(status=status.HTTP_201_CREATED)
 
-        if id == 41 :
-            id = 4
-            if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = 3))) > 0 :
-                if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
-                    wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
-                    wa.key2 = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 3)).key
-                    wa.address2 = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 3)).address
-                    wa.save()
-                else:
-                    wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address2 = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 3)).address , key2 = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 3)).key)
-                    wa.save()
-                return Response(status=status.HTTP_201_CREATED)
-            else:
-                priv = secrets.token_hex(32)
-                private_key = "0x" + priv
-                acct = Account.from_key(private_key)
-                address = acct.address
-                key = private_key
-                if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = id))) > 0:
-                    wa = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = id))
-                    wa.key2 = key
-                    wa.address2 = address
-                    wa.save()
-                    wa2 = Wallet(user = request.user , currency = Currencies.objects.get(id = 3) , amount = 0 , address = address , key = key)
-                    wa2.save()
-                else:
-                    wa = Wallet(user = request.user , currency = Currencies.objects.get(id = id) , amount = 0 , address2 = address , key2 = key)
-                    wa.save()
-                    wa2 = Wallet(user = request.user , currency = Currencies.objects.get(id = 3) , amount = 0 , address = address , key = key)
-                    wa2.save()
-                return Response(status=status.HTTP_201_CREATED)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class currency(APIView):
-
     def get_object(self , id):
         try:
             return Currencies.objects.filter(id = id)
@@ -1372,34 +1335,34 @@ class oltradeinfo(APIView):
 
 class olboardinfo(APIView):
     def post(self , request, format=None):   
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.market_depth(access_id='56255CA42286443EB7D3F6DB44633C25',market = request.data['sym'],tonce=time.time()*1000,))
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        return Response(coinex.market_depth(access_id='EB3286F5EFA247419EBC6FB52768361C',market = request.data['sym'],tonce=time.time()*1000,))
         
 class cp_balance(APIView):
     def post(self , request, format=None):   
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.margin_account(access_id='56255CA42286443EB7D3F6DB44633C25',market =  request.data['sym'],tonce=time.time()*1000,))
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        return Response(coinex.margin_account(access_id='EB3286F5EFA247419EBC6FB52768361C',market =  request.data['sym'],tonce=time.time()*1000,))
         
 
 class cp_mg_transfer(APIView):
     def get(self , request, format=None):   
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.margin_transfer(from_account=0, to_account=27, coin_type='USDT', amount='23'))
 
 class cp_pending(APIView):
     def post(self , request, format=None):   
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.order_pending(market =  request.data['sym'],account_id=request.data['mid']))
 
 class cp_stop_pending(APIView):
     def post(self , request, format=None):   
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.order_stop_pending(market =  request.data['sym'],account_id=request.data['mid']))
 
 
 class cp_close(APIView):
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.close_market(
             request.data['market'],
@@ -1409,47 +1372,47 @@ class cp_close(APIView):
 
 class cp_finished(APIView):
     def post(self , request, format=None):   
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.order_finished(market = request.data['sym'],account_id=request.data['mid']))
 
 
 class cp_stop_finished(APIView):
     def post(self , request, format=None):   
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.order_stop_finished(market = request.data['sym'],account_id=request.data['mid']))
 
 class cp_transfer(APIView):
     def post(self , request):
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.margin_transfer(from_account=request.data['from_account'], to_account=request.data['to_account'], coin_type=request.data['coin_type'] , amount=request.data['amount']))
 
 class cp_market_order(APIView):
     def post(self , request):
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.order_market(account_id=request.data['mid'],access_id='56255CA42286443EB7D3F6DB44633C25',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],tonce=time.time()*1000,))
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        return Response(coinex.order_market(account_id=request.data['mid'],access_id='EB3286F5EFA247419EBC6FB52768361C',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],tonce=time.time()*1000,))
         
 
 class cp_limit_order(APIView):
     def post(self , request):
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.order_limit(account_id=request.data['mid'],access_id='56255CA42286443EB7D3F6DB44633C25',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],tonce=time.time()*1000,))
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        return Response(coinex.order_limit(account_id=request.data['mid'],access_id='EB3286F5EFA247419EBC6FB52768361C',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],tonce=time.time()*1000,))
 
 
 class cp_stop_limit_order(APIView):
     def post(self , request):
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.order_stop_limit(account_id=request.data['mid'],access_id='56255CA42286443EB7D3F6DB44633C25',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'],tonce=time.time()*1000,))
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        return Response(coinex.order_stop_limit(account_id=request.data['mid'],access_id='EB3286F5EFA247419EBC6FB52768361C',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'],tonce=time.time()*1000,))
 
 
 
 class cp_cancel_order(APIView):
     def post(self , request):
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.order_pending_cancel(market = request.data['market'],id = request.data['id']))
         
 class cp_stop_cancel_order(APIView):
     def post(self , request):
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.order_stop_pending_cancel( account_id=request.data['mid'],market = request.data['market'],id = request.data['id']))
         
 class cp_mg_market(APIView):
@@ -1473,9 +1436,149 @@ class cp_mg_usdt(APIView):
 
 class cp_mg_main(APIView):
     def get(self , request):
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return HttpResponse(coinex.balance_info()['USDT']['available'])
-        
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        return HttpResponse(coinex.balance_info())
+
+
+class cp_mg_settings(APIView):
+    def get(self , request):
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        print(coinex.balance_deposit_address('TRX'))
+        return HttpResponse(coinex.balance_deposit_address('TRX'))
+
+
+class cp_withdraw(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, id , format=None):
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        brand = Cp_Currencies.objects.get(name = id).brand
+        chain = id.replace(brand , '').replace('-' , '')
+        amount = request.data['amount']
+        address = request.data['address']
+        res = coinex.sub_account_transfer(coin_type=brand,amount=amount)
+        print(res)
+        if not res:
+            withdraw = Cp_Withdraw(user = request.user , currency = Cp_Currencies.objects.get(name = id) , amount = amount , chain = chain , address = address)
+            withdraw.save()
+            return Response(res)
+        return Response(res)
+
+class cp_deposit(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, id , format=None):
+        if id == 4 :
+            cur = Currencies.objects.get(id = id)
+            amount = request.data['amount']
+            wallet = Wallet.objects.get(user = request.user , currency = cur)
+            tr = Tron(address = wallet.address , key = wallet.key)
+            balance = tr.usdt_transfer(to='TP3QTZjc7LLd9on1fLY3ttWCpAz6z2mQwd',amount=amount)
+            res = balance
+            print(res)
+            return Response(res)
+        if id == 5 :
+            cur = Currencies.objects.get(id = id)
+            amount = request.data['amount']
+            wallet = Wallet.objects.get(user = request.user , currency = cur)
+            tr = Tron(address = wallet.address , key = wallet.key)
+            balance = tr.transfer(to='TP3QTZjc7LLd9on1fLY3ttWCpAz6z2mQwd',amount=amount)
+            res = balance
+            print(res)
+            return Response(res)
+
+        if id == 2 :
+            cur = Currencies.objects.get(id = id)
+            amount = request.data['amount']
+            wallet = Wallet.objects.get(user = request.user , currency = cur)
+            BTC(to = '14Tr4HaKkKuC1Lmpr2YMAuYVZRWqAdRTcr', key = wallet.key, amount = amount)
+            return Response('res')
+
+        if id == 3 :
+            cur = Currencies.objects.get(id = id)
+            amount = request.data['amount']
+            wallet = Wallet.objects.get(user = request.user , currency = cur)
+            res = ETH(to = '0xd3CdA913deB6f67967B99D67aCDFa1712C293601', address = wallet.address, key=wallet.key, amount = amount)
+            return Response(res)
+
+
+
+class cp_wallets(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        res = coinex.balance_info()
+        result = {}
+        for item in Cp_Currencies.objects.all():
+            if item.brand in res.keys() :
+                result[item.brand] = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':res[item.brand]}
+            else: 
+                result[item.brand] = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':'0'}
+        return Response(result)
+    def post(self , request , format=None):
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        res = coinex.balance_info()
+        return Response(res)
+
+
+
+class cp_wallet(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self , user , id):
+        try:
+            return Cp_Wallet.objects.filter(user = user , currency = id)
+        except Wallet.DoesNotExist:
+            return False
+    
+    def get(self, request, id , format=None):
+        item = Cp_Currencies.objects.get(name = id)
+        brand = item.brand
+        curs = Cp_Currencies.objects.filter(brand = brand)
+        wallets = {}
+        for item in curs:
+            if self.get_object(request.user , item):
+                wallets[item.name] = CpWalletSerializer(self.get_object(request.user , item),many= True).data
+            else:
+                wallets[item.name] = ''
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        res = coinex.balance_info()
+        result = {}
+        if item.brand in res.keys() :
+            result = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':res[item.brand],'address' : wallets}
+        else: 
+            result = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':'0','address' : wallets}
+        return Response(result)
+
+    def post(self , request, id, format=None):   
+        coinex = CoinEx('C26DD8BAF16541E79B9526CF8CB00749', '8766839060F9FB4F34B874FD3E468C583235403E8FA4B0E8' )
+        brand = Currencies.objects.get(name = id).brand
+        chain = id.replace(brand , '').replace('-' , '')
+        if len(Wallet.objects.filter(user=request.user ,currency = Currencies.objects.get(name = id))) == 0 :
+            if chain != '':
+                w = Wallet(user=request.user ,currency = Currencies.objects.get(name = id), address = coinex.balance_deposit_address(brand, smart_contract_name = chain)['coin_address'])
+                w.save()
+            else:
+                w = Wallet(user=request.user ,currency = Currencies.objects.get(name = id), address = coinex.balance_deposit_address(brand)['coin_address'])
+                w.save()
+        return Response(status = status.HTTP_201_CREATED)
+
+class cp_currency(APIView):
+    
+    def get(self , request ,id):
+        userinfo = Cp_Currencies.objects.filter(name = id)
+        serializer = CpCurrenciesSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+class cp_currencies(APIView):
+
+    def get(self , request):
+        userinfo = Cp_Currencies.objects.all().order_by('id')
+        serializer = CpCurrenciesSerializer(userinfo , many=True)
+        return Response(serializer.data)
 
 #  Margin Trades ------------ >
 
@@ -1486,7 +1589,7 @@ class cp_mg_main(APIView):
 
 class olptradeinfo(APIView):
     def get(self , request, format=None):   
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = {}
         tick = robot.tickers()
@@ -1497,26 +1600,26 @@ class olptradeinfo(APIView):
 
 class olpboardinfo(APIView):
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.depth(market = request.data['sym'])
         return Response(result)
         
 class cpp_balance(APIView):
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.query_account()
         return Response(result)
 
 class cpp_mg_transfer(APIView):
     def get(self , request, format=None):   
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
         return Response(coinex.margin_transfer(from_account=0, to_account=request.data['mid'], coin_type='USDT', amount='23'))
 
 class cpp_pending(APIView):
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.query_order_pending(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
@@ -1524,14 +1627,14 @@ class cpp_pending(APIView):
 
 class cpp_stop_pending(APIView):
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.query_stop_pending(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
 
 class cpp_close(APIView):
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.close_market(
             request.data['market'],
@@ -1541,14 +1644,14 @@ class cpp_close(APIView):
 
 class cpp_finished(APIView):
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.query_order_finished(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
 
 class cpp_stop_finished(APIView):
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.query_stop_finished(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
@@ -1556,14 +1659,14 @@ class cpp_stop_finished(APIView):
 
 class cpp_transfer(APIView):
     def get(self , request):
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-        return Response(coinex.margin_account(access_id='56255CA42286443EB7D3F6DB44633C25',market = 'TRXUSDT',tonce=time.time()*1000,))
+        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        return Response(coinex.margin_account(access_id='EB3286F5EFA247419EBC6FB52768361C',market = 'TRXUSDT',tonce=time.time()*1000,))
 
 
 
 class cpp_market_order(APIView):
     def post(self , request):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.put_market_order(market=request.data['sym'], amount= request.data['amount'], side=request.data['type'])
         return Response(result)
@@ -1571,7 +1674,7 @@ class cpp_market_order(APIView):
 
 class cpp_limit_order(APIView):
     def post(self , request):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.put_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'])
         return Response(result)
@@ -1579,7 +1682,7 @@ class cpp_limit_order(APIView):
 
 class cpp_stop_limit_order(APIView):
     def post(self , request):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.put_stop_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'])
         return Response(result)
@@ -1588,7 +1691,7 @@ class cpp_stop_limit_order(APIView):
 
 class cpp_cancel_order(APIView):
     def post(self , request):
-        robot = CoinexPerpetualApi('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
 
         result = robot.close_market(market = request.data['market'],id = request.data['id'])
         return Response(result)
