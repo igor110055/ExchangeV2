@@ -106,9 +106,9 @@ WSGI_APPLICATION = 'sarafi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'sarafidb',
-        'USER': 'sarafiuser',
-        'PASSWORD': '123456789',
+        'NAME': 'myproject',
+        'USER': 'myprojectuser',
+        'PASSWORD': 'password',
         'HOST': 'localhost',
         'PORT': '',
     }
