@@ -9,10 +9,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import  Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from exchange.serializers import  BottomStickerSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, PostsSerializer, TopStickerSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import Cp_Withdraw, General, Notification, Perpetual, PerpetualRequest ,  Price, Staff,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
+from exchange.models import BottomSticker, Cp_Withdraw, General, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Staff, TopSticker,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -479,3 +479,74 @@ class ticket(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class topsticker(APIView):
+    def post(self , request , format=None):
+        serializer = TopStickerSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = TopSticker.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class bottomsticker(APIView):
+    def post(self , request , format=None):
+        serializer = BottomStickerSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = BottomSticker.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class posts(APIView):
+    def post(self , request , format=None):
+        serializer = PostsSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = Posts.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class news(APIView):
+    def post(self , request , format=None):
+        serializer = News(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = News.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class pages(APIView):
+    def post(self , request , format=None):
+        serializer = Pages(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = Pages.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

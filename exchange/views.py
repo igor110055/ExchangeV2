@@ -19,10 +19,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import BottomStickerSerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, TopStickerSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, Perpetual, PerpetualRequest, PriceHistory, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
+from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, TopSticker, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -98,8 +98,6 @@ class usersinfo(APIView):
         if len(Notification.objects.filter(user = request.user)) < 1 : 
             note = Notification(user = request.user , title = 'خوش آمدید' , text = 'به AMIZAX خوش آمدید') 
             note.save()
-        if len(self.get_object(request.user)) < 1 :
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         userinfo =  self.get_object(request.user)
         serializer = UserInfoSerializer(userinfo , many=True)
         return Response(serializer.data)
@@ -1872,3 +1870,26 @@ class cpp_cancel_order(APIView):
         return Response(result)
 
 
+class topsticker(APIView):
+    def get():
+        query = TopSticker.objects.all()
+        serializer = TopStickerSerializer(query , many =True)
+        return Response(serializer.data)
+
+class bottomsticker(APIView):
+    def get():
+        query = BottomSticker.objects.all()
+        serializer = BottomStickerSerializer(query , many =True)
+        return Response(serializer.data)
+
+class posts(APIView):
+    def get():
+        query = Posts.objects.all()
+        serializer = PostsSerializer(query , many =True)
+        return Response(serializer.data)
+
+class news(APIView):
+    def get():
+        query = News.objects.all()
+        serializer = NewsSerializer(query , many =True)
+        return Response(serializer.data)

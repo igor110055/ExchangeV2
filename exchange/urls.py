@@ -8,7 +8,11 @@ urlpatterns = [
 #  < ------------ General
 
 
-   path('userinfo' , views.usersinfo.as_view() , name='userinfo'),
+   path('posts' , views.posts.as_view() , name='posts'),
+   path('news' , views.news.as_view() , name='news'), 
+   path('topsticker' , views.topsticker.as_view() , name='topsticker'), 
+   path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'), 
+   path('userinfo' , views.usersinfo.as_view() , name='userinfo'), 
    path('rulev' , views.rulev.as_view() , name='rulev'),
    path('general' , views.general.as_view() , name='general'),
    path('user' , views.user.as_view() , name='user'),

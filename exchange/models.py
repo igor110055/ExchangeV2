@@ -740,3 +740,37 @@ class ProTradesSellOrder(models.Model):
 
     def get_brand(self):
         return self.trade.bcurrency.brand
+
+class TopSticker(models.Model):
+    title = models.ImageField(upload_to='docs' , null = True)
+    text = models.CharField(max_length=16 , null=True)
+    img = models.BooleanField(default = False)
+
+    def get_image(self):
+        return f'{ROOT}/media/{self.img}/'
+
+
+class BottomSticker(models.Model):
+    title = models.ImageField(upload_to='docs' , null = True)
+    text = models.CharField(max_length=16 , null=True)
+    img = models.BooleanField(default = False)
+
+    def get_image(self):
+        return f'{ROOT}/media/{self.img}/'
+
+class Posts(models.Model):
+    title = models.ImageField(upload_to='docs' , null = True)
+    text = models.CharField(max_length=16 , null=True)
+    img = models.BooleanField(default = False)
+
+    def get_image(self):
+        return f'{ROOT}/media/{self.img}/'
+
+
+class News(models.Model):
+    title = models.ImageField(upload_to='docs' , null = True)
+    text = models.CharField(max_length=16 , null=True)
+    img = models.BooleanField(default = False)
+
+    def get_image(self):
+        return f'{ROOT}/media/{self.img}/'

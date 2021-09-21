@@ -4,6 +4,10 @@ from rest_framework import views
 from . import views
 
 urlpatterns = [
+   path('posts' , views.posts.as_view() , name='posts'),
+   path('news' , views.news.as_view() , name='news'), 
+   path('topsticker' , views.topsticker.as_view() , name='topsticker'), 
+   path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'), 
    path('staff' , views.staff.as_view() , name='staff'),
    path('subject' , views.subject.as_view() , name='subject'),
    path('subject/<int:id>' , views.subject.as_view() , name='subject'),

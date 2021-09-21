@@ -3,7 +3,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import  Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, Leverage, MainTradesBuyOrder, MainTradesSellOrder, PerpetualRequest, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, TopSticker , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -368,4 +368,44 @@ class AdminChatSerializer(serializers.ModelSerializer):
             "owner",
             "uri",
             "get_user"
+        )
+
+class TopStickerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TopSticker
+        fields = (
+            "id",
+            "title",
+            "text",
+            "get_image"
+        )
+
+class BottomStickerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BottomSticker
+        fields = (
+            "id",
+            "title",
+            "text",
+            "get_image"
+        )
+
+class PostsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Posts
+        fields = (
+            "id",
+            "title",
+            "text",
+            "get_image"
+        )
+
+class NewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = News
+        fields = (
+            "id",
+            "title",
+            "text",
+            "get_image"
         )
