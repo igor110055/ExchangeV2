@@ -1369,7 +1369,10 @@ class perpetualrequest(APIView):
         per = PerpetualRequest(user = request.user)
         per.save()
         return Response(status=status.HTTP_201_CREATED)
-        
+    def put(self , request, format=None):
+        if Perpetual.objects.filter(user = request.user) :
+            return HttpResponse(True) 
+        return HttpResponse(False) 
 
 # < ------------   Margin Trades 
 
