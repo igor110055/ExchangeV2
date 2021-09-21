@@ -1361,10 +1361,10 @@ class perpetualrequest(APIView):
     permission_classes = [IsAuthenticated]
     def get(self , request, format=None):
         if Perpetual.objects.filter(user = request.user) :
-            return HttpResponse(True) 
+            return HttpResponse(0) 
         if PerpetualRequest.objects.filter(user = request.user) :
-            return HttpResponse(True) 
-        return HttpResponse(False) 
+            return HttpResponse(1) 
+        return HttpResponse(2) 
     def post(self , request, format=None):
         per = PerpetualRequest(user = request.user)
         per.save()
