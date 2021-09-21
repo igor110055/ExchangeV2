@@ -101,7 +101,7 @@ class user(APIView):
         if len(ChatSession.objects.filter(owner = request.user)) > 0 :
             user = ChatSession.objects.get(owner = request.user)
             return Response({'uri' : user.uri , 'username' : request.user.username})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({'uri' : 0})
 
 
 class adminchat(APIView):
