@@ -14,7 +14,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
-
+from rest_framework import status
 
 class ChatSessionView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -101,7 +101,7 @@ class user(APIView):
         if len(ChatSession.objects.filter(owner = request.user)) > 0 :
             user = ChatSession.objects.get(owner = request.user)
             return Response({'uri' : user.uri , 'username' : request.user.username})
-        return Response({'uri' : 'false', 'username' : ''})
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class adminchat(APIView):
