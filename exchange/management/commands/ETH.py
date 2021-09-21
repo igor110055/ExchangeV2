@@ -1,5 +1,5 @@
 from exchange.views import currency
-from exchange.models import Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
+from exchange.models import Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
 from django.core.management.base import BaseCommand, CommandError
 from web3 import Web3
 from web3.auto.infura import w3
