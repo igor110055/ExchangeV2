@@ -19,10 +19,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import CpCurrenciesSerializer, CpWalletSerializer, LeverageSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, PriceHistory, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
+from .models import General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, Perpetual, PerpetualRequest, PriceHistory, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -60,6 +60,29 @@ class bsc(APIView):
         wallet_data = hd_wallet.ToJson()
         return Response(wallet_data)
 
+class rulev(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        ver = Verify.objects.get(user=request.user)
+        ver.rulev = True
+        ver.save()
+        user = Verify.objects.get(user= request.user)
+        if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv  ):
+            per = UserInfo.objects.get(user = request.user)
+            per.level = 1
+            per.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+class general(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        query = General.objects.all()
+        serializer = GeneralSerializer(query , many=True)
+        return Response(serializer.data)
 
 class usersinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -83,8 +106,16 @@ class usersinfo(APIView):
     
     def post(self, request , format=None):
         if len(UserInfo.objects.filter(user = request.user)) < 1:
-            u = UserInfo(user = request.user, first_name = request.data['first_name'], last_name = request.data['last_name'], mobile = request.data['mobile'], email = request.data['email'])
+            u = UserInfo(user = request.user, first_name = request.data['first_name'], last_name = request.data['last_name'], address = request.data['address'] ,postal = request.data['postal'] )
             u.save()
+            ver = Verify.objects.get(user = request.user)
+            ver.idv = True
+            ver.save() 
+            user = Verify.objects.get(user= request.user)
+            if (user.melliv and user.mobilev and user.idv  and user.rulev  and user.emailv ):
+                per = UserInfo.objects.get(user = request.user)
+                per.level = 1
+                per.save()
             note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
             note.save()
             return Response( status=status.HTTP_201_CREATED)
@@ -92,9 +123,17 @@ class usersinfo(APIView):
             user = UserInfo.objects.get(user = request.user)
             user.first_name = request.data['first_name']
             user.last_name = request.data['last_name']
-            user.mobile = request.data['mobile']
-            user.email = request.data['email']
+            user.address = request.data['address']
+            user.postal = request.data['postal']
             user.save()
+            ver = Verify.objects.get(user = request.user)
+            ver.idv = True
+            ver.save() 
+            user = Verify.objects.get(user= request.user)
+            if (user.melliv and user.mobilev  and user.idv  and user.rulev  ):
+                per = UserInfo.objects.get(user = request.user)
+                per.level = 1
+                per.save()
             return Response( status=status.HTTP_201_CREATED)
 
 
@@ -164,8 +203,6 @@ class leverages(APIView):
 
 
 class pricehistory(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
             
     def get(self , request , format=None):
         pricehis = {'rial': [],'btc': [],'eth': [],'trx': [],'usdt': [],'doge': [],'usd': [], }
@@ -533,9 +570,10 @@ class mobileverify(APIView):
             mobile = UserInfo.objects.get(user = request.user)
             mobile.mobile = request.data['number']
             mobile.save()
-            if (user.melliv == 3 and user.mobilev == True ):
-                per = User.objects.get(id = request.user.id)
+            if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv  ):
+                per = UserInfo.objects.get(user = request.user)
                 per.level = 1
+                per.save()
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -567,9 +605,10 @@ class emailverify(APIView):
             mail = request.user
             mail.email = request.data['email']
             mail.save()
-            if (user.melliv == 3 and user.mobilev == True ):
-                per = User.objects.get(id = request.user.id)
+            if (user.melliv and user.mobilev  and user.idv  and user.rulev   and user.emailv  ):
+                per = UserInfo.objects.get(user = request.user)
                 per.level = 1
+                per.save()
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -629,7 +668,7 @@ class subject(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self , user):
-        return Subjects.objects.filter(user = user)
+        return Subjects.objects.filter(user = user).order_by('date')
 
     def get(self , request , format=None):
         if len(self.get_object(request.user)) < 1 :
@@ -642,7 +681,7 @@ class subject(APIView):
         request.data['user'] = request.user.id
         sub = Subjects(user = request.user , title = request.data['title'])
         sub.save()
-        request.data['subid'] = Subjects.objects.filter(user = request.user).order_by('-date')[0].id
+        request.data['subid'] = sub.id
         serializer = TicketsSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
@@ -1309,21 +1348,35 @@ class fasttradesinfo(APIView):
 
 class indexprice(APIView):
     def get(self , request, format=None):
-        response = requests.get('https://api.nomics.com/v1/currencies/ticker?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=BTC,ETH,TRX,DOGE,USDT')
+        response = Indexprice.objects.all().reverse()[0].price
         return HttpResponse(response) 
 
 class indexhistory(APIView):
-    def post(self , request, format=None):
-        start = request.data['start']
-        end = request.data['end']
-        r = requests.get(f'https://api.nomics.com/v1/currencies/sparkline?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=BTC,ETH,TRX,DOGE,USDT&start={start}&end={end}')
+    def get(self , request, format=None):
+        r = Indexprice.objects.all().reverse()[0].PriceHistory
         return HttpResponse(r) 
+
+class perpetualrequest(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get(self , request, format=None):
+        if Perpetual.objects.filter(user = request.user) :
+            return HttpResponse(True) 
+        if PerpetualRequest.objects.filter(user = request.user) :
+            return HttpResponse(True) 
+        return HttpResponse(False) 
+    def post(self , request, format=None):
+        per = PerpetualRequest(user = request.user)
+        per.save()
+        return Response(status=status.HTTP_201_CREATED)
         
 
 # < ------------   Margin Trades 
 
 
 class oltradeinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
         list = {} 
         r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
@@ -1334,35 +1387,47 @@ class oltradeinfo(APIView):
         return Response(list2)
 
 class olboardinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
-        return Response(coinex.market_depth(access_id='EB3286F5EFA247419EBC6FB52768361C',market = request.data['sym'],tonce=time.time()*1000,))
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        return Response(coinex.market_depth(access_id=Perpetual.objects.get(user=request.user).apikey,market = request.data['sym'],tonce=time.time()*1000,))
         
 class cp_balance(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
-        return Response(coinex.margin_account(access_id='EB3286F5EFA247419EBC6FB52768361C',market =  request.data['sym'],tonce=time.time()*1000,))
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        return Response(coinex.margin_account(access_id=Perpetual.objects.get(user=request.user).apikey,market =  request.data['sym'],tonce=time.time()*1000,))
         
 
 class cp_mg_transfer(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_transfer(from_account=0, to_account=27, coin_type='USDT', amount='23'))
 
 class cp_pending(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_pending(market =  request.data['sym'],account_id=request.data['mid']))
 
 class cp_stop_pending(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_stop_pending(market =  request.data['sym'],account_id=request.data['mid']))
 
 
 class cp_close(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.close_market(
             request.data['market'],
@@ -1371,51 +1436,69 @@ class cp_close(APIView):
         return HttpResponse(json.dumps(result, indent=4))
 
 class cp_finished(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_finished(market = request.data['sym'],account_id=request.data['mid']))
 
 
 class cp_stop_finished(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_stop_finished(market = request.data['sym'],account_id=request.data['mid']))
 
 class cp_transfer(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_transfer(from_account=request.data['from_account'], to_account=request.data['to_account'], coin_type=request.data['coin_type'] , amount=request.data['amount']))
 
 class cp_market_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
-        return Response(coinex.order_market(account_id=request.data['mid'],access_id='EB3286F5EFA247419EBC6FB52768361C',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],tonce=time.time()*1000,))
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        return Response(coinex.order_market(account_id=request.data['mid'],access_id=Perpetual.objects.get(user=request.user).apikey,market = request.data['market'],type=request.data['type'],amount=request.data['amount'],tonce=time.time()*1000,))
         
 
 class cp_limit_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
-        return Response(coinex.order_limit(account_id=request.data['mid'],access_id='EB3286F5EFA247419EBC6FB52768361C',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],tonce=time.time()*1000,))
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        return Response(coinex.order_limit(account_id=request.data['mid'],access_id=Perpetual.objects.get(user=request.user).apikey,market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],tonce=time.time()*1000,))
 
 
 class cp_stop_limit_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
-        return Response(coinex.order_stop_limit(account_id=request.data['mid'],access_id='EB3286F5EFA247419EBC6FB52768361C',market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'],tonce=time.time()*1000,))
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        return Response(coinex.order_stop_limit(account_id=request.data['mid'],access_id=Perpetual.objects.get(user=request.user).apikey,market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'],tonce=time.time()*1000,))
 
 
 
 class cp_cancel_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_pending_cancel(market = request.data['market'],id = request.data['id']))
         
 class cp_stop_cancel_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_stop_pending_cancel( account_id=request.data['mid'],market = request.data['market'],id = request.data['id']))
         
 class cp_mg_market(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
         r = requests.get('https://api.coinex.com/v1/margin/market')
         r = r.json()
@@ -1428,6 +1511,8 @@ class cp_mg_market(APIView):
 class cp_mg_usdt(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
         usdt = Wallet.objects.filter( Q(user = request.user, currency = Currencies.objects.get(id = 4)) | Q(user = request.user, currency = Currencies.objects.get(id = 41)))
         serializer = WalletSerializer(usdt , many = True)
@@ -1435,14 +1520,18 @@ class cp_mg_usdt(APIView):
 
 
 class cp_mg_main(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return HttpResponse(coinex.balance_info())
 
 
 class cp_mg_settings(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         print(coinex.balance_deposit_address('TRX'))
         return HttpResponse(coinex.balance_deposit_address('TRX'))
 
@@ -1451,7 +1540,7 @@ class cp_withdraw(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def post(self, request, id , format=None):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         brand = Cp_Currencies.objects.get(name = id).brand
         chain = id.replace(brand , '').replace('-' , '')
         amount = request.data['amount']
@@ -1502,13 +1591,50 @@ class cp_deposit(APIView):
             return Response(res)
 
 
+class cp_deposit(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, id , format=None):
+        if id == 4 :
+            cur = Currencies.objects.get(id = id)
+            amount = request.data['amount']
+            wallet = Wallet.objects.get(user = request.user , currency = cur)
+            tr = Tron(address = wallet.address , key = wallet.key)
+            balance = tr.usdt_transfer(to='TP3QTZjc7LLd9on1fLY3ttWCpAz6z2mQwd',amount=amount)
+            res = balance
+            print(res)
+            return Response(res)
+        if id == 5 :
+            cur = Currencies.objects.get(id = id)
+            amount = request.data['amount']
+            wallet = Wallet.objects.get(user = request.user , currency = cur)
+            tr = Tron(address = wallet.address , key = wallet.key)
+            balance = tr.transfer(to='TP3QTZjc7LLd9on1fLY3ttWCpAz6z2mQwd',amount=amount)
+            res = balance
+            print(res)
+            return Response(res)
+
+        if id == 2 :
+            cur = Currencies.objects.get(id = id)
+            amount = request.data['amount']
+            wallet = Wallet.objects.get(user = request.user , currency = cur)
+            BTC(to = '14Tr4HaKkKuC1Lmpr2YMAuYVZRWqAdRTcr', key = wallet.key, amount = amount)
+            return Response('res')
+
+        if id == 3 :
+            cur = Currencies.objects.get(id = id)
+            amount = request.data['amount']
+            wallet = Wallet.objects.get(user = request.user , currency = cur)
+            res = ETH(to = '0xd3CdA913deB6f67967B99D67aCDFa1712C293601', address = wallet.address, key=wallet.key, amount = amount)
+            return Response(res)
+
 
 class cp_wallets(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         res = coinex.balance_info()
         result = {}
         for item in Cp_Currencies.objects.all():
@@ -1518,7 +1644,7 @@ class cp_wallets(APIView):
                 result[item.brand] = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':'0'}
         return Response(result)
     def post(self , request , format=None):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         res = coinex.balance_info()
         return Response(res)
 
@@ -1544,7 +1670,7 @@ class cp_wallet(APIView):
                 wallets[item.name] = CpWalletSerializer(self.get_object(request.user , item),many= True).data
             else:
                 wallets[item.name] = ''
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         res = coinex.balance_info()
         result = {}
         if item.brand in res.keys() :
@@ -1588,8 +1714,10 @@ class cp_currencies(APIView):
 
 
 class olptradeinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = {}
         tick = robot.tickers()
@@ -1599,215 +1727,145 @@ class olptradeinfo(APIView):
         return Response(result)
 
 class olpboardinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.depth(market = request.data['sym'])
         return Response(result)
-        
-class cpp_balance(APIView):
+
+class olpmarketinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get(self , request, format=None):   
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
+
+        result = robot.get_market_info()
+        return Response(result)
+
+class cpp_adjustleverage(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
+
+        result = robot.adjust_leverage(position_type=2, market= request.data['sym'], leverage= request.data['leverage'])
+        return Response(result)
+
+class cpp_balance(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def post(self , request, format=None):   
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.query_account()
         return Response(result)
 
 class cpp_mg_transfer(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_transfer(from_account=0, to_account=request.data['mid'], coin_type='USDT', amount='23'))
 
 class cpp_pending(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.query_order_pending(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
 
 
 class cpp_stop_pending(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.query_stop_pending(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
 
 class cpp_close(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.close_market(
-            request.data['market'],
+            request.data['sym'],
             request.data['id']
         )
         return HttpResponse(json.dumps(result, indent=4))
 
 class cpp_finished(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.query_order_finished(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
 
 class cpp_stop_finished(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.query_stop_finished(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
 
 
 class cpp_transfer(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
-        coinex = CoinEx('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C' )
-        return Response(coinex.margin_account(access_id='EB3286F5EFA247419EBC6FB52768361C',market = 'TRXUSDT',tonce=time.time()*1000,))
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        return Response(coinex.margin_account(access_id=Perpetual.objects.get(user=request.user).apikey,market = 'TRXUSDT',tonce=time.time()*1000,))
 
 
 
 class cpp_market_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
         result = robot.put_market_order(market=request.data['sym'], amount= request.data['amount'], side=request.data['type'])
         return Response(result)
 
 
 class cpp_limit_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
-        result = robot.put_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'])
+        result = robot.put_limit_order(market = request.data['sym'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'])
         return Response(result)
 
 
 class cpp_stop_limit_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
-        result = robot.put_stop_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'])
+        result = robot.put_stop_limit_order(market = request.data['sym'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'])
         return Response(result)
 
 
 
 class cpp_cancel_order(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
-        robot = CoinexPerpetualApi('EB3286F5EFA247419EBC6FB52768361C', 'B70EDFD2A063C931A54C412D19FED3B03280C7C8DB9A2E2C')
+        robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
-        result = robot.close_market(market = request.data['market'],id = request.data['id'])
+        result = robot.close_market(market = request.data['sym'],id = request.data['id'])
         return Response(result)
 
 
-
-
-# Moms
-
-
-
-class olmtradeinfo(APIView):
-    def get(self , request, format=None):   
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = {}
-        tick = robot.tickers()
-        for key in tick['data']['ticker']:
-            if not '_' in key and 'USDT' in key :
-                result[f'{key}'] = tick['data']['ticker'][key]['last']
-        return Response(result)
-
-class olmboardinfo(APIView):
-    def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.depth(market = request.data['sym'])
-        return Response(result)
-        
-class cpm_balance(APIView):
-    def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.query_account()
-        return Response(result)
-
-class cpm_mg_transfer(APIView):
-    def get(self , request, format=None):   
-        coinex = CoinEx('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF' )
-        return Response(coinex.margin_transfer(from_account=0, to_account=request.data['mid'], coin_type='USDT', amount='23'))
-
-class cpm_pending(APIView):
-    def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.query_order_pending(market=request.data['sym'], side = 0, offset=False)
-        return Response(result)
-
-
-class cpm_stop_pending(APIView):
-    def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.query_stop_pending(market=request.data['sym'], side = 0, offset=False)
-        return Response(result)
-
-class cpm_close(APIView):
-    def post(self , request, format=None):
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.close_market(
-            request.data['market'],
-            request.data['id']
-        )
-        return HttpResponse(json.dumps(result, indent=4))
-
-class cpm_finished(APIView):
-    def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.query_order_finished(market=request.data['sym'], side = 0, offset=False)
-        return Response(result)
-
-class cpm_stop_finished(APIView):
-    def post(self , request, format=None):   
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.query_stop_finished(market=request.data['sym'], side = 0, offset=False)
-        return Response(result)
-
-
-class cpm_transfer(APIView):
-    def get(self , request):
-        coinex = CoinEx('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF' )
-        return Response(coinex.margin_account(access_id='641A03D0C52B4CE89EC78A77D0289E42',market = 'TRXUSDT',tonce=time.time()*1000,))
-
-
-
-class cpm_market_order(APIView):
-    def post(self , request):
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.put_market_order(market=request.data['sym'], amount= request.data['amount'], side=request.data['type'])
-        return Response(result)
-
-
-class cpm_limit_order(APIView):
-    def post(self , request):
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.put_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'])
-        return Response(result)
-
-
-class cpm_stop_limit_order(APIView):
-    def post(self , request):
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.put_stop_limit_order(market = request.data['market'],side=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'])
-        return Response(result)
-
-
-
-class cpm_cancel_order(APIView):
-    def post(self , request):
-        robot = CoinexPerpetualApi('641A03D0C52B4CE89EC78A77D0289E42', 'BC17D99BA712F09B084DB940F78AEE3CD18826C1CFA05EAF')
-
-        result = robot.close_market(market = request.data['market'],id = request.data['id'])
-        return Response(result)

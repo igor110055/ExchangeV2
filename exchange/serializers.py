@@ -1,8 +1,9 @@
+from chat.models import ChatSession
 from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import  Cp_Currencies, Cp_Wallet, Leverage, MainTradesBuyOrder, MainTradesSellOrder, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import  Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, Leverage, MainTradesBuyOrder, MainTradesSellOrder, PerpetualRequest, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -95,7 +96,9 @@ class VerifySerializer(serializers.ModelSerializer):
             "mobilev",
             "emailv",
             "melliv",
-            "bankv"
+            "idv",
+            "bankv",
+            "rulev"
         )
 
 
@@ -201,6 +204,7 @@ class SubjectsSerializer(serializers.ModelSerializer):
             "title",
             "aread",
             "get_age",
+            "get_user",
             "get_lastticket"
         )
 class TicketsSerializer(serializers.ModelSerializer):
@@ -208,6 +212,9 @@ class TicketsSerializer(serializers.ModelSerializer):
         model = Tickets
         fields = (
             "date",
+            "pic",
+            "user",
+            "get_pic",
             "subid",
             "text",
             "get_age",
@@ -311,4 +318,54 @@ class MainTradesBuyOrderSerializer(serializers.ModelSerializer):
             "date",
             "get_age",
             "get_brand"
+        )
+
+class Cp_WithdrawSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cp_Withdraw
+        fields = (
+            "id",
+            "date",
+            "user",
+            "currency",
+            "chain",
+            "amount",
+            "address",
+            "get_currency",
+            "get_age",
+            "get_user"
+        )
+        
+class GeneralSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = General
+        fields = (
+            "name",
+            "email",
+            "mobile",
+            "whatsapp",
+            "telegram",
+            "instagram",
+            "telephone",
+            "rule",
+            "logo",
+        )
+class PerpetualRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PerpetualRequest
+        fields = (
+            "id",
+            "user",
+            "get_age",
+            "get_user",
+        )
+
+class AdminChatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatSession
+        fields = (
+            "id",
+            "owner",
+            "uri",
+            "get_user"
         )

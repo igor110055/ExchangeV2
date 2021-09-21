@@ -1,5 +1,6 @@
-from exchange.views import currencies, currency, price, usersinfo
-from django.shortcuts import render
+from typing import Text
+from exchange.views import cp_withdraw, currencies, currency, notifications, price, usersinfo
+from django.shortcuts import get_object_or_404, render
 from django import http
 from django.db.models.fields import EmailField
 from django.http.response import JsonResponse
@@ -8,10 +9,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import  VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from exchange.serializers import  Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import  Price, Staff,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
+from exchange.models import Cp_Withdraw, General, Notification, Perpetual, PerpetualRequest ,  Price, Staff,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -27,7 +28,39 @@ from ippanel import Client
 import pytz
 from random import randrange
 
+def email(user , date , title , text) :
+    send_mail(
+        'Subject here',
+        f'به شرکت سرمایه گذاری ... خوش آمدید کد فعالسازی : {"vcode"} ',
+        'info@ramabit.com',
+        [f'armansaheb@gmail.com'],
+        fail_silently=False,
+    )
 
+def sms(user , date , title  , text ):
+    sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+
+    pattern_values = {
+    "verification-code": f"dcsdcdscd",
+    }
+
+    bulk_id = sms.send_pattern(
+        "pifmmqr30d",    # pattern code
+        "+983000505",      # originator
+        f"+989999999",  # recipient
+        pattern_values,  # pattern values
+    )
+
+    message = sms.get_message(bulk_id)
+    print(message)
+    print(f"+98999999999")
+    return True
+
+def notification (user , date = datetime.now(), title = '' , text = ''):
+    note = Notification(user = user , title = title , text = text)
+    note.save()
+    sms(user , date, title, text)
+    email(user , date, title, text)
 
 class staff(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -235,3 +268,214 @@ class verifymelli(APIView):
         req = VerifyMelliRequest.objects.get(mellic = no)
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
+
+
+class cwithdraw(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        bankcards = Cp_Withdraw.objects.filter(rejected = False , completed = False)
+        serializer = Cp_WithdrawSerializer(bankcards , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        id = request.data['id']
+        req = Cp_Withdraw.objects.get(id = id)
+        user = req.user.id
+        notification(user = User.objects.get(id = user) , title = 'درخواست برداشت وجه شما انجام شد' , text = f'درخواست برداشت مقدار  {req.amount} و ارسال آن به آدرس  {req.address} با موفقیت انجام شد ')
+        req.completed = True
+        req.save()
+        return Response(status=status.HTTP_201_CREATED)
+ 
+    def put(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        id = request.data['id']
+        req = Cp_Withdraw.objects.get(id = id)
+        user = req.user.id
+        notification(user = User.objects.get(id = user) , title = ' متاسفانه درخواست برداشت وجه شما انجام نشد ' , text = f'درخواست برداشت مقدار  {req.amount} و ارسال آن به آدرس  {req.address}  با مشکل روبرو شد . لطفا با پشتیبانی تماس بگیرید ')
+        req.rejected = True
+        req.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+class rcwithdraw(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        bankcards = Cp_Withdraw.objects.filter(rejected = True)
+        serializer = Cp_WithdrawSerializer(bankcards , many=True)
+        return Response(serializer.data)
+
+class ccwithdraw(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        bankcards = Cp_Withdraw.objects.filter(completed = True)
+        serializer = Cp_WithdrawSerializer(bankcards , many=True)
+        return Response(serializer.data)
+
+
+class general(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        query = General.objects.filter(id = 1)
+        serializer = GeneralSerializer(query , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        gen = General.objects.get(id = 1)
+        if 'name' in request.data :
+            gen.name = request.data['name']
+        if 'email' in request.data :
+            gen.email = request.data['email']
+        if 'telephone' in request.data :
+            gen.telephone = request.data['telephone']
+        if 'instagram' in request.data :
+            gen.instagram = request.data['instagram']
+        if 'telegram' in request.data :
+            gen.telegram = request.data['telegram']
+        if 'whatsapp' in request.data :
+            gen.whatsapp = request.data['whatsapp']
+        if 'rule' in request.data :
+            gen.rule = request.data['rule']
+        if 'logo' in request.data :
+            gen.logo = request.data['logo']
+        gen.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+class perpetualreq(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        query = PerpetualRequest.objects.all()
+        serializer = PerpetualRequestSerializer(query , many=True)
+        return Response(serializer.data)
+
+    def post(self , request, id , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        query = PerpetualRequest.objects.filter(id = id)
+        serializer = PerpetualRequestSerializer(query , many=True)
+        return Response(serializer.data)
+
+class perpetualreqccept(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def post(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        id = request.data['id']
+        user = PerpetualRequest.objects.get(id = id).user
+        print(request.data['name'])
+        per = Perpetual(user = user ,name = request.data['name'], apikey = request.data['apikey'] , secretkey = request.data['secretkey'])
+        per.save()
+        PerpetualRequest.objects.filter(id = id).delete()
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class subject(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self , user):
+        return Subjects.objects.all()
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+
+        if len(self.get_object(request.user)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(request.user)
+        serializer = SubjectsSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+    def post(self, request, id, format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+
+        if len(self.get_object(request.user)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  Subjects.objects.filter(id = id)
+        serializer = SubjectsSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+class ticket(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self , id):
+        return Tickets.objects.filter(subid = id)
+
+    def get(self , request , id , format=None):
+        if len(self.get_object(id)) < 1 :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        userinfo =  self.get_object(id)
+        serializer = TicketsSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        request.data['user'] = request.user.id
+        serializer = TicketsSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -1,9 +1,11 @@
+from exchange import serializers
+from exchange.lib import request_client
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from .models import (
     ChatSession, ChatSessionMember, ChatSessionMessage, deserialize_user
 )
-
+from exchange.serializers import AdminChatSerializer
 from rest_framework import status
 from rest_framework import authentication
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -21,7 +23,9 @@ class ChatSessionView(APIView):
     def post(self, request, *args, **kwargs):
         """create a new chat session."""
         user = request.user
-
+        chats =  ChatSession.objects.filter(owner = request.user)
+        for item in chats :
+            item.delete()
         chat_session = ChatSession.objects.create(owner=user)
 
         return Response({
@@ -89,3 +93,22 @@ class ChatSessionMessageView(APIView):
             'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
             'user': deserialize_user(user)
         })
+
+class user(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        if len(ChatSession.objects.filter(owner = request.user)) > 0 :
+            user = ChatSession.objects.get(owner = request.user)
+            return Response({'uri' : user.uri , 'username' : request.user.username})
+        return Response({'uri' : 'false', 'username' : ''})
+
+
+class adminchat(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        user = ChatSession.objects.all()
+        serializer = AdminChatSerializer(user , many=True)
+        return Response(serializer.data)

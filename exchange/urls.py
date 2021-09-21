@@ -9,6 +9,8 @@ urlpatterns = [
 
 
    path('userinfo' , views.usersinfo.as_view() , name='userinfo'),
+   path('rulev' , views.rulev.as_view() , name='rulev'),
+   path('general' , views.general.as_view() , name='general'),
    path('user' , views.user.as_view() , name='user'),
    path('wallet' , views.wallets.as_view() , name='wallet'),
    path('wallet/<int:id>' , views.wallet.as_view() , name='wallets'),
@@ -40,7 +42,7 @@ urlpatterns = [
    path('maintrades/<int:id>' , views.maintrades.as_view() , name='maintrades'),
    path('protrades/<int:id>' , views.protrades.as_view() , name='protrades'),
    path('fasttorial/<int:id>' , views.fasttorial.as_view() , name='fasttorial'),
-
+   path('perpetualrequest' , views.perpetualrequest.as_view() , name='perpetualrequest'),
 #  General  ------------ >   
 #  < ------------ Main Trades 
 
@@ -102,9 +104,10 @@ urlpatterns = [
 #  < ------------ Perpetual Trades 
 
 
-
+   path('olpmarketinfo' , views.olpmarketinfo.as_view() , name='olpmarketinfo'),
    path('olptradeinfo' , views.olptradeinfo.as_view() , name='olptradeinfo'),
    path('olpboardinfo' , views.olpboardinfo.as_view() , name='olpboardinfo'),
+   path('cpp_adjustleverage' , views.cpp_adjustleverage.as_view() , name='cpp_adjustleverage'),
    path('cpp_balance' , views.cpp_balance.as_view() , name='cpp_balance'),
    path('cpp_market_order' , views.cpp_market_order.as_view() , name='cpp_market_order'),
    path('cpp_limit_order' , views.cpp_limit_order.as_view() , name='cpp_limit_order'),
@@ -122,21 +125,5 @@ urlpatterns = [
 
 #  Perpetual Trades  ------------ >
 
-
-
-   path('olmtradeinfo' , views.olmtradeinfo.as_view() , name='olmtradeinfo'),
-   path('olmboardinfo' , views.olmboardinfo.as_view() , name='olmboardinfo'),
-   path('cpm_balance' , views.cpm_balance.as_view() , name='cpm_balance'),
-   path('cpm_market_order' , views.cpm_market_order.as_view() , name='cpm_market_order'),
-   path('cpm_limit_order' , views.cpm_limit_order.as_view() , name='cpm_limit_order'),
-   path('cpm_stop_limit_order' , views.cpm_stop_limit_order.as_view() , name='cpm_stop_limit_order'),
-   path('cpm_cancel_order' , views.cpm_cancel_order.as_view() , name='cpm_cancel_order'),
-   path('cpm_pending' , views.cpm_pending.as_view() , name='cpm_pending'),
-   path('cpm_stop_pending' , views.cpm_stop_pending.as_view() , name='cpm_stop_pending'),
-   path('cpm_close' , views.cpm_close.as_view() , name='cpm_close'),
-   path('cpm_finished' , views.cpm_finished.as_view() , name='cpm_finished'),
-   path('cpm_stop_finished' , views.cpm_stop_finished.as_view() , name='cpm_stop_finished'),
-   path('cpm_transfer' , views.cpm_transfer.as_view() , name='cpm_transfer'),
-   path('cpm_mg_transfer' , views.cpm_mg_transfer.as_view() , name='cpm_mg_transfer'),
 
 ]

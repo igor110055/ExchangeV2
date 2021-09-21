@@ -1,4 +1,3 @@
-from itertools import chain
 from typing import Text
 from django.db import models
 from io import BytesIO
@@ -8,10 +7,11 @@ from django.utils import timezone
 import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
+from requests.api import post
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
-from sarafi.settings import ROOT
+from sarafi.settings import ROOT, SECRET_KEY
 from django.dispatch import receiver
 from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
@@ -40,6 +40,8 @@ class UserInfo(models.Model):
     last_name=models.CharField(max_length=255)
     mobile = models.CharField(max_length=100,)
     email = models.EmailField()
+    address = models.CharField(max_length=500, null=True)
+    post = models.CharField(max_length=10, null=True)
     level = models.IntegerField(default= 0)
     is_active = models.BooleanField(default=True)
     is_verify = models.BooleanField(default=False)
@@ -54,11 +56,77 @@ class UserInfo(models.Model):
     def get_absolute_url(self):
         return f'/{self.username}/'
 
+
+class General(models.Model):
+    name=models.CharField(max_length=255)
+    email=models.CharField(max_length=255)
+    mobile=models.CharField(max_length=255)
+    whatsapp=models.CharField(max_length=255)
+    telegram=models.CharField(max_length=255)
+    instagram=models.CharField(max_length=255)
+    telephone=models.CharField(max_length=255)
+    rule = models.CharField(max_length=10000 , null=True)
+    logo = models.ImageField(upload_to='general' , null = True)
+
+
 class mobilecodes(models.Model):
     number = models.CharField(max_length=15)
     code = models.CharField(max_length=15)
 
-    
+class Perpetual(models.Model):
+    user = models.ForeignKey(User , related_name='Perpetual' , on_delete=models.CASCADE , null=True,)
+    name = models.CharField(max_length=255, null=True)
+    secretkey = models.CharField(max_length=255)
+    apikey = models.CharField(max_length=255)
+
+class PerpetualRequest(models.Model):
+    user = models.ForeignKey(User , related_name='Perpetualreq' , on_delete=models.CASCADE , null=True,)
+    date = models.DateTimeField(default=timezone.now())
+
+    def get_user(self):
+        return self.user.username
+        
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now()- self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes
+
+class Indexprice(models.Model):
+    price = JSONField()
+    PriceHistory = JSONField()
+
 class Staff(models.Model):
     user = models.ForeignKey(User , related_name='staffs' , on_delete=models.CASCADE)
     level = models.IntegerField()
@@ -128,9 +196,51 @@ class Cp_Withdraw(models.Model):
     chain = models.CharField(max_length=10)
     amount = models.FloatField()
     address = models.CharField(max_length=1000 , null = True, blank=True)
+    rejected= models.BooleanField(default=False)
+    completed= models.BooleanField(default=False)
     
+    def get_user(self):
+        return self.user.username
+
     def get_currency(self) :
         return f'{self.currency.name}'
+    
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now()- self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes
 
 class Verify(models.Model):
     user = models.ForeignKey(User , related_name='verify' , on_delete=models.CASCADE)
@@ -140,6 +250,8 @@ class Verify(models.Model):
     emailc = models.IntegerField( null = True ,default=0)
     melliv = models.BooleanField(default = False , null = True)
     bankv = models.BooleanField(default = False , null = True)
+    idv = models.BooleanField(default = False , null = True)
+    rulev = models.BooleanField(default = False , null = True)
     class meta:
         verbose_name = ' تاییدیه '
         verbose_name_plural = ' تاییدیه ها'
@@ -231,6 +343,9 @@ class Subjects(models.Model):
     def get_lastticket(self):
         return self.ticket.all().order_by('-date').first().text
 
+    def get_user(self):
+        return self.user.username
+
     def get_age(self):
         days=0
         hours=0
@@ -269,6 +384,7 @@ class Subjects(models.Model):
         return  days + hours + minutes
     
 class Tickets(models.Model):
+    user = models.ForeignKey(User ,related_name='harchi', on_delete=models.CASCADE , null=True)
     date = models.DateTimeField(default=timezone.now())
     subid = models.ForeignKey(Subjects , related_name='ticket' , on_delete=models.CASCADE)
     text = models.CharField(max_length = 1000)
@@ -276,6 +392,9 @@ class Tickets(models.Model):
     class meta:
         verbose_name = ' تیکت '
         verbose_name_plural = 'تیکت ها'
+
+    def get_pic(self):
+        return f'{ROOT}/media/{self.pic}/'
 
     def get_age(self):
         days=0
@@ -317,7 +436,7 @@ class Tickets(models.Model):
     def get_title(self):
         return self.subid.title
     def get_user(self):
-        return self.subid.user.username
+        return self.user.username
 
 
 class Pages(models.Model):

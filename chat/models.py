@@ -19,7 +19,6 @@ def deserialize_user(user):
 
 class TrackableDateModel(models.Model):
     """Abstract model to Track the creation/updated date for a model."""
-
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
 
@@ -38,6 +37,8 @@ class ChatSession(TrackableDateModel):
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
     uri = models.URLField(default=_generate_unique_uri)
 
+    def get_user(self):
+        return self.owner.username
 
 class ChatSessionMessage(TrackableDateModel):
     """Store messages for a session."""
