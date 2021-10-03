@@ -65,7 +65,8 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://amizax.com"
+    "http://amizax.com",
+    "http://www.amizax.com"
 ]
 
 MIDDLEWARE = [
