@@ -47,6 +47,10 @@ urlpatterns = [
    path('protrades/<int:id>' , views.protrades.as_view() , name='protrades'),
    path('fasttorial/<int:id>' , views.fasttorial.as_view() , name='fasttorial'),
    path('perpetualrequest' , views.perpetualrequest.as_view() , name='perpetualrequest'),
+   path('mainpageposts' , views.mainpageposts.as_view() , name='mainpageposts'),
+   path('topsticker' , views.topsticker.as_view() , name='topsticker'),
+   path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),
+   path('otherpages' , views.otherpages.as_view() , name='otherpages'),
 #  General  ------------ >   
 #  < ------------ Main Trades 
 

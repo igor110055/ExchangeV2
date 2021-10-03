@@ -24,4 +24,8 @@ urlpatterns = [
    path('perpetualreq/<int:id>' , views.perpetualreq.as_view() , name='perpetualreq'),
    path('general' , views.general.as_view() , name='general'),
    path('user' , views.user.as_view() , name='user'),
+   path('mainpageposts' , views.mainpageposts.as_view() , name='mainpageposts'),
+   path('topsticker' , views.topsticker.as_view() , name='topsticker'),
+   path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),
+   path('otherpages' , views.otherpages.as_view() , name='otherpages'),
 ]

@@ -440,9 +440,14 @@ class Tickets(models.Model):
 
 
 class Pages(models.Model):
-    name = models.CharField(max_length = 100)
+    pic = models.ImageField(upload_to='pages' , null = True)
     title = models.CharField(max_length = 100)
     text = models.CharField(max_length = 10000)
+    position = models.CharField(max_length=100 , null=True)
+    
+    def get_pic(self):
+        return f'{ROOT}/media/{self.pic}'
+
     class meta:
         verbose_name = ' صفحه '
         verbose_name_plural = 'صفحات '

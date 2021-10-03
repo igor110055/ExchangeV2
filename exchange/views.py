@@ -1893,3 +1893,89 @@ class news(APIView):
         query = News.objects.all()
         serializer = NewsSerializer(query , many =True)
         return Response(serializer.data)
+
+
+
+
+class topsticker(APIView):
+    def get(self , request , format=None):
+        pages = Pages.objects.filter(position = 'top')
+        serializer = PagesSerializer(pages , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        serializer = PagesSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = Pages.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class bottomsticker(APIView):
+    def get(self , request , format=None):
+        pages = Pages.objects.filter(position = 'bottom')
+        serializer = PagesSerializer(pages , many=True)
+        return Response(serializer.data)
+        
+    def post(self , request , format=None):
+        serializer = PagesSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = Pages.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+class mainpageposts(APIView):
+    def get(self , request , format=None):
+        pages = Pages.objects.filter(position = 'mainposts')
+        serializer = PagesSerializer(pages , many=True)
+        return Response(serializer.data)
+        
+    def post(self , request , format=None):
+        serializer = PagesSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = Pages.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class otherpages(APIView):
+    def get(self , request , format=None):
+        pages = Pages.objects.filter(position = 'others')
+        serializer = PagesSerializer(pages , many=True)
+        return Response(serializer.data)
+        
+    def post(self , request , format=None):
+        serializer = PagesSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = Pages.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

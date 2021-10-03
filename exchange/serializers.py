@@ -227,9 +227,11 @@ class PagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pages
         fields = (
-            "name",
             "title",
             "text",
+            "pic",
+            "position",
+            "get_pic"
         )
 class ForgetSerializer(serializers.ModelSerializer):
     class Meta:
