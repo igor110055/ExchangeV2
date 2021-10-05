@@ -227,6 +227,7 @@ class PagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pages
         fields = (
+            "id",
             "title",
             "text",
             "pic",
