@@ -554,8 +554,8 @@ class topsticker(APIView):
             print(serializer.errors)
             return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self , request , format=None):
-        serializer = Pages.objects.get(id=request.data['id'])
+    def delete(self , request, id, format=None):
+        serializer = Pages.objects.get(id = id)
         serializer.delete()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -574,8 +574,8 @@ class bottomsticker(APIView):
             print(serializer.errors)
             return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self , request , format=None):
-        serializer = Pages.objects.get(id=request.data['id'])
+    def delete(self , request, id, format=None):
+        serializer = Pages.objects.get(id = id)
         serializer.delete()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -596,8 +596,8 @@ class mainpageposts(APIView):
             print(serializer.errors)
             return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self , request , format=None):
-        serializer = Pages.objects.get(id=request.data['id'])
+    def delete(self , request, id, format=None):
+        serializer = Pages.objects.get(id = id)
         serializer.delete()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -617,7 +617,7 @@ class otherpages(APIView):
             print(serializer.errors)
             return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self , request , format=None):
-        serializer = Pages.objects.get(id=request.data['id'])
+    def delete(self , request, id, format=None):
+        serializer = Pages.objects.get(id = id)
         serializer.delete()
         return Response(status=status.HTTP_201_CREATED)
