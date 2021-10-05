@@ -557,7 +557,7 @@ class topsticker(APIView):
     def delete(self , request , format=None):
         serializer = Pages.objects.get(id=request.data['id'])
         serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_201_CREATED)
 
 class bottomsticker(APIView):
     def get(self , request , format=None):
@@ -577,7 +577,7 @@ class bottomsticker(APIView):
     def delete(self , request , format=None):
         serializer = Pages.objects.get(id=request.data['id'])
         serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_201_CREATED)
 
 
 
@@ -599,7 +599,7 @@ class mainpageposts(APIView):
     def delete(self , request , format=None):
         serializer = Pages.objects.get(id=request.data['id'])
         serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class otherpages(APIView):
@@ -620,4 +620,4 @@ class otherpages(APIView):
     def delete(self , request , format=None):
         serializer = Pages.objects.get(id=request.data['id'])
         serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_201_CREATED)
