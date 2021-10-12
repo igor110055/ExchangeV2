@@ -19,10 +19,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import BottomStickerSerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, TopStickerSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import BottomStickerSerializer, BuySerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, TopStickerSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, TopSticker, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
+from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, TopSticker, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -1372,6 +1372,32 @@ class perpetualrequest(APIView):
             return HttpResponse(True) 
         return HttpResponse(False) 
 
+class buy(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return buyrequest.objects.all().order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuySerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+
+    def post(self , request, format=None):
+        request.data['user'] = request.user.id
+        serializer = BuySerializer(data = request.data)
+        if serializer.is_valid():
+            wallet = Wallet.objects.get(user = request.user)
+            if wallet.amount < float(request.data['ramount']):
+                return Response({'error':'موجودی کافی نیست'} )
+            wallet.amount = wallet.amount - float(request.data['ramount'])
+            wallet.save()
+            serializer.save()
+            return Response(serializer.data , status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
 # < ------------   Margin Trades 
 
 
@@ -1401,6 +1427,11 @@ class cp_balance(APIView):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_account(access_id=Perpetual.objects.get(user=request.user).apikey,market =  request.data['sym'],tonce=time.time()*1000,))
         
+class cp_ticker(APIView):
+    def post(self , request, format=None):   
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.market_ticker(market =  request.data['sym']+'USDT'))
+
 
 class cp_mg_transfer(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -1512,8 +1543,7 @@ class cp_mg_market(APIView):
 class cp_mg_usdt(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
+
     def get(self , request):
         usdt = Wallet.objects.filter( Q(user = request.user, currency = Currencies.objects.get(id = 4)) | Q(user = request.user, currency = Currencies.objects.get(id = 41)))
         serializer = WalletSerializer(usdt , many = True)
@@ -1525,7 +1555,7 @@ class cp_mg_main(APIView):
     permission_classes = [IsAuthenticated]
     def get(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
-        return HttpResponse(coinex.balance_info())
+        return Response(coinex.balance_info())
 
 
 class cp_mg_settings(APIView):
@@ -1693,6 +1723,23 @@ class cp_wallet(APIView):
                 w.save()
         return Response(status = status.HTTP_201_CREATED)
 
+class cp_history(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self , user , id):
+        try:
+            return Cp_Wallet.objects.filter(user = user , currency = id)
+        except Wallet.DoesNotExist:
+            return False
+    
+    def get(self, request, id , format=None):
+        brand = Cp_Currencies.objects.get(name = id).brand
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=request.user).name, coin_type=brand)
+        print(res)
+        return Response(res)
+
 class cp_currency(APIView):
     
     def get(self , request ,id):
@@ -1818,15 +1865,6 @@ class cpp_stop_finished(APIView):
 
         result = robot.query_stop_finished(market=request.data['sym'], side = 0, offset=False)
         return Response(result)
-
-
-class cpp_transfer(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
-    def get(self , request):
-        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
-        return Response(coinex.margin_account(access_id=Perpetual.objects.get(user=request.user).apikey,market = 'TRXUSDT',tonce=time.time()*1000,))
-
 
 
 class cpp_market_order(APIView):

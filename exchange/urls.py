@@ -51,6 +51,7 @@ urlpatterns = [
    path('topsticker' , views.topsticker.as_view() , name='topsticker'),
    path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),
    path('otherpages' , views.otherpages.as_view() , name='otherpages'),
+   path('buy' , views.buy.as_view() , name='buy'),
 #  General  ------------ >   
 #  < ------------ Main Trades 
 
@@ -84,6 +85,8 @@ urlpatterns = [
    path('oltradeinfo' , views.oltradeinfo.as_view() , name='oltradeinfo'),
    path('olboardinfo' , views.olboardinfo.as_view() , name='olboardinfo'),
    path('cp_balance' , views.cp_balance.as_view() , name='cp_balance'),
+   path('cp_history/<str:id>' , views.cp_history.as_view() , name='cp_history'),
+   path('cp_ticker' , views.cp_ticker.as_view() , name='cp_ticker'),
    path('cp_market_order' , views.cp_market_order.as_view() , name='cp_market_order'),
    path('cp_limit_order' , views.cp_limit_order.as_view() , name='cp_limit_order'),
    path('cp_stop_limit_order' , views.cp_stop_limit_order.as_view() , name='cp_stop_limit_order'),
@@ -126,7 +129,6 @@ urlpatterns = [
    path('cpp_close' , views.cpp_close.as_view() , name='cpp_close'),
    path('cpp_finished' , views.cpp_finished.as_view() , name='cpp_finished'),
    path('cpp_stop_finished' , views.cpp_stop_finished.as_view() , name='cpp_stop_finished'),
-   path('cpp_transfer' , views.cpp_transfer.as_view() , name='cpp_transfer'),
    path('cpp_mg_transfer' , views.cpp_mg_transfer.as_view() , name='cpp_mg_transfer'),
 
 

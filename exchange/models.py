@@ -73,6 +73,13 @@ class mobilecodes(models.Model):
     number = models.CharField(max_length=15)
     code = models.CharField(max_length=15)
 
+class buyrequest(models.Model):
+    user = models.ForeignKey(User , related_name='buys' , on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now())
+    currency = models.CharField(max_length=20)
+    ramount = models.BigIntegerField()
+    camount = models.FloatField()
+
 class Perpetual(models.Model):
     user = models.ForeignKey(User , related_name='Perpetual' , on_delete=models.CASCADE , null=True,)
     name = models.CharField(max_length=255, null=True)

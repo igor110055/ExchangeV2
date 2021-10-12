@@ -3,7 +3,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, TopSticker , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff
+from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, TopSticker , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, buyrequest
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +30,16 @@ class PriceSerializer(serializers.ModelSerializer):
             "usdt",
             "doge",
             "usd",
+        )
+class BuySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = buyrequest
+        fields = (
+            "user",
+            "currency",
+            "ramount",
+            "camount",
+            "date",
         )
 
 class LeverageSerializer(serializers.ModelSerializer):
