@@ -3,6 +3,7 @@ from django.db import models
 from io import BytesIO
 from PIL import Image
 from django.contrib.auth.models import User
+from django.db.models.query_utils import select_related_descend
 from django.utils import timezone
 import uuid
 from django.core.files import File
@@ -55,8 +56,14 @@ class UserInfo(models.Model):
 
     def get_absolute_url(self):
         return f'/{self.username}/'
+        
+    def is_staff(self):
+        return self.user.is_staff
 
 
+class Review(models.Model):
+    date = models.DateTimeField(default=timezone.now())
+    
 class General(models.Model):
     name=models.CharField(max_length=255)
     email=models.CharField(max_length=255)
@@ -302,6 +309,10 @@ class VerifyBankRequest(models.Model):
         verbose_name_plural = ' درخواست های تایید کارت بانکی '
     def get_user(self):
         return f'{self.user.username}'
+    def get_first(self):
+        return f'{UserInfo.objects.get(user=self.user).first_name}'
+    def get_last(self):
+        return f'{UserInfo.objects.get(user=self.user).last_name}'
 
 class VerifyBankAccountsRequest(models.Model):
     user = models.ForeignKey(User , related_name='BanksAccounts' , on_delete=models.CASCADE)
@@ -312,6 +323,10 @@ class VerifyBankAccountsRequest(models.Model):
         verbose_name_plural = ' درخواست های تایید حساب بانکی '
     def get_user(self):
         return f'{self.user.username}'
+    def get_first(self):
+        return f'{self.user.first_name}'
+    def get_last(self):
+        return f'{self.user.last_name}'
 
 class Transactions(models.Model):
     date = models.DateField(default=timezone.now()) 

@@ -24,7 +24,7 @@ ROOT = 'http://amizax.com'
 SECRET_KEY = 'django-insecure-ra$$l%4d2y4i!5#=(n58_u988+gdn8$st2^rtx-l0buiwhi7kc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['amizax.com', 'www.amizax.com']
 
@@ -65,7 +65,8 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://amizax.com"
+    "http://amizax.com",
+    "http://www.amizax.com"
 ]
 
 MIDDLEWARE = [

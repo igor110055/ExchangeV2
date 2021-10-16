@@ -4,7 +4,11 @@ from rest_framework import views
 from . import views
 
 urlpatterns = [
+   path('review' , views.review.as_view() , name='review'),
    path('posts' , views.posts.as_view() , name='posts'),
+   path('changepass' , views.changepass.as_view() , name='changepass'),
+   path('levelchange' , views.levelchange.as_view() , name='levelchange'),
+   path('wallets/<str:username>' , views.wallets.as_view() , name='wallets'),
    path('news' , views.news.as_view() , name='news'), 
    path('topsticker' , views.topsticker.as_view() , name='topsticker'), 
    path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'), 
@@ -23,7 +27,8 @@ urlpatterns = [
    path('perpetualreqccept' , views.perpetualreqccept.as_view() , name='perpetualreqccept'),
    path('perpetualreq/<int:id>' , views.perpetualreq.as_view() , name='perpetualreq'),
    path('general' , views.general.as_view() , name='general'),
-   path('user' , views.user.as_view() , name='user'),
+   path('user/<str:user>' , views.user.as_view() , name='user'),
+   path('users' , views.users.as_view() , name='users'),
    path('mainpageposts' , views.mainpageposts.as_view() , name='mainpageposts'),
    path('topsticker' , views.topsticker.as_view() , name='topsticker'),
    path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),

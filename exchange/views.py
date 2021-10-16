@@ -22,7 +22,7 @@ from rest_framework import authentication
 from .serializers import BottomStickerSerializer, BuySerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, TopStickerSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, TopSticker, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
+from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, Review, TopSticker, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -1806,6 +1806,10 @@ class cp_history(APIView):
             return False
     
     def get(self, request, id , format=None):
+        if id == 'false':
+            coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+            res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=request.user).name)
+            return Response(res)
         brand = Cp_Currencies.objects.get(name = id).brand
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
         res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=request.user).name, coin_type=brand)
@@ -2089,3 +2093,9 @@ class otherpages(APIView):
         serializer = Pages.objects.get(id=request.data['id'])
         serializer.delete()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+def review(request):
+    rev = Review()
+    rev.save()
+    return HttpResponse()

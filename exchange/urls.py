@@ -6,8 +6,7 @@ from . import views
 urlpatterns = [
 
 #  < ------------ General
-
-
+   path('review' , views.review , name='review'),
    path('posts' , views.posts.as_view() , name='posts'),
    path('news' , views.news.as_view() , name='news'), 
    path('topsticker' , views.topsticker.as_view() , name='topsticker'), 
@@ -88,6 +87,7 @@ urlpatterns = [
    path('olboardinfo' , views.olboardinfo.as_view() , name='olboardinfo'),
    path('cp_balance' , views.cp_balance.as_view() , name='cp_balance'),
    path('cp_history/<str:id>' , views.cp_history.as_view() , name='cp_history'),
+   path('cp_history/' , views.cp_history.as_view() , name='cp_history'),
    path('cp_ticker' , views.cp_ticker.as_view() , name='cp_ticker'),
    path('cp_market_order' , views.cp_market_order.as_view() , name='cp_market_order'),
    path('cp_limit_order' , views.cp_limit_order.as_view() , name='cp_limit_order'),

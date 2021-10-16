@@ -16,7 +16,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "email",
             "level",
             "is_active",
-            "is_admin"
+            "is_admin",
+            "is_staff"
         )
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -160,7 +161,9 @@ class VerifyBankRequestSerializer(serializers.ModelSerializer):
             "user",
             "bankc",
             "get_user",
-            "action"
+            "action",
+            "get_first",
+            "get_last"
         )
 
 class VerifyBankAccountsRequestSerializer(serializers.ModelSerializer):
@@ -171,7 +174,9 @@ class VerifyBankAccountsRequestSerializer(serializers.ModelSerializer):
             "user",
             "bankc",
             "get_user",
-            "action"
+            "action",
+            "get_first",
+            "get_last"
         )
 
 class TransactionsSerializer(serializers.ModelSerializer):
@@ -380,7 +385,8 @@ class AdminChatSerializer(serializers.ModelSerializer):
             "id",
             "owner",
             "uri",
-            "get_user"
+            "get_user",
+            "get_seen"
         )
 
 class TopStickerSerializer(serializers.ModelSerializer):

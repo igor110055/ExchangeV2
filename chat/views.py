@@ -43,9 +43,8 @@ class ChatSessionView(APIView):
 
         chat_session = ChatSession.objects.get(uri=uri)
         owner = chat_session.owner
-
-        if owner != user:
-            user=user, chat_session=chat_session
+        print(chat_session.owner)
+        print(user)
 
         owner = deserialize_user(owner)
         members = [
@@ -71,10 +70,13 @@ class ChatSessionMessageView(APIView):
         chat_session = ChatSession.objects.get(uri=uri)
         messages = [chat_session_message.to_json() 
             for chat_session_message in chat_session.messages.all()]
-
+        notseen = 0
+        for item in chat_session.messages.all():
+            if not item.seen:
+                notseen = notseen + 1
         return Response({
             'id': chat_session.id, 'uri': chat_session.uri,
-            'messages': messages
+            'messages': messages, 'notseen' : notseen
         })
 
     def post(self, request, *args, **kwargs):
@@ -84,11 +86,14 @@ class ChatSessionMessageView(APIView):
 
         user = request.user
         chat_session = ChatSession.objects.get(uri=uri)
-
-        ChatSessionMessage.objects.create(
-            user=user, chat_session=chat_session, message=message
-        )
-
+        if request.user.is_staff:
+            ChatSessionMessage.objects.create(
+                user=user, chat_session=chat_session, message=message, aseen=True
+            )
+        else:
+            ChatSessionMessage.objects.create(
+                user=user, chat_session=chat_session, message=message, seen=True
+            )
         return Response ({
             'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
             'user': deserialize_user(user)
@@ -103,6 +108,23 @@ class user(APIView):
             return Response({'uri' : user.uri , 'username' : request.user.username})
         return Response({'uri' : 0})
 
+class seen(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get(self, request, uri, *args, **kwargs):
+        if request.user.is_staff:
+            chat_session = ChatSession.objects.get(uri=uri)
+            messages = chat_session.messages.all()
+            for item in messages:
+                item.aseen = True
+                item.save()
+            return Response(True)
+        chat_session = ChatSession.objects.get(uri=uri)
+        messages = chat_session.messages.all()
+        for item in messages:
+            item.seen = True
+            item.save()
+        return Response(True)
 
 class adminchat(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]

@@ -1,5 +1,5 @@
 from typing import Text
-
+from django.utils import timezone
 from django.db.models import manager
 from exchange.views import cp_withdraw, currencies, currency, notifications, price, usersinfo
 from django.shortcuts import get_object_or_404, render
@@ -14,7 +14,7 @@ from rest_framework import authentication
 from exchange.serializers import  BottomStickerSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, PostsSerializer, TopStickerSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Withdraw, General, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Staff, TopSticker,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
+from exchange.models import BottomSticker, Cp_Withdraw, General, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -101,6 +101,49 @@ class user(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
 
+    def get(self , request ,user, format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        users = []
+        userinfo =  User.objects.filter(username=user)
+        for item in userinfo :
+            if len(UserInfo.objects.filter(user = item)) > 0:
+                userinfos = UserInfo.objects.get(user = item)
+                wallet= 0
+                price = 0
+                for itemm in Wallet.objects.filter(user = item):
+                    if itemm.currency.id == 1:
+                        price = 1
+                    elif itemm.currency.id == 2:
+                        price = Price.objects.get(id = 1).btc * Price.objects.get(id = 1).usd
+                    elif itemm.currency.id == 3:
+                        price = Price.objects.get(id = 1).eth * Price.objects.get(id = 1).usd
+                    elif itemm.currency.id == 4:
+                        price = Price.objects.get(id = 1).usdt * Price.objects.get(id = 1).usd
+                    elif itemm.currency.id == 5:
+                        price = Price.objects.get(id = 1).trx * Price.objects.get(id = 1).usd
+                    elif itemm.currency.id == 6:
+                        price = Price.objects.get(id = 1).doge * Price.objects.get(id = 1).usd
+                    wallet = wallet + (itemm.amount * price)
+                users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
+        return Response(users)
+    def post(self , request , format=None):
+        user = UserInfo.objects.get(user = User.objects.get(id = request.data['id']))
+        if request.data['act'] == 1:
+            if user.is_active == True:
+                user.is_active = False
+            elif user.is_active == False:
+                user.is_active = True
+        user.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+class users(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
     def get(self , request , format=None):
         if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
@@ -128,7 +171,7 @@ class user(APIView):
                     elif itemm.currency.id == 6:
                         price = Price.objects.get(id = 1).doge * Price.objects.get(id = 1).usd
                     wallet = wallet + (itemm.amount * price)
-                users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': userinfos.is_admin, 'id': item.id })
+                users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
         return Response(users)
     def post(self , request , format=None):
         user = UserInfo.objects.get(user = User.objects.get(id = request.data['id']))
@@ -458,6 +501,19 @@ class subject(APIView):
         userinfo =  Subjects.objects.filter(id = id)
         serializer = SubjectsSerializer(userinfo , many=True)
         return Response(serializer.data)
+    
+    def put(self, request, id, format=None):
+        request.data['user'] = User.objects.get(username = request.data['username']).id
+        sub = Subjects(user = request.user , title = request.data['title'])
+        sub.save()
+        request.data['user'] = request.user.id
+        request.data['subid'] = sub.id
+        serializer = TicketsSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class ticket(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -621,3 +677,57 @@ class otherpages(APIView):
         serializer = Pages.objects.get(id = id)
         serializer.delete()
         return Response(status=status.HTTP_201_CREATED)
+
+
+class wallets(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self , user):
+        try:
+            return Wallet.objects.filter(user = User.objects.get(username= user))
+        except Wallet.DoesNotExist:
+            return Http404
+            
+    def get(self , request, username , format=None):
+        userinfo = self.get_object(user = username)
+        serializer = WalletSerializer(userinfo , many=True)
+        return Response(serializer.data)
+
+
+class levelchange(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+            
+    def post(self , request , format=None):
+        userinfo = UserInfo.objects.get(user = User.objects.get(username = request.data['username']))
+        userinfo.level = int(request.data['level'])
+        userinfo.save()
+        return Response(status=status.HTTP_201_CREATED)
+        
+
+class changepass(APIView):
+    def post(self , request):
+        user = User.objects.get(username = request.data['username'])
+        passw = request.data['pass']
+        passs = make_password(str(passw))
+        user.password = passs
+        user.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+class review(APIView):
+    def get(self, request):
+        hours = 0
+        days = 0
+        weeks = 0
+        months = 0
+        for item in Review.objects.all():
+            if item.date > timezone.now() - timedelta(hours = 1):
+                hours = hours + 1
+            if item.date > timezone.now() - timedelta(days = 1):
+                days = days + 1
+            if item.date > timezone.now() - timedelta(weeks = 1):
+                weeks = weeks + 1
+            if item.date > timezone.now() - timedelta(weeks = 4):
+                months = months + 1
+        return Response({'days': days,'weeks': weeks, 'months': months, 'hours': hours })

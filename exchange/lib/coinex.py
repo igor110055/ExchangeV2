@@ -104,8 +104,8 @@ class CoinEx:
     def sub_account_transfer(self, coin_type, amount, **params):
         return self._v1('sub_account/transfer', method='post', auth=True, coin_type=coin_type, amount=amount, **params)
 
-    def sub_account_transfer_history(self, sub_user_name , coin_type, **params):
-        return self._v1('sub_account/transfer/history', method='get', auth=True, page=1,limit=10,sub_user_name= sub_user_name,coin_type=coin_type, **params)
+    def sub_account_transfer_history(self, sub_user_name , **params):
+        return self._v1('sub_account/transfer/history', method='get', auth=True, page=1,limit=10,sub_user_name= sub_user_name, **params)
 
 
     def order_limit(self, market, type, amount, price, **params):

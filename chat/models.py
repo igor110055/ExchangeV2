@@ -39,6 +39,12 @@ class ChatSession(TrackableDateModel):
 
     def get_user(self):
         return self.owner.username
+    def get_seen(self):
+        notseen = 0
+        for item in self.messages.all():
+            if not item.aseen:
+                notseen = notseen + 1
+        return notseen
 
 class ChatSessionMessage(TrackableDateModel):
     """Store messages for a session."""
@@ -48,6 +54,8 @@ class ChatSessionMessage(TrackableDateModel):
         ChatSession, related_name='messages', on_delete=models.PROTECT
     )
     message = models.TextField(max_length=2000)
+    seen = models.BooleanField(default=False)
+    aseen = models.BooleanField(default=False)
 
     def to_json(self):
         """deserialize message to JSON."""
