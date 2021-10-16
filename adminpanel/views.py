@@ -744,3 +744,7 @@ class buy(APIView):
         maintrade =  self.get_object(request.user)
         serializer = BuySerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+    def post(self , request, format=None):
+        buyrequest.objects.get(id = request.data['id']).delete()
+        return Response(status=status.HTTP_201_CREATED)
