@@ -746,5 +746,12 @@ class buy(APIView):
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
     def post(self , request, format=None):
-        buyrequest.objects.get(id = request.data['id']).delete()
-        return Response(status=status.HTTP_201_CREATED)
+        if request.data['act'] == 'reject':
+            buyrequest.objects.get(id = request.data['id']).delete()
+            note = Notification(user=buyrequest.objects.get(id = request.data['id']).user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
+            note.save()
+            return Response(status=status.HTTP_201_CREATED)
+        req = buyrequest.objects.get(id = request.data['id']).delete()
+        note = Notification(req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
+        note.save()
+        return Response( status=status.HTTP_201_CREATED)
