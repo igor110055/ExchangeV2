@@ -5,6 +5,7 @@ from . import views
 
 urlpatterns = [
    path('review' , views.review.as_view() , name='review'),
+   path('buy' , views.buy.as_view() , name='buy'),
    path('posts' , views.posts.as_view() , name='posts'),
    path('changepass' , views.changepass.as_view() , name='changepass'),
    path('levelchange' , views.levelchange.as_view() , name='levelchange'),

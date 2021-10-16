@@ -36,6 +36,9 @@ class BuySerializer(serializers.ModelSerializer):
     class Meta:
         model = buyrequest
         fields = (
+            "id",
+            "get_user",
+            "get_age",
             "user",
             "currency",
             "ramount",

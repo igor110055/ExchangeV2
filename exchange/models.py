@@ -63,7 +63,7 @@ class UserInfo(models.Model):
 
 class Review(models.Model):
     date = models.DateTimeField(default=timezone.now())
-    
+
 class General(models.Model):
     name=models.CharField(max_length=255)
     email=models.CharField(max_length=255)
@@ -86,6 +86,44 @@ class buyrequest(models.Model):
     currency = models.CharField(max_length=20)
     ramount = models.BigIntegerField()
     camount = models.FloatField()
+    def get_user(self):
+        return self.user.username
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now()- self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes
 
 class Perpetual(models.Model):
     user = models.ForeignKey(User , related_name='Perpetual' , on_delete=models.CASCADE , null=True,)
