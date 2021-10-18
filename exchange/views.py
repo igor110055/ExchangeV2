@@ -98,45 +98,68 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
 @api_view(["POST"])
 @csrf_exempt
 @method_decorator(csrf_exempt, name='dispatch')
-def login(request):
-    reqBody = json.loads(request.body)
-    utc=pytz.UTC
-    if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
-        if SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile):
-            ver = SmsVerified.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-            if ver.date + timedelta(minutes = 10) > utc.localize(datetime.now()):
-                data = {}
-                reqBody = json.loads(request.body)
-                username = reqBody['username']
-                print(username)
-                password = reqBody['password']
-                try:
+class login(APIView):
+    def post(self,request):
+        reqBody = json.loads(request.body)
+        utc=pytz.UTC
+        if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
+            if SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile):
+                ver = SmsVerified.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+                if ver.date + timedelta(minutes = 10) > utc.localize(datetime.now()):
+                    data = {}
+                    reqBody = json.loads(request.body)
+                    username = reqBody['username']
+                    print(username)
+                    password = reqBody['password']
+                    try:
 
-                    Account = User.objects.get(username=username)
-                except BaseException as e:
-                    raise ValidationError({"400": f'{str(e)}'})
+                        Account = User.objects.get(username=username)
+                    except BaseException as e:
+                        raise ValidationError({"400": f'{str(e)}'})
 
-                token = Token.objects.get_or_create(user=Account)[0].key
-                print(token)
-                if not check_password(password, Account.password):
-                    raise ValidationError({"message": "Incorrect Login credentials"})
+                    token = Token.objects.get_or_create(user=Account)[0].key
+                    print(token)
+                    if not check_password(password, Account.password):
+                        raise ValidationError({"message": "Incorrect Login credentials"})
 
-                if Account:
-                    if Account.is_active:
-                        print(request.user)
-                        data["message"] = "user logged in"
-                        data["username"] = Account.email
+                    if Account:
+                        if Account.is_active:
+                            print(request.user)
+                            data["message"] = "user logged in"
+                            data["username"] = Account.email
 
-                        Res = {"data": data, "auth_token": token}
-                        notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+                            Res = {"data": data, "auth_token": token}
+                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
 
-                        return Response(Res)
+                            return Response(Res)
+
+                        else:
+                            raise ValidationError({"400": f'Account not active'})
 
                     else:
-                        raise ValidationError({"400": f'Account not active'})
-
+                        raise ValidationError({"400": f'Account doesnt exist'})
                 else:
-                    raise ValidationError({"400": f'Account doesnt exist'})
+                    vcode = randrange(123456,999999)
+                    a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+                    for item in a:
+                        item.delete()
+                    c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
+                    c.save()
+                    sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+
+                    pattern_values = {
+                    "verification-code": f"{vcode}",
+                    }
+
+                    bulk_id = sms.send_pattern(
+                        "pifmmqr30d",    # pattern code
+                        "+983000505",      # originator
+                        f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
+                        pattern_values,  # pattern values
+                    )
+
+                    message = sms.get_message(bulk_id)
+                    return Response(1)
             else:
                 vcode = randrange(123456,999999)
                 a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
@@ -160,58 +183,36 @@ def login(request):
                 message = sms.get_message(bulk_id)
                 return Response(1)
         else:
-            vcode = randrange(123456,999999)
-            a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-            for item in a:
-                item.delete()
-            c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
-            c.save()
-            sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+            data = {}
+            username = reqBody['username']
+            print(username)
+            password = reqBody['password']
+            try:
 
-            pattern_values = {
-            "verification-code": f"{vcode}",
-            }
+                Account = User.objects.get(username=username)
+            except BaseException as e:
+                raise ValidationError({"400": f'{str(e)}'})
 
-            bulk_id = sms.send_pattern(
-                "pifmmqr30d",    # pattern code
-                "+983000505",      # originator
-                f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
-                pattern_values,  # pattern values
-            )
+            token = Token.objects.get_or_create(user=Account)[0].key
+            print(token)
+            if not check_password(password, Account.password):
+                raise ValidationError({"message": "Incorrect Login credentials"})
 
-            message = sms.get_message(bulk_id)
-            return Response(1)
-    else:
-        data = {}
-        username = reqBody['username']
-        print(username)
-        password = reqBody['password']
-        try:
+            if Account:
+                if Account.is_active:
+                    print(request.user)
+                    data["message"] = "user logged in"
+                    data["username"] = Account.username
 
-            Account = User.objects.get(username=username)
-        except BaseException as e:
-            raise ValidationError({"400": f'{str(e)}'})
+                    Res = {"data": data, "auth_token": token}
+                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+                    return Response(Res)
 
-        token = Token.objects.get_or_create(user=Account)[0].key
-        print(token)
-        if not check_password(password, Account.password):
-            raise ValidationError({"message": "Incorrect Login credentials"})
-
-        if Account:
-            if Account.is_active:
-                print(request.user)
-                data["message"] = "user logged in"
-                data["username"] = Account.username
-
-                Res = {"data": data, "auth_token": token}
-                notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
-                return Response(Res)
+                else:
+                    raise ValidationError({"400": f'Account not active'})
 
             else:
-                raise ValidationError({"400": f'Account not active'})
-
-        else:
-            raise ValidationError({"400": f'Account doesnt exist'})
+                raise ValidationError({"400": f'Account doesnt exist'})
 
 @api_view(["POST"])
 @method_decorator(csrf_exempt, name='dispatch')
