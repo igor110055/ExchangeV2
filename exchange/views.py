@@ -190,7 +190,7 @@ class BasePermission(metaclass=BasePermissionMetaclass):
         return True
 
 
-class IsSmsVerified(BasePermission):
+class IsSmsVerified (BasePermission):
 
     def has_permission(self, request, view):
         return True
@@ -278,7 +278,7 @@ class bsc(APIView):
 
 class rulev(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
         ver = Verify.objects.get(user=request.user)
@@ -293,7 +293,7 @@ class rulev(APIView):
 
 class general(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
         query = General.objects.all()
@@ -303,7 +303,7 @@ class general(APIView):
 
 class usersinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     
     def get_object(self , user):
@@ -357,7 +357,7 @@ class usersinfo(APIView):
 
 class dashboardinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
         item = User.objects.get(id= request.user.id)
@@ -381,7 +381,7 @@ class dashboardinfo(APIView):
 
 class user(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get_object(self , user):
         try:
             return User.objects.filter(id = user.id)
@@ -401,7 +401,7 @@ class user(APIView):
 
 class price(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
             
     def get(self , request , format=None):
         price = Price.objects.filter(id=1)
@@ -437,7 +437,7 @@ class pricehistory(APIView):
 
 class wallets(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self , user):
         try:
@@ -453,7 +453,7 @@ class wallets(APIView):
 
 class wallet(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self , user , id):
         try:
@@ -592,7 +592,7 @@ class currencies(APIView):
 
 class verify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get_object(self , user):
         if(len(Verify.objects.filter(user = user))<1):
             verif = Verify(user = user)
@@ -609,7 +609,7 @@ class verify(APIView):
 
 class bankcards(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self , user):
         try:
@@ -629,7 +629,7 @@ class bankcards(APIView):
 
 class bankaccounts(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self , user):
         try:
@@ -653,7 +653,7 @@ class bankaccounts(APIView):
 
 class transactions(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get_object(self , user):
         try:
             return Transactions.objects.filter(user = user)
@@ -668,7 +668,7 @@ class transactions(APIView):
 
 class settings(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get_object(self):
         try:
             return Settings.objects.filter(id = 1)
@@ -689,7 +689,7 @@ class settings(APIView):
 
 class pages(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get_object(self):
         try:
             return Pages.objects.all()
@@ -747,7 +747,7 @@ class resetpass(APIView):
 
 class mobileverify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def put(self , request):
         vcode = randrange(123456,999999)
         a = mobilecodes.objects.filter(number = request.data['number'])
@@ -793,7 +793,7 @@ class mobileverify(APIView):
 
 class emailverify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def put(self , request):
         user = Verify.objects.get(user= request.user)
@@ -828,7 +828,7 @@ class emailverify(APIView):
 
 class verifymelli(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def post(self , request , format=None):
         request.data['user'] = request.user.id
@@ -841,7 +841,7 @@ class verifymelli(APIView):
 
 class bankrequests(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self , user):
         return VerifyBankRequest.objects.filter(user = user)
@@ -855,7 +855,7 @@ class bankrequests(APIView):
 
 class notifications(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self , user):
         return Notification.objects.filter(user = user)
@@ -878,7 +878,7 @@ class notifications(APIView):
 
 class subject(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self , user):
         return Subjects.objects.filter(user = user).order_by('date')
@@ -913,7 +913,7 @@ class subject(APIView):
 
 class ticket(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self , id):
         return Tickets.objects.filter(subid = id)
@@ -936,7 +936,7 @@ class ticket(APIView):
 
 class maintrades(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self):
         return MainTrades.objects.all()
@@ -957,7 +957,7 @@ class maintrades(APIView):
 
 class protrades(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self):
         return ProTrades.objects.all()
@@ -978,7 +978,7 @@ class protrades(APIView):
 
 class fasttorial(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get(self , request , id , format=None):
         uprice = price = Price.objects.get(id = 1).usd
@@ -1030,7 +1030,7 @@ class maintradebuyorders(APIView):
         return Response(serializer.data)
     
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def post(self , request ,id , format=None):
         amount = float(request.data['amount'])
@@ -1113,7 +1113,7 @@ class maintradesellorders(APIView):
         return Response(serializer.data)
     
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def post(self , request, id , format=None):
         amount = float(request.data['amount'])
@@ -1185,7 +1185,7 @@ class maintradesellorders(APIView):
 
 class maintradesinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, id):
         return MainTrades.objects.get(id = id)
@@ -1214,7 +1214,7 @@ class maintradesinfo(APIView):
 
 class maintradesselllist(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
         return ProTradesSellOrder.objects.filter(user = user)
@@ -1228,7 +1228,7 @@ class maintradesselllist(APIView):
 
 class maintradesbuylist(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
         return ProTradesBuyOrder.objects.filter(user = user)
@@ -1252,7 +1252,7 @@ class protradebuyorders(APIView):
         return Response(serializer.data)
     
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def post(self , request ,id , format=None):
         amount = float(request.data['amount'])
@@ -1365,7 +1365,7 @@ class protradesellorders(APIView):
         return Response(serializer.data)
     
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def post(self , request, id , format=None):
         amount = float(request.data['amount'])
@@ -1473,7 +1473,7 @@ class protradesellorders(APIView):
 
 class protradesinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, id):
         return ProTrades.objects.get(id = id)
@@ -1502,7 +1502,7 @@ class protradesinfo(APIView):
 
 class protradesselllist(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
         return ProTradesSellOrder.objects.filter(user = user)
@@ -1516,7 +1516,7 @@ class protradesselllist(APIView):
 
 class protradesbuylist(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
         return ProTradesBuyOrder.objects.filter(user = user)
@@ -1531,7 +1531,7 @@ class protradesbuylist(APIView):
 
 class fasttradesinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self ,id):
         return MainTrades.objects.get(id = id)
@@ -1571,7 +1571,7 @@ class indexhistory(APIView):
 
 class perpetualrequest(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):
         if Perpetual.objects.filter(user = request.user) :
             return HttpResponse(2) 
@@ -1589,7 +1589,7 @@ class perpetualrequest(APIView):
 
 class buy(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
         return buyrequest.objects.all().order_by('-date')
@@ -1618,7 +1618,7 @@ class buy(APIView):
 
 class sell(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
         return buyrequest.objects.all().order_by('-date')
@@ -1649,7 +1649,7 @@ class sell(APIView):
 
 class oltradeinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
         list = {} 
         r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
@@ -1661,14 +1661,14 @@ class oltradeinfo(APIView):
 
 class olboardinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.market_depth(access_id=Perpetual.objects.get(user=request.user).apikey,market = request.data['sym'],tonce=time.time()*1000,))
         
 class cp_balance(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_account(access_id=Perpetual.objects.get(user=request.user).apikey,market =  request.data['sym'],tonce=time.time()*1000,))
@@ -1685,21 +1685,21 @@ class cp_ticker(APIView):
 
 class cp_mg_transfer(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_transfer(from_account=0, to_account=27, coin_type='USDT', amount='23'))
 
 class cp_pending(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_pending(market =  request.data['sym'],account_id=request.data['mid']))
 
 class cp_stop_pending(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_stop_pending(market =  request.data['sym'],account_id=request.data['mid']))
@@ -1707,7 +1707,7 @@ class cp_stop_pending(APIView):
 
 class cp_close(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -1719,7 +1719,7 @@ class cp_close(APIView):
 
 class cp_finished(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_finished(market = request.data['sym'],account_id=request.data['mid']))
@@ -1727,21 +1727,21 @@ class cp_finished(APIView):
 
 class cp_stop_finished(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_stop_finished(market = request.data['sym'],account_id=request.data['mid']))
 
 class cp_transfer(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_transfer(from_account=request.data['from_account'], to_account=request.data['to_account'], coin_type=request.data['coin_type'] , amount=request.data['amount']))
 
 class cp_market_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_market(account_id=request.data['mid'],access_id=Perpetual.objects.get(user=request.user).apikey,market = request.data['market'],type=request.data['type'],amount=request.data['amount'],tonce=time.time()*1000,))
@@ -1749,7 +1749,7 @@ class cp_market_order(APIView):
 
 class cp_limit_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_limit(account_id=request.data['mid'],access_id=Perpetual.objects.get(user=request.user).apikey,market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],tonce=time.time()*1000,))
@@ -1757,7 +1757,7 @@ class cp_limit_order(APIView):
 
 class cp_stop_limit_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_stop_limit(account_id=request.data['mid'],access_id=Perpetual.objects.get(user=request.user).apikey,market = request.data['market'],type=request.data['type'],amount=request.data['amount'],price=request.data['price'],stop_price=request.data['stop_price'],tonce=time.time()*1000,))
@@ -1766,21 +1766,21 @@ class cp_stop_limit_order(APIView):
 
 class cp_cancel_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_pending_cancel(market = request.data['market'],id = request.data['id']))
         
 class cp_stop_cancel_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.order_stop_pending_cancel( account_id=request.data['mid'],market = request.data['market'],id = request.data['id']))
         
 class cp_mg_market(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
         r = requests.get('https://api.coinex.com/v1/margin/market')
         r = r.json()
@@ -1792,7 +1792,7 @@ class cp_mg_market(APIView):
 
 class cp_mg_usdt(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get(self , request):
         usdt = Wallet.objects.filter( Q(user = request.user, currency = Currencies.objects.get(id = 4)) | Q(user = request.user, currency = Currencies.objects.get(id = 41)))
@@ -1802,7 +1802,7 @@ class cp_mg_usdt(APIView):
 
 class cp_mg_main(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.balance_info())
@@ -1816,7 +1816,7 @@ class cp_mg_main(APIView):
 
 class cp_mg_settings(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         print(coinex.balance_deposit_address('TRX'))
@@ -1825,7 +1825,7 @@ class cp_mg_settings(APIView):
 
 class cp_withdraw(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self, request, id , format=None):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         brand = Cp_Currencies.objects.get(name = id).brand
@@ -1842,7 +1842,7 @@ class cp_withdraw(APIView):
 
 class cp_deposit(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self, request, id , format=None):
         if id == 4 :
             cur = Currencies.objects.get(id = id)
@@ -1880,7 +1880,7 @@ class cp_deposit(APIView):
 
 class cp_deposit(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self, request, id , format=None):
         if id == 4 :
             cur = Currencies.objects.get(id = id)
@@ -1918,7 +1918,7 @@ class cp_deposit(APIView):
 
 class cp_wallets(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get(self , request , format=None):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
@@ -1939,7 +1939,7 @@ class cp_wallets(APIView):
 
 class cp_wallet(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self , user , id):
         try:
@@ -1981,7 +1981,7 @@ class cp_wallet(APIView):
 
 class cp_history(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self , user , id):
         try:
@@ -2023,7 +2023,7 @@ class cp_currencies(APIView):
 
 class olptradeinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2036,7 +2036,7 @@ class olptradeinfo(APIView):
 
 class olpboardinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2045,7 +2045,7 @@ class olpboardinfo(APIView):
 
 class olpmarketinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2054,7 +2054,7 @@ class olpmarketinfo(APIView):
 
 class cpp_adjustleverage(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2063,7 +2063,7 @@ class cpp_adjustleverage(APIView):
 
 class cpp_balance(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2072,14 +2072,14 @@ class cpp_balance(APIView):
 
 class cpp_mg_transfer(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def get(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_transfer(from_account=0, to_account=request.data['mid'], coin_type='USDT', amount='23'))
 
 class cpp_pending(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2089,7 +2089,7 @@ class cpp_pending(APIView):
 
 class cpp_stop_pending(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2098,7 +2098,7 @@ class cpp_stop_pending(APIView):
 
 class cpp_close(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2110,7 +2110,7 @@ class cpp_close(APIView):
 
 class cpp_finished(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2119,7 +2119,7 @@ class cpp_finished(APIView):
 
 class cpp_stop_finished(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2129,7 +2129,7 @@ class cpp_stop_finished(APIView):
 
 class cpp_market_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2139,7 +2139,7 @@ class cpp_market_order(APIView):
 
 class cpp_limit_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2149,7 +2149,7 @@ class cpp_limit_order(APIView):
 
 class cpp_stop_limit_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 
@@ -2160,7 +2160,7 @@ class cpp_stop_limit_order(APIView):
 
 class cpp_cancel_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated, IsSmsVerified]
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         robot = CoinexPerpetualApi(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey)
 

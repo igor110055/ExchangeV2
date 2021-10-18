@@ -61,6 +61,14 @@ class UserInfo(models.Model):
     def is_staff(self):
         return self.user.is_staff
 
+class LevelFee(models.Model):
+    id = models.IntegerField()
+    buy = models.FloatField()
+    sell = models.FloatField()
+    perpetual = models.FloatField()
+    margin = models.FloatField()
+    exchange = models.FloatField()
+
 
 class Review(models.Model):
     date = models.DateTimeField(default=timezone.now())
