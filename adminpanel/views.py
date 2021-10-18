@@ -11,10 +11,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import  BottomStickerSerializer, BuySerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, PostsSerializer, TopStickerSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from exchange.serializers import  BottomStickerSerializer, BuySerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Withdraw, General, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyrequest
+from exchange.models import BottomSticker, Cp_Withdraw, General, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyrequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -747,11 +747,13 @@ class buy(APIView):
 
     def post(self , request, format=None):
         if request.data['act'] == 'reject':
-            buyrequest.objects.get(id = request.data['id']).delete()
-            note = Notification(user=buyrequest.objects.get(id = request.data['id']).user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
+            req = buyrequest.objects.get(id = request.data['id'])
+            note = Notification(user=req.user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
             note.save()
+            req.delete()
             return Response(status=status.HTTP_201_CREATED)
-        req = buyrequest.objects.get(id = request.data['id']).delete()
-        note = Notification(req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
+        req = buyrequest.objects.get(id = request.data['id'])
+        note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
         note.save()
+        req.delete()
         return Response( status=status.HTTP_201_CREATED)

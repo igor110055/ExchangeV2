@@ -51,6 +51,7 @@ urlpatterns = [
    path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),
    path('otherpages' , views.otherpages.as_view() , name='otherpages'),
    path('buy' , views.buy.as_view() , name='buy'),
+   path('sell' , views.sell.as_view() , name='sell'),
    path('request/', views.send_request, name='request'),
    path('verify/', views.verify , name='verify'),
 #  General  ------------ >   
