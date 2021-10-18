@@ -96,7 +96,8 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     sendemail(user , date, title, text)
 
 class login(APIView):
-    pass
+    def post(self, request):
+        return Response('hi')
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
