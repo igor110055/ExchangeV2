@@ -133,10 +133,10 @@ class login(APIView):
                             return Response(Res)
 
                         else:
-                            raise ValidationError({"400": f'Account not active'})
+                            raise Response({"400": f'Account not active'})
 
                     else:
-                        raise ValidationError({"400": f'Account doesnt exist'})
+                        raise Response({"400": f'Account doesnt exist'})
                 else:
                     vcode = randrange(123456,999999)
                     a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
