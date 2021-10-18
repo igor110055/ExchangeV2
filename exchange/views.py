@@ -95,6 +95,7 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     sms(user , date, title, text)
     sendemail(user , date, title, text)
 
+@method_decorator(csrf_exempt)
 class login(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [AllowAny]
