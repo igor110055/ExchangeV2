@@ -94,7 +94,10 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     note.save()
     sms(user , date, title, text)
     sendemail(user , date, title, text)
+
 class login(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [AllowAny]
     def post(self, request):
         reqBody = json.loads(request.body)
         utc=pytz.UTC
