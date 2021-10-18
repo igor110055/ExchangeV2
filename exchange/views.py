@@ -99,7 +99,7 @@ class login(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [AllowAny]
 
-    def post(self, request):
+    def post(self, request, format=None):
         reqBody = json.loads(request.body)
         utc=pytz.UTC
         if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
@@ -214,9 +214,8 @@ class login(APIView):
             else:
                 raise ValidationError({"400": f'Account doesnt exist'})
 
-@api_view(["POST"])
-class loginsms( request):
-    def post(self, request):
+class loginsms(APIView):
+    def post(self, request, format=None):
         reqBody = json.loads(request.body)
         c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
         if(int(reqBody['code']) == int(c.code)):
