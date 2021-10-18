@@ -98,7 +98,7 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
 class login(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [AllowAny]
-    def post(self, request):
+    def post(self , request , format=None):
         reqBody = json.loads(request.body)
         utc=pytz.UTC
         if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
