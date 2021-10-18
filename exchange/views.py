@@ -216,6 +216,7 @@ def login(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@method_decorator(csrf_exempt, name='dispatch')
 @csrf_exempt
 def loginsms( request):
     reqBody = json.loads(request.body)
