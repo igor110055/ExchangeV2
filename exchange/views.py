@@ -96,7 +96,6 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     sendemail(user , date, title, text)
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
 def login(request):
     reqBody = json.loads(request.body)
     utc=pytz.UTC
@@ -213,7 +212,6 @@ def login(request):
             raise ValidationError({"400": f'Account doesnt exist'})
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
 def loginsms( request):
     reqBody = json.loads(request.body)
     c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
