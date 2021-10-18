@@ -176,4 +176,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 CRONJOBS = [
     ('* * * * *', 'exchange.cron.TICKER')
 ]
-REST_SESSION_LOGIN = False
+CSRF_COOKIE_NAME = "XSRF-TOKEN"
