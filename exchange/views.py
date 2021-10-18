@@ -97,6 +97,7 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@csrf_exempt
 def login(request):
     reqBody = json.loads(request.body)
     utc=pytz.UTC
@@ -214,6 +215,7 @@ def login(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@csrf_exempt
 def loginsms( request):
     reqBody = json.loads(request.body)
     c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
