@@ -95,8 +95,6 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     sms(user , date, title, text)
     sendemail(user , date, title, text)
 
-@api_view(["POST"])
-@csrf_exempt
 @method_decorator(csrf_exempt, name='dispatch')
 class login(APIView):
     permission_classes = [AllowAny]
