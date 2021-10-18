@@ -62,7 +62,7 @@ class UserInfo(models.Model):
         return self.user.is_staff
 
 class LevelFee(models.Model):
-    id = models.IntegerField()
+    id = models.IntegerField(primary_key=True)
     buy = models.FloatField()
     sell = models.FloatField()
     perpetual = models.FloatField()
