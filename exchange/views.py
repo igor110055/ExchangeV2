@@ -213,21 +213,20 @@ class login(APIView):
             else:
                 raise ValidationError({"400": f'Account doesnt exist'})
 
-@api_view(["POST"])
 @method_decorator(csrf_exempt, name='dispatch')
-@csrf_exempt
-def loginsms( request):
-    reqBody = json.loads(request.body)
-    c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-    if(int(reqBody['code']) == int(c.code)):
-        smss = SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-        for item in smss:
-            item.delete()
-        sms = SmsVerified(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-        sms.save()
-        return Response(status=status.HTTP_200_OK)
-    else:
-        return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
+class loginsms(APIView):
+    def post(self, request):
+        reqBody = json.loads(request.body)
+        c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+        if(int(reqBody['code']) == int(c.code)):
+            smss = SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+            for item in smss:
+                item.delete()
+            sms = SmsVerified(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+            sms.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
 
     
 
