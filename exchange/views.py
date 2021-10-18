@@ -98,6 +98,7 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @csrf_exempt
+@method_decorator(csrf_exempt, name='dispatch')
 def login(request):
     reqBody = json.loads(request.body)
     utc=pytz.UTC
