@@ -46,7 +46,7 @@ class UserInfo(models.Model):
     level = models.IntegerField(default= 0)
     is_active = models.BooleanField(default=True)
     is_verify = models.BooleanField(default=False)
-    is_smsverified = models.BooleanField(default=False)
+    smsverify = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     complete = models.BooleanField(default=False)
     class meta:
@@ -60,6 +60,11 @@ class UserInfo(models.Model):
         
     def is_staff(self):
         return self.user.is_staff
+
+
+class SmsVerified(models.Model):
+    number = models.CharField(max_length=20)
+    date = models.DateTimeField(default=timezone.now())
 
 class LevelFee(models.Model):
     id = models.IntegerField(primary_key=True)

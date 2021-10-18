@@ -1,6 +1,8 @@
 import re
 from requests.sessions import Request
+from django.contrib.auth.hashers import check_password
 from exchange.lib import request_client
+from django.core.exceptions import ValidationError
 from typing import Text
 from django import http
 from django.http import response
@@ -22,12 +24,14 @@ from rest_framework import authentication
 from .serializers import BottomStickerSerializer, BuySerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, TopStickerSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, Review, TopSticker, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
-from django.contrib.auth.models import AbstractUser , User
+from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, Review, SmsVerified, TopSticker, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
+from django.contrib.auth.models import AbstractUser , User, UserManager
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from django.utils.decorators import method_decorator
 from py_crypto_hd_wallet import HdWalletFactory, HdWalletCoins, HdWalletSpecs , HdWalletWordsNum, HdWalletChanges
 import json
 from datetime import datetime ,timedelta
@@ -57,12 +61,12 @@ import requests
 import json
 
 
-def email(user , date , title , text) :
+def sendemail(user , date , title , text) :
     send_mail(
         'Subject here',
-        f'به شرکت سرمایه گذاری ... خوش آمدید کد فعالسازی : {"vcode"} ',
+        f'{title}\n{text}',
         'info@ramabit.com',
-        [f'armansaheb@gmail.com'],
+        [f'{user.email}'],
         fail_silently=False,
     )
 
@@ -76,7 +80,7 @@ def sms(user , date , title  , text ):
     bulk_id = sms.send_pattern(
         "pifmmqr30d",    # pattern code
         "+983000505",      # originator
-        f"+989999999",  # recipient
+        f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
         pattern_values,  # pattern values
     )
 
@@ -84,6 +88,144 @@ def sms(user , date , title  , text ):
     print(message)
     print(f"+98999999999")
     return True
+
+def notification (user , date = datetime.now(), title = '' , text = ''):
+    note = Notification(user = user , title = title , text = text)
+    note.save()
+    sms(user , date, title, text)
+    sendemail(user , date, title, text)
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def login(request):
+    reqBody = json.loads(request.body)
+    utc=pytz.UTC
+    if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
+        if SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile):
+            ver = SmsVerified.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+            if ver.date + timedelta(minutes = 10) > utc.localize(datetime.now()):
+                data = {}
+                reqBody = json.loads(request.body)
+                username = reqBody['username']
+                print(username)
+                password = reqBody['password']
+                try:
+
+                    Account = User.objects.get(username=username)
+                except BaseException as e:
+                    raise ValidationError({"400": f'{str(e)}'})
+
+                token = Token.objects.get_or_create(user=Account)[0].key
+                print(token)
+                if not check_password(password, Account.password):
+                    raise ValidationError({"message": "Incorrect Login credentials"})
+
+                if Account:
+                    if Account.is_active:
+                        print(request.user)
+                        data["message"] = "user logged in"
+                        data["username"] = Account.email
+
+                        Res = {"data": data, "auth_token": token}
+                        notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+
+                        return Response(Res)
+
+                    else:
+                        raise ValidationError({"400": f'Account not active'})
+
+                else:
+                    raise ValidationError({"400": f'Account doesnt exist'})
+            else:
+                vcode = randrange(123456,999999)
+                a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+                for item in a:
+                    item.delete()
+                c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
+                c.save()
+                sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+
+                pattern_values = {
+                "verification-code": f"{vcode}",
+                }
+
+                bulk_id = sms.send_pattern(
+                    "pifmmqr30d",    # pattern code
+                    "+983000505",      # originator
+                    f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
+                    pattern_values,  # pattern values
+                )
+
+                message = sms.get_message(bulk_id)
+                return Response(1)
+        else:
+            vcode = randrange(123456,999999)
+            a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+            for item in a:
+                item.delete()
+            c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
+            c.save()
+            sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+
+            pattern_values = {
+            "verification-code": f"{vcode}",
+            }
+
+            bulk_id = sms.send_pattern(
+                "pifmmqr30d",    # pattern code
+                "+983000505",      # originator
+                f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
+                pattern_values,  # pattern values
+            )
+
+            message = sms.get_message(bulk_id)
+            return Response(1)
+    else:
+        data = {}
+        username = reqBody['username']
+        print(username)
+        password = reqBody['password']
+        try:
+
+            Account = User.objects.get(username=username)
+        except BaseException as e:
+            raise ValidationError({"400": f'{str(e)}'})
+
+        token = Token.objects.get_or_create(user=Account)[0].key
+        print(token)
+        if not check_password(password, Account.password):
+            raise ValidationError({"message": "Incorrect Login credentials"})
+
+        if Account:
+            if Account.is_active:
+                print(request.user)
+                data["message"] = "user logged in"
+                data["username"] = Account.username
+
+                Res = {"data": data, "auth_token": token}
+                notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+                return Response(Res)
+
+            else:
+                raise ValidationError({"400": f'Account not active'})
+
+        else:
+            raise ValidationError({"400": f'Account doesnt exist'})
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def loginsms( request):
+    reqBody = json.loads(request.body)
+    c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+    if(int(reqBody['code']) == int(c.code)):
+        smss = SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+        for item in smss:
+            item.delete()
+        sms = SmsVerified(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+        sms.save()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
 
     
 

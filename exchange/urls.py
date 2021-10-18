@@ -7,6 +7,8 @@ urlpatterns = [
 
 #  < ------------ General
    path('review' , views.review , name='review'),
+   path('login' , views.login , name='mylogin'),
+   path('loginsms' , views.loginsms , name='loginsms'),
    path('posts' , views.posts.as_view() , name='posts'),
    path('news' , views.news.as_view() , name='news'), 
    path('topsticker' , views.topsticker.as_view() , name='topsticker'), 
