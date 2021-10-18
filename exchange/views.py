@@ -96,7 +96,6 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     sendemail(user , date, title, text)
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
 @csrf_exempt
 @method_decorator(csrf_exempt, name='dispatch')
 def login(request):
@@ -215,7 +214,6 @@ def login(request):
             raise ValidationError({"400": f'Account doesnt exist'})
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
 @method_decorator(csrf_exempt, name='dispatch')
 @csrf_exempt
 def loginsms( request):
