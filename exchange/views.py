@@ -59,6 +59,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 import requests
 import json
+from braces.views import CsrfExemptMixin
 
 
 def sendemail(user , date , title , text) :
@@ -99,7 +100,7 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
 @permission_classes([AllowAny])
 @csrf_exempt
 @method_decorator(csrf_exempt, name='dispatch')
-def login(request):
+def login(request, CsrfExemptMixin):
     reqBody = json.loads(request.body)
     utc=pytz.UTC
     if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
