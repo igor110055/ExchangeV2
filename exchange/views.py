@@ -96,25 +96,140 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     sendemail(user , date, title, text)
 
 class login(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [AllowAny]
+
     def post(self, request):
-        return Response('hi')
+        reqBody = json.loads(request.body)
+        utc=pytz.UTC
+        if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
+            if SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile):
+                ver = SmsVerified.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+                if ver.date + timedelta(minutes = 10) > utc.localize(datetime.now()):
+                    data = {}
+                    reqBody = json.loads(request.body)
+                    username = reqBody['username']
+                    print(username)
+                    password = reqBody['password']
+                    try:
+
+                        Account = User.objects.get(username=username)
+                    except BaseException as e:
+                        raise ValidationError({"400": f'{str(e)}'})
+
+                    token = Token.objects.get_or_create(user=Account)[0].key
+                    print(token)
+                    if not check_password(password, Account.password):
+                        raise ValidationError({"message": "Incorrect Login credentials"})
+
+                    if Account:
+                        if Account.is_active:
+                            print(request.user)
+                            data["message"] = "user logged in"
+                            data["username"] = Account.email
+
+                            Res = {"data": data, "auth_token": token}
+                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+
+                            return Response(Res)
+
+                        else:
+                            raise ValidationError({"400": f'Account not active'})
+
+                    else:
+                        raise ValidationError({"400": f'Account doesnt exist'})
+                else:
+                    vcode = randrange(123456,999999)
+                    a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+                    for item in a:
+                        item.delete()
+                    c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
+                    c.save()
+                    sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+
+                    pattern_values = {
+                    "verification-code": f"{vcode}",
+                    }
+
+                    bulk_id = sms.send_pattern(
+                        "pifmmqr30d",    # pattern code
+                        "+983000505",      # originator
+                        f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
+                        pattern_values,  # pattern values
+                    )
+
+                    message = sms.get_message(bulk_id)
+                    return Response(1)
+            else:
+                vcode = randrange(123456,999999)
+                a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+                for item in a:
+                    item.delete()
+                c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
+                c.save()
+                sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+
+                pattern_values = {
+                "verification-code": f"{vcode}",
+                }
+
+                bulk_id = sms.send_pattern(
+                    "pifmmqr30d",    # pattern code
+                    "+983000505",      # originator
+                    f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
+                    pattern_values,  # pattern values
+                )
+
+                message = sms.get_message(bulk_id)
+                return Response(1)
+        else:
+            data = {}
+            username = reqBody['username']
+            print(username)
+            password = reqBody['password']
+            try:
+
+                Account = User.objects.get(username=username)
+            except BaseException as e:
+                raise ValidationError({"400": f'{str(e)}'})
+
+            token = Token.objects.get_or_create(user=Account)[0].key
+            print(token)
+            if not check_password(password, Account.password):
+                raise ValidationError({"message": "Incorrect Login credentials"})
+
+            if Account:
+                if Account.is_active:
+                    print(request.user)
+                    data["message"] = "user logged in"
+                    data["username"] = Account.username
+
+                    Res = {"data": data, "auth_token": token}
+                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+                    return Response(Res)
+
+                else:
+                    raise ValidationError({"400": f'Account not active'})
+
+            else:
+                raise ValidationError({"400": f'Account doesnt exist'})
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
-def loginsms( request):
-    reqBody = json.loads(request.body)
-    c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-    if(int(reqBody['code']) == int(c.code)):
-        smss = SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-        for item in smss:
-            item.delete()
-        sms = SmsVerified(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-        sms.save()
-        return Response(status=status.HTTP_200_OK)
-    else:
-        return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
+class loginsms( request):
+    def post(self, request):
+        reqBody = json.loads(request.body)
+        c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+        if(int(reqBody['code']) == int(c.code)):
+            smss = SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+            for item in smss:
+                item.delete()
+            sms = SmsVerified(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+            sms.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
 
-    
+        
 
 MERCHANT = '2a4c4e4e-3e4c-431f-80f5-3b5172b763c2'
 ZP_API_REQUEST = "https://api.zarinpal.com/pg/v4/payment/request.json"
