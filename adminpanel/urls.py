@@ -6,13 +6,9 @@ from . import views
 urlpatterns = [
    path('review' , views.review.as_view() , name='review'),
    path('buy' , views.buy.as_view() , name='buy'),
-   path('posts' , views.posts.as_view() , name='posts'),
    path('changepass' , views.changepass.as_view() , name='changepass'),
    path('levelchange' , views.levelchange.as_view() , name='levelchange'),
    path('wallets/<str:username>' , views.wallets.as_view() , name='wallets'),
-   path('news' , views.news.as_view() , name='news'), 
-   path('topsticker' , views.topsticker.as_view() , name='topsticker'), 
-   path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'), 
    path('staff' , views.staff.as_view() , name='staff'),
    path('subject' , views.subject.as_view() , name='subject'),
    path('subject/<int:id>' , views.subject.as_view() , name='subject'),

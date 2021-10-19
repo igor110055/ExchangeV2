@@ -538,62 +538,6 @@ class ticket(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class topsticker(APIView):
-    def post(self , request , format=None):
-        serializer = TopStickerSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self , request , format=None):
-        serializer = TopSticker.objects.get(id=request.data['id'])
-        serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-class bottomsticker(APIView):
-    def post(self , request , format=None):
-        serializer = BottomStickerSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self , request , format=None):
-        serializer = BottomSticker.objects.get(id=request.data['id'])
-        serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-class posts(APIView):
-    def post(self , request , format=None):
-        serializer = PostsSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self , request , format=None):
-        serializer = Posts.objects.get(id=request.data['id'])
-        serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-class news(APIView):
-    def post(self , request , format=None):
-        serializer = News(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self , request , format=None):
-        serializer = News.objects.get(id=request.data['id'])
-        serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 class topsticker(APIView):
     def get(self , request , format=None):
@@ -613,6 +557,15 @@ class topsticker(APIView):
     def delete(self , request, id, format=None):
         serializer = Pages.objects.get(id = id)
         serializer.delete()
+        return Response(status=status.HTTP_201_CREATED)
+
+    def put(self , request , format=None):
+        post = BottomSticker.objects.get(id=request.data['id'])
+        post.text = request.data['text']
+        post.title = request.data['text']
+        if 'img' in request.data:
+            post.img = request.files['img']
+        post.save()
         return Response(status=status.HTTP_201_CREATED)
 
 class bottomsticker(APIView):
@@ -635,6 +588,14 @@ class bottomsticker(APIView):
         serializer.delete()
         return Response(status=status.HTTP_201_CREATED)
 
+    def put(self , request , format=None):
+        post = BottomSticker.objects.get(id=request.data['id'])
+        post.text = request.data['text']
+        post.title = request.data['text']
+        if 'img' in request.data:
+            post.img = request.files['img']
+        post.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class mainpageposts(APIView):
@@ -657,6 +618,15 @@ class mainpageposts(APIView):
         serializer.delete()
         return Response(status=status.HTTP_201_CREATED)
 
+    def put(self , request , format=None):
+        post = BottomSticker.objects.get(id=request.data['id'])
+        post.text = request.data['text']
+        post.title = request.data['text']
+        if 'img' in request.data:
+            post.img = request.files['img']
+        post.save()
+        return Response(status=status.HTTP_201_CREATED)
+
 
 class otherpages(APIView):
     def get(self , request , format=None):
@@ -676,6 +646,15 @@ class otherpages(APIView):
     def delete(self , request, id, format=None):
         serializer = Pages.objects.get(id = id)
         serializer.delete()
+        return Response(status=status.HTTP_201_CREATED)
+
+    def put(self , request , format=None):
+        post = BottomSticker.objects.get(id=request.data['id'])
+        post.text = request.data['text']
+        post.title = request.data['text']
+        if 'img' in request.data:
+            post.img = request.files['img']
+        post.save()
         return Response(status=status.HTTP_201_CREATED)
 
 
