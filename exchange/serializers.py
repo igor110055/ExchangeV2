@@ -262,6 +262,7 @@ class PagesSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "text",
+            "minitext",
             "pic",
             "position",
             "get_pic"

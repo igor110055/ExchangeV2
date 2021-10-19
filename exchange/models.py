@@ -565,6 +565,7 @@ class Pages(models.Model):
     pic = models.ImageField(upload_to='pages' , null = True)
     title = models.CharField(max_length = 100)
     text = models.CharField(max_length = 10000)
+    minitext = models.CharField(max_length = 1000, default='')
     position = models.CharField(max_length=100 , null=True)
     
     def get_pic(self):

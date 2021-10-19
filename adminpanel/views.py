@@ -562,6 +562,7 @@ class topsticker(APIView):
     def put(self , request , format=None):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
+        post.minitext = request.data['minitext']
         post.title = request.data['title']
         if 'pic' in request.data:
             print(request.data)
@@ -592,6 +593,7 @@ class bottomsticker(APIView):
     def put(self , request , format=None):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
+        post.minitext = request.data['minitext']
         post.title = request.data['title']
         if request.data['pic']:
             print(request.data['id'])
@@ -623,6 +625,7 @@ class mainpageposts(APIView):
     def put(self , request , format=None):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
+        post.minitext = request.data['minitext']
         post.title = request.data['title']
         if 'pic' in request.data:
             post.pic = request.data['pic']
@@ -653,6 +656,7 @@ class otherpages(APIView):
     def put(self , request , format=None):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
+        post.minitext = request.data['minitext']
         post.title = request.data['title']
         if 'pic' in request.data:
             post.pic = request.data['pic']
