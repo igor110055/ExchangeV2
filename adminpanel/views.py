@@ -595,8 +595,8 @@ class bottomsticker(APIView):
         post.text = request.data['text']
         post.minitext = request.data['minitext']
         post.title = request.data['title']
-        if request.data['pic']:
-            print(request.data['id'])
+        if 'pic' in request.data:
+            print(request.data)
             post.pic = request.data['pic']
         post.save()
         return Response(status=status.HTTP_201_CREATED)
@@ -628,6 +628,7 @@ class mainpageposts(APIView):
         post.minitext = request.data['minitext']
         post.title = request.data['title']
         if 'pic' in request.data:
+            print(request.data)
             post.pic = request.data['pic']
         post.save()
         return Response(status=status.HTTP_201_CREATED)
@@ -659,6 +660,7 @@ class otherpages(APIView):
         post.minitext = request.data['minitext']
         post.title = request.data['title']
         if 'pic' in request.data:
+            print(request.data)
             post.pic = request.data['pic']
         post.save()
         return Response(status=status.HTTP_201_CREATED)
