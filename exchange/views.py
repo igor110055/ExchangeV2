@@ -130,8 +130,11 @@ class login(APIView):
                             data["username"] = Account.email
 
                             Res = {"data": data, "auth_token": token}
-                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ' , pattern='gf9zbtg61v')
-
+                            if UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])).mobile:
+                                notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                            if not UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])):
+                                ui = UserInfo(user = User.objects.get(username = reqBody['username']))
+                                ui.save()
                             return Response(Res)
 
                         else:
@@ -206,7 +209,11 @@ class login(APIView):
                     data["username"] = Account.username
 
                     Res = {"data": data, "auth_token": token}
-                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                    if UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])).mobile:
+                        notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                    if not UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])):
+                                ui = UserInfo(user = User.objects.get(username = reqBody['username']))
+                                ui.save()
                     return Response(Res)
 
                 else:
