@@ -560,9 +560,9 @@ class topsticker(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
     def put(self , request , format=None):
-        post = BottomSticker.objects.get(id=request.data['id'])
+        post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
-        post.title = request.data['text']
+        post.title = request.data['title']
         if 'img' in request.data:
             post.img = request.files['img']
         post.save()
@@ -589,9 +589,10 @@ class bottomsticker(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
     def put(self , request , format=None):
-        post = BottomSticker.objects.get(id=request.data['id'])
+        print(request.data['id'])
+        post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
-        post.title = request.data['text']
+        post.title = request.data['title']
         if 'img' in request.data:
             post.img = request.files['img']
         post.save()
@@ -619,9 +620,9 @@ class mainpageposts(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
     def put(self , request , format=None):
-        post = BottomSticker.objects.get(id=request.data['id'])
+        post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
-        post.title = request.data['text']
+        post.title = request.data['title']
         if 'img' in request.data:
             post.img = request.files['img']
         post.save()
@@ -649,9 +650,9 @@ class otherpages(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
     def put(self , request , format=None):
-        post = BottomSticker.objects.get(id=request.data['id'])
+        post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
-        post.title = request.data['text']
+        post.title = request.data['title']
         if 'img' in request.data:
             post.img = request.files['img']
         post.save()
