@@ -74,7 +74,7 @@ def sms(user , date , title  , text , pattern):
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
     pattern_values = {
-    "name": "",
+    "name": "کاربر",
     }
 
     bulk_id = sms.send_pattern(
