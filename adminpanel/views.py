@@ -40,7 +40,7 @@ def email(user , date , title , text) :
     )
 
 def sms(user , date , title  , text ):
-    sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+    sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
     pattern_values = {
     "verification-code": f"dcsdcdscd",
