@@ -396,7 +396,7 @@ class VerifyMelliRequest(models.Model):
         verbose_name = ' درخواست تایید کارت ملی '
         verbose_name_plural = ' درخواست های تایید کارت ملی '
     def get_image(self):
-        return f'{ROOT}/media/{self.melliimg}/'
+        return f'{ROOT}/media/{self.melliimg}'
     def get_user(self):
         return self.user.id
 
@@ -874,7 +874,7 @@ class TopSticker(models.Model):
     img = models.BooleanField(default = False)
 
     def get_image(self):
-        return f'{ROOT}/media/{self.img}/'
+        return f'{ROOT}/media/{self.img}'
 
 
 class BottomSticker(models.Model):
@@ -883,7 +883,7 @@ class BottomSticker(models.Model):
     img = models.BooleanField(default = False)
 
     def get_image(self):
-        return f'{ROOT}/media/{self.img}/'
+        return f'{ROOT}/media/{self.img}'
 
 class Posts(models.Model):
     title = models.ImageField(upload_to='docs' , null = True)
@@ -891,7 +891,7 @@ class Posts(models.Model):
     img = models.BooleanField(default = False)
 
     def get_image(self):
-        return f'{ROOT}/media/{self.img}/'
+        return f'{ROOT}/media/{self.img}'
 
 
 class News(models.Model):
@@ -900,4 +900,4 @@ class News(models.Model):
     img = models.BooleanField(default = False)
 
     def get_image(self):
-        return f'{ROOT}/media/{self.img}/'
+        return f'{ROOT}/media/{self.img}'
