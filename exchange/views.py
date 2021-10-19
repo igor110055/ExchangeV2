@@ -71,7 +71,7 @@ def sendemail(user , date , title , text) :
     )
 
 def sms(user , date , title  , text , pattern, code):
-    sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
+    sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
 
     pattern_values = {
     "verification-code": f"",
@@ -130,7 +130,7 @@ class login(APIView):
                             data["username"] = Account.email
 
                             Res = {"data": data, "auth_token": token}
-                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ', pattern='mw6od7kmx5')
+                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ', pattern='pifmmqr30d')
 
                             return Response(Res)
 
@@ -206,7 +206,7 @@ class login(APIView):
                     data["username"] = Account.username
 
                     Res = {"data": data, "auth_token": token}
-                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ', pattern='mw6od7kmx5')
+                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ', pattern='pifmmqr30d')
                     return Response(Res)
 
                 else:
