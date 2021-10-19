@@ -146,7 +146,7 @@ class login(APIView):
                         item.delete()
                     c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
                     c.save()
-                    sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+                    sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
                     pattern_values = {
                     "verification-code": f"{vcode}",
@@ -168,7 +168,7 @@ class login(APIView):
                     item.delete()
                 c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
                 c.save()
-                sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+                sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
                 pattern_values = {
                 "verification-code": f"{vcode}",
