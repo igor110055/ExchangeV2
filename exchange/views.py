@@ -70,15 +70,15 @@ def sendemail(user , date , title , text) :
         fail_silently=False,
     )
 
-def sms(user , date , title  , text , pattern, code):
+def sms(user , date , title  , text ):
     sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
 
     pattern_values = {
-    "verification-code": f"",
+    "verification-code": f"dcsdcdscd",
     }
 
     bulk_id = sms.send_pattern(
-        f"{pattern}",    # pattern code
+        "pifmmqr30d",    # pattern code
         "+983000505",      # originator
         f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
         pattern_values,  # pattern values
@@ -89,10 +89,10 @@ def sms(user , date , title  , text , pattern, code):
     print(f"+98999999999")
     return True
 
-def notification (user , date = datetime.now(), title = '' , text = '', pattern = '', code= ''):
+def notification (user , date = datetime.now(), title = '' , text = ''):
     note = Notification(user = user , title = title , text = text)
     note.save()
-    sms(user , date, title, text, pattern)
+    sms(user , date, title, text)
     sendemail(user , date, title, text)
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -130,7 +130,7 @@ class login(APIView):
                             data["username"] = Account.email
 
                             Res = {"data": data, "auth_token": token}
-                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ', pattern='pifmmqr30d')
+                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
 
                             return Response(Res)
 
@@ -206,7 +206,7 @@ class login(APIView):
                     data["username"] = Account.username
 
                     Res = {"data": data, "auth_token": token}
-                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ', pattern='pifmmqr30d')
+                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
                     return Response(Res)
 
                 else:
