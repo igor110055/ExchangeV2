@@ -70,15 +70,15 @@ def sendemail(user , date , title , text) :
         fail_silently=False,
     )
 
-def sms(user , date , title  , text ):
-    sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+def sms(user , date , title  , text , pattern):
+    sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
     pattern_values = {
-    "verification-code": f"dcsdcdscd",
+    "name": "",
     }
 
     bulk_id = sms.send_pattern(
-        "pifmmqr30d",    # pattern code
+        f"{pattern}",    # pattern code
         "+983000505",      # originator
         f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
         pattern_values,  # pattern values
@@ -89,10 +89,10 @@ def sms(user , date , title  , text ):
     print(f"+98999999999")
     return True
 
-def notification (user , date = datetime.now(), title = '' , text = ''):
+def notification (user , date = datetime.now(), title = '' , text = '', pattern='gf9zbtg61v'):
     note = Notification(user = user , title = title , text = text)
     note.save()
-    sms(user , date, title, text)
+    sms(user , date, title, text, pattern)
     sendemail(user , date, title, text)
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -130,7 +130,7 @@ class login(APIView):
                             data["username"] = Account.email
 
                             Res = {"data": data, "auth_token": token}
-                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ' , pattern='gf9zbtg61v')
 
                             return Response(Res)
 
@@ -153,7 +153,7 @@ class login(APIView):
                     }
 
                     bulk_id = sms.send_pattern(
-                        "pifmmqr30d",    # pattern code
+                        "s1a8zjq33u",    # pattern code
                         "+983000505",      # originator
                         f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
                         pattern_values,  # pattern values
@@ -175,7 +175,7 @@ class login(APIView):
                 }
 
                 bulk_id = sms.send_pattern(
-                    "pifmmqr30d",    # pattern code
+                    "s1a8zjq33u",    # pattern code
                     "+983000505",      # originator
                     f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
                     pattern_values,  # pattern values
@@ -206,7 +206,7 @@ class login(APIView):
                     data["username"] = Account.username
 
                     Res = {"data": data, "auth_token": token}
-                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
                     return Response(Res)
 
                 else:
@@ -232,7 +232,7 @@ class loginsms(APIView):
 
 class welcomesms(APIView):
     def get(self, request, format=None):
-            notification(user = request.user, title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+            notification(user = request.user, title='Amizax', text='خود وارد شدید Amizax با موفقیت به حساب  ')
             return Response(status=status.HTTP_200_OK)
 
 
@@ -793,14 +793,14 @@ class mobileverify(APIView):
         c = mobilecodes(number = request.data['number'], code = vcode)
         c.save()
 
-        sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+        sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
         pattern_values = {
         "verification-code": f"{vcode}",
         }
 
         bulk_id = sms.send_pattern(
-            "pifmmqr30d",    # pattern code
+            "s1a8zjq33u",    # pattern code
             "+983000505",      # originator
             f"+98{request.data['number']}",  # recipient
             pattern_values,  # pattern values

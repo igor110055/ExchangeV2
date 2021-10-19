@@ -40,16 +40,16 @@ def email(user , date , title , text) :
     )
 
 def sms(user , date , title  , text ):
-    sms = Client("HpmWk_fgdm_OnxGYeVpNE1kmL8fTKC7Fu0cuLmeXQHM=")
+    sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
     pattern_values = {
     "verification-code": f"dcsdcdscd",
     }
 
     bulk_id = sms.send_pattern(
-        "pifmmqr30d",    # pattern code
+        "nyxequ9zz4",    # pattern code
         "+983000505",      # originator
-        f"+989999999",  # recipient
+        f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
         pattern_values,  # pattern values
     )
 
