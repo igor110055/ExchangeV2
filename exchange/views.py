@@ -95,7 +95,7 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     sms(user , date, title, text)
     sendemail(user , date, title, text)
 
-@method_decorator('csrf_exempt')
+@method_decorator(csrf_exempt, name='dispatch')
 class login(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [AllowAny]
@@ -229,7 +229,11 @@ class loginsms(APIView):
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
 
-        
+class welcomesms(APIView):
+    def get(self, request, format=None):
+            notification(user = request.user, title='Amizax', text='خود وارد شدید Amizax موفقیت به حساب  ')
+            return Response(status=status.HTTP_200_OK)
+
 
 MERCHANT = '2a4c4e4e-3e4c-431f-80f5-3b5172b763c2'
 ZP_API_REQUEST = "https://api.zarinpal.com/pg/v4/payment/request.json"
