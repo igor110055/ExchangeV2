@@ -563,8 +563,9 @@ class topsticker(APIView):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
         post.title = request.data['title']
-        if 'img' in request.data:
-            post.img = request.files['img']
+        if 'pic' in request.data:
+            print(request.data)
+            post.pic = request.data['pic']
         post.save()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -589,12 +590,12 @@ class bottomsticker(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
     def put(self , request , format=None):
-        print(request.data['id'])
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
         post.title = request.data['title']
-        if 'img' in request.data:
-            post.img = request.files['img']
+        if request.data['pic']:
+            print(request.data['id'])
+            post.pic = request.data['pic']
         post.save()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -623,8 +624,8 @@ class mainpageposts(APIView):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
         post.title = request.data['title']
-        if 'img' in request.data:
-            post.img = request.files['img']
+        if 'pic' in request.data:
+            post.pic = request.data['pic']
         post.save()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -653,8 +654,8 @@ class otherpages(APIView):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
         post.title = request.data['title']
-        if 'img' in request.data:
-            post.img = request.files['img']
+        if 'pic' in request.data:
+            post.pic = request.data['pic']
         post.save()
         return Response(status=status.HTTP_201_CREATED)
 
