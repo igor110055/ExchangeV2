@@ -37,13 +37,13 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 class UserInfo(models.Model):
     user = models.OneToOneField(User , related_name='userinfo', on_delete=models.CASCADE)
-    first_name=models.CharField(max_length=255)
-    last_name=models.CharField(max_length=255)
-    mobile = models.CharField(max_length=100,)
-    email = models.EmailField()
+    first_name=models.CharField(max_length=255, null=True)
+    last_name=models.CharField(max_length=255, null=True)
+    mobile = models.CharField(max_length=100, null=True)
+    email = models.EmailField(null=True)
     address = models.CharField(max_length=500, null=True)
     post = models.CharField(max_length=10, null=True)
-    level = models.IntegerField(default= 0)
+    level = models.IntegerField(default= 0, null=True)
     is_active = models.BooleanField(default=True)
     is_verify = models.BooleanField(default=False)
     smsverify = models.BooleanField(default=False)
