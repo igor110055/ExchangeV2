@@ -215,6 +215,7 @@ class login(APIView):
             else:
                 raise ValidationError({"400": f'Account doesnt exist'})
 
+@method_decorator(csrf_exempt, name='dispatch')
 class loginsms(APIView):
     def post(self, request, format=None):
         reqBody = json.loads(request.body)
