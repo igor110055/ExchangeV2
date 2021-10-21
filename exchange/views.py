@@ -371,7 +371,7 @@ class rulev(APIView):
         ver.rulev = True
         ver.save()
         user = Verify.objects.get(user= request.user)
-        if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv  ):
+        if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv and user.coinv  ):
             per = UserInfo.objects.get(user = request.user)
             per.level = 1
             per.save()
@@ -412,7 +412,7 @@ class usersinfo(APIView):
             ver.idv = True
             ver.save() 
             user = Verify.objects.get(user= request.user)
-            if (user.melliv and user.mobilev and user.idv  and user.rulev  and user.emailv ):
+            if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv and user.coinv  ):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
@@ -430,7 +430,7 @@ class usersinfo(APIView):
             ver.idv = True
             ver.save() 
             user = Verify.objects.get(user= request.user)
-            if (user.melliv and user.mobilev  and user.idv  and user.rulev  ):
+            if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv and user.coinv  ):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
@@ -866,7 +866,7 @@ class mobileverify(APIView):
             mobile = UserInfo.objects.get(user = request.user)
             mobile.mobile = request.data['number']
             mobile.save()
-            if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv  ):
+            if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv and user.coinv   ):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
@@ -901,7 +901,7 @@ class emailverify(APIView):
             mail = request.user
             mail.email = request.data['email']
             mail.save()
-            if (user.melliv and user.mobilev  and user.idv  and user.rulev   and user.emailv  ):
+            if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv and user.coinv   ):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
@@ -917,6 +917,8 @@ class verifymelli(APIView):
         request.data['user'] = request.user.id
         serializer = VerifyMelliRequestSerializer(data = request.data)
         if serializer.is_valid():
+            for item in VerifyMelliRequest.objects.filter(user = request.user):
+                item.delete()
             serializer.save()
             return Response(status=status.HTTP_201_CREATED)
         else:

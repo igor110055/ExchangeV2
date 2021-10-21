@@ -359,13 +359,14 @@ class Cp_Withdraw(models.Model):
 class Verify(models.Model):
     user = models.ForeignKey(User , related_name='verify' , on_delete=models.CASCADE)
     mobilev = models.BooleanField(default = False , null = True)
-    mobilec = models.IntegerField( null = True,default=0)
+    mobilec = models.IntegerField(null = True,default=0)
     emailv = models.BooleanField(default = False , null = True)
-    emailc = models.IntegerField( null = True ,default=0)
+    emailc = models.IntegerField(null = True ,default=0)
     melliv = models.BooleanField(default = False , null = True)
     bankv = models.BooleanField(default = False , null = True)
     idv = models.BooleanField(default = False , null = True)
     rulev = models.BooleanField(default = False , null = True)
+    coinv = models.BooleanField(default = False , null = True)
     class meta:
         verbose_name = ' تاییدیه '
         verbose_name_plural = ' تاییدیه ها'

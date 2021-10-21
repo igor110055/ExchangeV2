@@ -465,7 +465,15 @@ class perpetualreqccept(APIView):
         print(request.data['name'])
         per = Perpetual(user = user ,name = request.data['name'], apikey = request.data['apikey'] , secretkey = request.data['secretkey'])
         per.save()
-        PerpetualRequest.objects.filter(id = id).delete()
+        ver = Verify.objects.get(user = user)
+        ver.coinv = True
+        ver.save()
+        user = Verify.objects.get(user = user)
+        if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv and user.coinv   ):
+                per = UserInfo.objects.get(user = request.user)
+                per.level = 1
+                per.save()
+        PerpetualRequest.objects.get(id = id).delete()
         return Response(status=status.HTTP_201_CREATED)
 
 

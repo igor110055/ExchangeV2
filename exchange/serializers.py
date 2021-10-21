@@ -126,7 +126,8 @@ class VerifySerializer(serializers.ModelSerializer):
             "melliv",
             "idv",
             "bankv",
-            "rulev"
+            "rulev",
+            "coinv"
         )
 
 
