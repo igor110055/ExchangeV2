@@ -6,6 +6,12 @@ from . import views
 urlpatterns = [
    path('review' , views.review.as_view() , name='review'),
    path('buy' , views.buy.as_view() , name='buy'),
+   path('buyout' , views.buyout.as_view() , name='buyout'),
+   path('sellout' , views.sellout.as_view() , name='sellout'),
+   path('buyouthistory' , views.buyouthistory.as_view() , name='buyouthistory'),
+   path('sellouthistory' , views.sellouthistory.as_view() , name='sellouthistory'),
+   path('buyoutopen' , views.buyoutopen.as_view() , name='buyoutopen'),
+   path('selloutopen' , views.selloutopen.as_view() , name='selloutopen'),
    path('changepass' , views.changepass.as_view() , name='changepass'),
    path('levelchange' , views.levelchange.as_view() , name='levelchange'),
    path('wallets/<str:username>' , views.wallets.as_view() , name='wallets'),

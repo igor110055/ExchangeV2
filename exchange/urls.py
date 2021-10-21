@@ -55,6 +55,8 @@ urlpatterns = [
    path('otherpages' , views.otherpages.as_view() , name='otherpages'),
    path('buy' , views.buy.as_view() , name='buy'),
    path('sell' , views.sell.as_view() , name='sell'),
+   path('buyout' , views.buyout.as_view() , name='buyout'),
+   path('sellout' , views.sellout.as_view() , name='sellout'),
    path('request/', views.send_request, name='request'),
    path('verify/', views.verify , name='verify'),
 #  General  ------------ >   

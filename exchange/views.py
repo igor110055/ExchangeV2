@@ -21,10 +21,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import BottomStickerSerializer, BuySerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, TopStickerSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, Review, SmsVerified, TopSticker, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest
+from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, Review, SmsVerified, TopSticker, buyoutrequest, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User, UserManager
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -1700,6 +1700,51 @@ class buy(APIView):
         return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
 
 
+class buyout(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return buyoutrequest.objects.all().order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuyoutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+
+    def post(self , request, format=None):
+        request.data['user'] = request.user.id
+        serializer = BuyoutSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data , status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+
+class sellout(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return sellrequest.objects.all().order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = selloutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+
+    def post(self , request, format=None):
+        request.data['user'] = request.user.id
+        serializer = selloutSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data , status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
 
 class sell(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -1724,7 +1769,10 @@ class sell(APIView):
         wal = Wallet.objects.get(user = request.user, currency = Currencies.objects.get(id = 1))
         wal.amount = wal.amount + request.data['ramount']
         wal.save()
-        note = Notification(user=req.user, title = 'فروش موفق' , text = ' درخواست فروش شما با موفقیت انجام شد . ')
+        serializer = SellSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+        note = Notification(user=request.user, title = 'فروش موفق' , text = ' درخواست فروش شما با موفقیت انجام شد . ')
         note.save()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -2038,9 +2086,6 @@ class cp_wallet(APIView):
         curs = Cp_Currencies.objects.filter(brand = brand)
         wallets = {}
         for item in curs:
-            if self.get_object(request.user , item):
-                wallets[item.name] = CpWalletSerializer(self.get_object(request.user , item),many= True).data
-            else:
                 wallets[item.name] = ''
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         res = coinex.balance_info()
@@ -2052,17 +2097,19 @@ class cp_wallet(APIView):
         return Response(result)
 
     def post(self , request, id, format=None):   
-        coinex = CoinEx('C26DD8BAF16541E79B9526CF8CB00749', '8766839060F9FB4F34B874FD3E468C583235403E8FA4B0E8' )
-        brand = Currencies.objects.get(name = id).brand
-        chain = id.replace(brand , '').replace('-' , '')
-        if len(Wallet.objects.filter(user=request.user ,currency = Currencies.objects.get(name = id))) == 0 :
-            if chain != '':
-                w = Wallet(user=request.user ,currency = Currencies.objects.get(name = id), address = coinex.balance_deposit_address(brand, smart_contract_name = chain)['coin_address'])
-                w.save()
-            else:
-                w = Wallet(user=request.user ,currency = Currencies.objects.get(name = id), address = coinex.balance_deposit_address(brand)['coin_address'])
-                w.save()
-        return Response(status = status.HTTP_201_CREATED)
+        brand = id
+        curs = Cp_Currencies.objects.filter(brand = brand)
+        wallets = {}
+        for item in curs:
+            wallets[item.name] = ''
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        res = coinex.balance_info()
+        result = {}
+        if brand in res.keys() :
+            result = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':res[item.brand],'address' : wallets}
+        else: 
+            result = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':'0','address' : wallets}
+        return Response(result)
 
 class cp_history(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]

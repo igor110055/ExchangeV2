@@ -3,7 +3,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, TopSticker , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, buyrequest, sellrequest
+from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, TopSticker , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, buyoutrequest, buyrequest, selloutrequest, sellrequest
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,8 +44,38 @@ class BuySerializer(serializers.ModelSerializer):
             "ramount",
             "camount",
             "date",
+            "act"
         )
-
+class BuyoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = buyoutrequest
+        fields = (
+            "id",
+            "get_user",
+            "get_age",
+            "user",
+            "address",
+            "currency",
+            "ramount",
+            "camount",
+            "date",
+            "act"
+        )
+class selloutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = selloutrequest
+        fields = (
+            "id",
+            "get_user",
+            "get_age",
+            "user",
+            "hash",
+            "currency",
+            "ramount",
+            "camount",
+            "date",
+            "act"
+        )
 class SellSerializer(serializers.ModelSerializer):
     class Meta:
         model = sellrequest
@@ -58,6 +88,7 @@ class SellSerializer(serializers.ModelSerializer):
             "ramount",
             "camount",
             "date",
+            "act"
         )
 
 class LeverageSerializer(serializers.ModelSerializer):

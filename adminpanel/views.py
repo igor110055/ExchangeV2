@@ -11,10 +11,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import  BottomStickerSerializer, BuySerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer
+from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Withdraw, General, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyrequest, sellrequest
+from exchange.models import BottomSticker, Cp_Withdraw, General, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -29,6 +29,7 @@ from django.core.mail import send_mail
 from ippanel import Client
 import pytz
 from random import randrange
+from django.db.models import Q
 
 def email(user , date , title , text) :
     send_mail(
@@ -733,7 +734,7 @@ class buy(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return buyrequest.objects.all().order_by('-date')
+        return buyrequest.objects.filter(act = 0).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
@@ -745,10 +746,137 @@ class buy(APIView):
             req = buyrequest.objects.get(id = request.data['id'])
             note = Notification(user=req.user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
             note.save()
-            req.delete()
+            req.act = 1
+            req.save()
             return Response(status=status.HTTP_201_CREATED)
         req = buyrequest.objects.get(id = request.data['id'])
         note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
         note.save()
-        req.delete()
+        req.act = 2
+        req.save()
         return Response( status=status.HTTP_201_CREATED)
+
+class buyout(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return buyoutrequest.objects.filter(act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuyoutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+    def post(self , request, format=None):
+        if request.data['act'] == 'reject':
+            req = buyoutrequest.objects.get(id = request.data['id'])
+            note = Notification(user=req.user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
+            note.save()
+            req.act = 1
+            req.save()
+            return Response(status=status.HTTP_201_CREATED)
+        req = buyoutrequest.objects.get(id = request.data['id'])
+        note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
+        note.save()
+        req.act = 2
+        req.save()
+        return Response( status=status.HTTP_201_CREATED)
+
+class sellout(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return selloutrequest.objects.filter(act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = selloutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+    def post(self , request, format=None):
+        if request.data['act'] == 'reject':
+            req = selloutrequest.objects.get(id = request.data['id'])
+            note = Notification(user=req.user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
+            note.save()
+            req.act = 1
+            req.save()
+            return Response(status=status.HTTP_201_CREATED)
+        req = selloutrequest.objects.get(id = request.data['id'])
+        note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
+        note.save()
+        req.act = 2
+        req.save()
+        return Response( status=status.HTTP_201_CREATED)
+
+class selloutopen(APIView):
+    def get_object(self, user):
+        return selloutrequest.objects.filter(act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = selloutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+class buyoutopen(APIView):
+    def get_object(self, user):
+        return buyoutrequest.objects.filter(act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuyoutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class sellouthistory(APIView):
+    def get_object(self, user):
+        return selloutrequest.objects.filter(~Q(act = 0)).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = selloutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class buyouthistory(APIView):
+    def get_object(self, user):
+        return buyoutrequest.objects.filter(~Q(act = 0)).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuyoutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+
+
+class sellopen(APIView):
+    def get_object(self, user):
+        return sellrequest.objects.filter(act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = SellSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+class buyopen(APIView):
+    def get_object(self, user):
+        return buyrequest.objects.filter(act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuySerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class sellhistory(APIView):
+    def get_object(self, user):
+        return sellrequest.objects.filter(~Q(act = 0)).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = SellSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+class buyhistory(APIView):
+    def get_object(self, user):
+        return buyrequest.objects.filter(~Q(act = 0)).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuySerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
