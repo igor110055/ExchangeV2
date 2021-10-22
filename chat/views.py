@@ -2,10 +2,12 @@ from exchange import serializers
 from exchange.lib import request_client
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
+
+from exchange.models import LevelFee
 from .models import (
     ChatSession, ChatSessionMember, ChatSessionMessage, deserialize_user
 )
-from exchange.serializers import AdminChatSerializer
+from exchange.serializers import AdminChatSerializer, LevelFeeSerializer
 from rest_framework import status
 from rest_framework import authentication
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -134,3 +136,5 @@ class adminchat(APIView):
         user = ChatSession.objects.all()
         serializer = AdminChatSerializer(user , many=True)
         return Response(serializer.data)
+
+

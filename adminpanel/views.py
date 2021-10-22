@@ -11,10 +11,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, selloutSerializer
+from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Withdraw, General, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
+from exchange.models import BottomSticker, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -212,7 +212,7 @@ class bankcards(APIView):
             verify = Verify.objects.get(user = request.data['user'])
             verify.bankv = True
             verify.save()
-            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv :
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
@@ -256,6 +256,15 @@ class bankaccounts(APIView):
             serializer.save()
             id = request.data['id']
             req = VerifyBankAccountsRequest.objects.get(id = id)
+            ver = Verify.objects.get(user = req.user)
+            ver.accountv = True
+            ver.save()
+            verify = Verify.objects.get(user = req.user)
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+                user = UserInfo.objects.get(user = req.user)
+                user.level = 1
+                user.save()
+            req = VerifyBankAccountsRequest.objects.get(id = id)
             req.delete()
             return Response(status=status.HTTP_201_CREATED)
         else:
@@ -295,23 +304,58 @@ class verifymelli(APIView):
         verify = Verify.objects.get(user = request.data['user'])
         verify.melliv = True
         verify.save()
-        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv :
+        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
             user = UserInfo.objects.get(user = request.data['user'])
             user.level = 1
             user.save()
         id = request.data['id']
         req = VerifyMelliRequest.objects.get(id = id)
-        req.delete()
+        req.act = True
+        req.save()
         return Response(status=status.HTTP_201_CREATED)
  
+class verifyaccept(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        bankcards = VerifyAcceptRequest.objects.all()
+        serializer = VerifyBankAccountsRequestSerializer(bankcards , many=True)
+        return Response(serializer.data)
+
+    def post(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        verify = Verify.objects.get(user = request.data['user'])
+        verify.acceptv = True
+        verify.save()
+        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+                user = UserInfo.objects.get(user = request.data['user'])
+                user.level = 1
+                user.save()
+        id = request.data['id']
+        req = VerifyAcceptRequest.objects.get(id = id)
+        req.act = True
+        req.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+
     def put(self , request , format=None):
         if len(Staff.objects.filter(user = request.user))<1:
             return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
             if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
-        no = request.data['number']
-        req = VerifyMelliRequest.objects.get(mellic = no)
+        id = request.data['id']
+        req = VerifyAcceptRequest.objects.get(id = id)
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -469,11 +513,11 @@ class perpetualreqccept(APIView):
         ver = Verify.objects.get(user = user)
         ver.coinv = True
         ver.save()
-        user = Verify.objects.get(user = user)
-        if (user.melliv and user.mobilev  and user.idv  and user.rulev  and user.emailv and user.coinv   ):
-                per = UserInfo.objects.get(user = request.user)
-                per.level = 1
-                per.save()
+        verify = Verify.objects.get(user = user)
+        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+                user = UserInfo.objects.get(user = user)
+                user.level = 1
+                user.save()
         PerpetualRequest.objects.get(id = id).delete()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -880,3 +924,23 @@ class buyhistory(APIView):
         maintrade =  self.get_object(request.user)
         serializer = BuySerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+
+
+class levelfee(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        user = LevelFee.objects.all()
+        serializer = LevelFeeSerializer(user , many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = LevelFeeSerializer(LevelFee.objects.get(id = request.data['id']) , data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)

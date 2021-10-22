@@ -3,7 +3,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, TopSticker , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, buyoutrequest, buyrequest, selloutrequest, sellrequest
+from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, TopSticker, VerifyAcceptRequest , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, buyoutrequest, buyrequest, selloutrequest, sellrequest
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -157,10 +157,21 @@ class VerifySerializer(serializers.ModelSerializer):
             "melliv",
             "idv",
             "bankv",
+            "accountv",
             "rulev",
             "coinv"
         )
-
+class LevelFeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LevelFee
+        fields = (
+            "id",
+            "buy",
+            "sell",
+            "perpetual",
+            "margin",
+            "exchange",
+        )
 
 class VerifyMelliRequestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -175,6 +186,17 @@ class VerifyMelliRequestSerializer(serializers.ModelSerializer):
             "get_user"
         )
 
+class VerifyAcceptRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VerifyAcceptRequest
+        fields = (
+            "id",
+            "user",
+            "acceptimg",
+            "action",
+            "get_image",
+            "get_user"
+        )
 
 class BankCardsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -191,6 +213,7 @@ class BankAccountsSerializer(serializers.ModelSerializer):
         fields = (
             "user",
             "number",
+            "shebac",
             "status"
         )
 
@@ -222,6 +245,7 @@ class VerifyBankAccountsRequestSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "bankc",
+            "shebac",
             "get_user",
             "action",
             "get_first",

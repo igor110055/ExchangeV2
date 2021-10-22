@@ -59,6 +59,7 @@ urlpatterns = [
    path('sellout' , views.sellout.as_view() , name='sellout'),
    path('request/', views.send_request, name='request'),
    path('verify/', views.verify , name='verify'),
+   path('levelfee', views.levelfee.as_view() , name='levelfee'),
 #  General  ------------ >   
 #  < ------------ Main Trades 
 

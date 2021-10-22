@@ -68,11 +68,11 @@ class SmsVerified(models.Model):
 
 class LevelFee(models.Model):
     id = models.IntegerField(primary_key=True)
-    buy = models.FloatField()
-    sell = models.FloatField()
-    perpetual = models.FloatField()
-    margin = models.FloatField()
-    exchange = models.FloatField()
+    buy = models.FloatField(default=0)
+    sell = models.FloatField(default=0)
+    perpetual = models.FloatField(default=0)
+    margin = models.FloatField(default=0)
+    exchange = models.FloatField(default=0)
 
 
 class Review(models.Model):
@@ -457,6 +457,7 @@ class Verify(models.Model):
     emailc = models.IntegerField(null = True ,default=0)
     melliv = models.BooleanField(default = False , null = True)
     bankv = models.BooleanField(default = False , null = True)
+    accountv = models.BooleanField(default = False , null = True)
     idv = models.BooleanField(default = False , null = True)
     rulev = models.BooleanField(default = False , null = True)
     coinv = models.BooleanField(default = False , null = True)
@@ -475,7 +476,8 @@ class BankCards(models.Model):
 
 class BankAccounts(models.Model):
     user =  models.ForeignKey(User , related_name='accounts' , on_delete=models.CASCADE)
-    number = models.CharField(max_length=16 , null=True)
+    number = models.CharField(max_length=16 , null=True , blank=True)
+    shebac = models.CharField(max_length=50 , null=True)
     status = models.BooleanField(default=False)
     class meta:
         verbose_name = ' حساب بانکی '
@@ -485,6 +487,18 @@ class VerifyMelliRequest(models.Model):
     user = models.ForeignKey(User , related_name='melli' , on_delete=models.CASCADE)
     melliimg = models.ImageField(upload_to='melli' , null = True)
     mellic = models.CharField(max_length=16 , null=True)
+    action = models.BooleanField(default = False)
+    class meta:
+        verbose_name = ' درخواست تایید کارت ملی '
+        verbose_name_plural = ' درخواست های تایید کارت ملی '
+    def get_image(self):
+        return f'{ROOT}/media/{self.melliimg}'
+    def get_user(self):
+        return self.user.id
+
+class VerifyAcceptRequest(models.Model):
+    user = models.ForeignKey(User , related_name='accept' , on_delete=models.CASCADE)
+    acceptimg = models.ImageField(upload_to='melli' , null = True)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید کارت ملی '
@@ -511,6 +525,7 @@ class VerifyBankRequest(models.Model):
 class VerifyBankAccountsRequest(models.Model):
     user = models.ForeignKey(User , related_name='BanksAccounts' , on_delete=models.CASCADE)
     bankc = models.CharField(max_length=16 , null=True)
+    shebac = models.CharField(max_length=50 , null=True)
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید حساب بانکی '
@@ -518,9 +533,9 @@ class VerifyBankAccountsRequest(models.Model):
     def get_user(self):
         return f'{self.user.username}'
     def get_first(self):
-        return f'{self.user.first_name}'
+        return f'{UserInfo.objects.get(user=self.user).first_name}'
     def get_last(self):
-        return f'{self.user.last_name}'
+        return f'{UserInfo.objects.get(user=self.user).last_name}'
 
 class Transactions(models.Model):
     date = models.DateField(default=timezone.now()) 
