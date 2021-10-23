@@ -932,7 +932,7 @@ class levelfee(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
-        user = LevelFee.objects.all().order_by('-id')
+        user = LevelFee.objects.all().order_by('id')
         serializer = LevelFeeSerializer(user , many=True)
         return Response(serializer.data)
 
