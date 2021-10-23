@@ -944,4 +944,4 @@ class levelfee(APIView):
         serializer.margin = request.data['margin']
         serializer.exchange = request.data['exchange']
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response( status=status.HTTP_201_CREATED)
