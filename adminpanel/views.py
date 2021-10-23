@@ -30,6 +30,8 @@ from ippanel import Client
 import pytz
 from random import randrange
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 def email(user , date , title , text) :
     send_mail(

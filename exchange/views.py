@@ -31,7 +31,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
-from django.utils.decorators import method_decorator
+
 from py_crypto_hd_wallet import HdWalletFactory, HdWalletCoins, HdWalletSpecs , HdWalletWordsNum, HdWalletChanges
 import json
 from datetime import datetime ,timedelta
@@ -54,7 +54,7 @@ from .lib import CoinexPerpetualApi
 from django.db.models import Q
 from sarafi.settings import ROOT
 from django.views.decorators.csrf import csrf_exempt
-
+from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.shortcuts import redirect
 import requests
