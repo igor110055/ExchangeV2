@@ -926,7 +926,7 @@ class buyhistory(APIView):
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class levelfee(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
