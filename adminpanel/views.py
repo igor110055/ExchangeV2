@@ -30,8 +30,6 @@ from ippanel import Client
 import pytz
 from random import randrange
 from django.db.models import Q
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 
 def email(user , date , title , text) :
     send_mail(
@@ -928,7 +926,7 @@ class buyhistory(APIView):
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+
 class levelfee(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
