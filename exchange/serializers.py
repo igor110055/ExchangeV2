@@ -13,6 +13,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "mobile",
+            "smsverify",
+            "googleverify",
             "email",
             "level",
             "is_active",

@@ -932,15 +932,16 @@ class levelfee(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
-        user = LevelFee.objects.all()
+        user = LevelFee.objects.all().order_by('-id')
         serializer = LevelFeeSerializer(user , many=True)
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        serializer = LevelFeeSerializer(LevelFee.objects.get(id = request.data['id']) , data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            print(serializer.errors)
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+        serializer = LevelFee.objects.get(id = request.data['id'])
+        serializer.buy = request.data['buy']
+        serializer.sell = request.data['sell']
+        serializer.perpetual = request.data['perpetual']
+        serializer.margin = request.data['margin']
+        serializer.exchange = request.data['exchange']
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

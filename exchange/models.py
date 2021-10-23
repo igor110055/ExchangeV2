@@ -47,6 +47,7 @@ class UserInfo(models.Model):
     is_active = models.BooleanField(default=True)
     is_verify = models.BooleanField(default=False)
     smsverify = models.BooleanField(default=False)
+    googleverify = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     complete = models.BooleanField(default=False)
     class meta:

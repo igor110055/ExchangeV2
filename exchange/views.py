@@ -436,6 +436,19 @@ class usersinfo(APIView):
                 per.save()
             return Response( status=status.HTTP_201_CREATED)
 
+    def put(self, request , format=None):
+        user = Verify.objects.get(user= request.user)
+        c = mobilecodes.objects.get(number= UserInfo.objects.get(user = request.user).mobile)
+        if(int(request.data['code']) == int(c.code)):
+            user = UserInfo.objects.get(user = request.user)
+            if 'smsverify' in request.data:
+                user.smsverify = bool(request.data['smsverify'])
+            if 'googleverify' in request.data:
+                user.googleverify = bool(request.data['googleverify'])
+            user.save()
+            return Response( status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
 
 
 class dashboardinfo(APIView):
@@ -833,6 +846,8 @@ class mobileverify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def put(self , request):
+        if not 'number' in request.data:
+            request.data['number'] = UserInfo.objects.get(user = request.user).mobile
         vcode = randrange(123456,999999)
         a = mobilecodes.objects.filter(number = request.data['number'])
         for item in a:
