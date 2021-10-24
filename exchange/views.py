@@ -955,7 +955,7 @@ class verifyaccept(APIView):
             serializer.save()
             return Response(status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class bankrequests(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
