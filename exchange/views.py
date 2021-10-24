@@ -947,7 +947,7 @@ class verifyaccept(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self , request , format=None):
-        request.data['user'] = request.user.id
+        request.data['user'] = request.user
         serializer = VerifyBankAccountsRequestSerializer(data = request.data)
         if serializer.is_valid():
             for item in verifyaccept.objects.filter(user = request.user):
