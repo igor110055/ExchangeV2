@@ -251,6 +251,7 @@ class bankaccounts(APIView):
         else:
             if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
+        request.data['user'] = VerifyBankAccountsRequest.objects.get(id = request.data['id']).user.id
         serializer = BankAccountsSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
@@ -268,6 +269,7 @@ class bankaccounts(APIView):
             req.delete()
             return Response(status=status.HTTP_201_CREATED)
         else:
+            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self , request , format=None):
