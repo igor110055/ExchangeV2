@@ -34,6 +34,7 @@ urlpatterns = [
    path('mobile-verify' , views.mobileverify.as_view() , name='mobileverify'),
    path('email-verify' , views.emailverify.as_view() , name='emailverify'),
    path('verifymelli' , views.verifymelli.as_view() , name='verifymelli'),
+   path('verifyaccept' , views.verifyaccept.as_view() , name='verifyaccept'),
    path('bsc' , views.bsc.as_view() , name='bsc'),
    path('price' , views.price.as_view() , name='price'),
    path('leverages' , views.leverages.as_view() , name='leverages'),
