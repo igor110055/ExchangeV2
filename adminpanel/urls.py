@@ -24,6 +24,7 @@ urlpatterns = [
    path('bankcards' , views.bankcards.as_view() , name='bankcards'),
    path('bankaccounts' , views.bankaccounts.as_view() , name='bankaccounts'),
    path('verifymelli' , views.verifymelli.as_view() , name='verifymelli'),
+   path('verifyaccept' , views.verifyaccept.as_view() , name='verifyaccept'),
    path('cwithdraw' , views.cwithdraw.as_view() , name='cwithdraw'),
    path('rcwithdraw' , views.rcwithdraw.as_view() , name='rcwithdraw'),
    path('ccwithdraw' , views.ccwithdraw.as_view() , name='ccwithdraw'),
