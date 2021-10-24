@@ -947,7 +947,7 @@ class verifyaccept(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self , request , format=None):
-        request.data['user'] = request.user
+        request.data['user'] = request.user.id
         serializer = VerifyAcceptRequestSerializer(data = request.data)
         if serializer.is_valid():
             for item in VerifyAcceptRequest.objects.filter(user = request.user):
