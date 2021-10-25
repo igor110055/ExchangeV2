@@ -158,6 +158,7 @@ class VerifySerializer(serializers.ModelSerializer):
             "emailv",
             "melliv",
             "idv",
+            "acceptv",
             "bankv",
             "accountv",
             "rulev",
