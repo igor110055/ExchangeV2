@@ -195,8 +195,8 @@ class VerifyAcceptRequestSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "acceptimg",
-            "action",
             "get_image",
+            "action",
             "get_user"
         )
 

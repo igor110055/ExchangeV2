@@ -504,8 +504,10 @@ class VerifyAcceptRequest(models.Model):
     class meta:
         verbose_name = ' درخواست تایید کارت ملی '
         verbose_name_plural = ' درخواست های تایید کارت ملی '
+        
     def get_image(self):
         return f'{ROOT}/media/{self.acceptimg}'
+
     def get_user(self):
         return self.user.id
 
