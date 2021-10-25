@@ -460,6 +460,7 @@ class Verify(models.Model):
     bankv = models.BooleanField(default = False , null = True)
     accountv = models.BooleanField(default = False , null = True)
     idv = models.BooleanField(default = False , null = True)
+    acceptv = models.BooleanField(default = False , null = True)
     rulev = models.BooleanField(default = False , null = True)
     coinv = models.BooleanField(default = False , null = True)
     class meta:
@@ -504,7 +505,7 @@ class VerifyAcceptRequest(models.Model):
     class meta:
         verbose_name = ' درخواست تایید کارت ملی '
         verbose_name_plural = ' درخواست های تایید کارت ملی '
-        
+
     def get_image(self):
         return f'{ROOT}/media/{self.acceptimg}'
 
