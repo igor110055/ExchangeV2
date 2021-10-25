@@ -499,7 +499,7 @@ class VerifyMelliRequest(models.Model):
 
 class VerifyAcceptRequest(models.Model):
     user = models.ForeignKey(User , related_name='accept' , on_delete=models.CASCADE)
-    acceptimg = models.ImageField(upload_to='accept' , null = True)
+    acceptimg = models.ImageField(upload_to='accept')
     action = models.BooleanField(default = False)
     class meta:
         verbose_name = ' درخواست تایید کارت ملی '
