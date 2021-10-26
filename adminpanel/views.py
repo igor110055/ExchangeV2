@@ -315,6 +315,17 @@ class verifymelli(APIView):
         req.act = True
         req.save()
         return Response(status=status.HTTP_201_CREATED)
+
+    def put(self , request , format=None):
+        if len(Staff.objects.filter(user = request.user))<1:
+            return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            if Staff.objects.get(user = request.user).level < 1 :
+                return Response(status= status.HTTP_400_BAD_REQUEST)
+        id = request.data['id']
+        req = VerifyMelliRequest.objects.get(id = id)
+        req.delete()
+        return Response(status=status.HTTP_201_CREATED)
  
 class verifyaccept(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]

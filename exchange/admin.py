@@ -4,7 +4,6 @@ from django.core import mail
 from .models import Cp_Currencies, Cp_Wallet, General , Cp_Withdraw, LevelFee, Leverage, MainTradesBuyOrder, MainTradesSellOrder , MainTrades, Perpetual, ProTrades, Notification, Review, SmsVerified, VerifyAcceptRequest, VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Staff, UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Forgetrequest, VerifyBankRequest, Indexprice, buyoutrequest, buyrequest, selloutrequest, sellrequest
 # Register your models here.
 admin.site.register(VerifyAcceptRequest)
-admin.site.register(Perpetual)
 admin.site.register(selloutrequest)
 admin.site.register(LevelFee)
 admin.site.register(buyoutrequest)
