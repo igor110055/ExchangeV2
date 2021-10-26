@@ -521,8 +521,9 @@ class perpetualreqccept(APIView):
         id = request.data['id']
         user = PerpetualRequest.objects.get(id = id).user
         print(request.data['name'])
-        per = Perpetual(user = user ,name = request.data['name'], apikey = request.data['apikey'] , secretkey = request.data['secretkey'])
-        per.save()
+        if not len(Perpetual.objects.filter(user = user)):
+            per = Perpetual(user = user ,name = request.data['name'], apikey = request.data['apikey'] , secretkey = request.data['secretkey'])
+            per.save()
         ver = Verify.objects.get(user = user)
         ver.coinv = True
         ver.save()
