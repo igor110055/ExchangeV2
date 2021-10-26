@@ -212,7 +212,7 @@ class bankcards(APIView):
             verify = Verify.objects.get(user = request.data['user'])
             verify.bankv = True
             verify.save()
-            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
@@ -261,7 +261,7 @@ class bankaccounts(APIView):
             ver.accountv = True
             ver.save()
             verify = Verify.objects.get(user = req.user)
-            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
                 user = UserInfo.objects.get(user = req.user)
                 user.level = 1
                 user.save()
@@ -306,7 +306,7 @@ class verifymelli(APIView):
         verify = Verify.objects.get(user = request.data['user'])
         verify.melliv = True
         verify.save()
-        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
             user = UserInfo.objects.get(user = request.data['user'])
             user.level = 1
             user.save()
@@ -350,7 +350,7 @@ class verifyaccept(APIView):
         verify = Verify.objects.get(user = request.data['user'])
         verify.acceptv = True
         verify.save()
-        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
@@ -520,7 +520,6 @@ class perpetualreqccept(APIView):
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         id = request.data['id']
         user = PerpetualRequest.objects.get(id = id).user
-        print(request.data['name'])
         if not len(Perpetual.objects.filter(user = user)):
             per = Perpetual(user = user ,name = request.data['name'], apikey = request.data['apikey'] , secretkey = request.data['secretkey'])
             per.save()
@@ -528,7 +527,7 @@ class perpetualreqccept(APIView):
         ver.coinv = True
         ver.save()
         verify = Verify.objects.get(user = user)
-        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
                 user = UserInfo.objects.get(user = user)
                 user.level = 1
                 user.save()

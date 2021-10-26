@@ -371,7 +371,7 @@ class rulev(APIView):
         ver.rulev = True
         ver.save()
         verify = Verify.objects.get(user= request.user)
-        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+        if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
             per = UserInfo.objects.get(user = request.user)
             per.level = 1
             per.save()
@@ -412,7 +412,7 @@ class usersinfo(APIView):
             ver.idv = True
             ver.save() 
             verify = Verify.objects.get(user= request.user)
-            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
@@ -430,7 +430,7 @@ class usersinfo(APIView):
             ver.idv = True
             ver.save() 
             verify = Verify.objects.get(user= request.user)
-            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
@@ -883,7 +883,7 @@ class mobileverify(APIView):
             mobile.mobile = request.data['number']
             mobile.save()
             verify = Verify.objects.get(user = request.user)
-            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
@@ -919,7 +919,7 @@ class emailverify(APIView):
             mail.email = request.data['email']
             mail.save()
             verify = Verify.objects.get(user = request.user)
-            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accontv :
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
