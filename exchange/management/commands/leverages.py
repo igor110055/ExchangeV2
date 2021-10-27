@@ -19,7 +19,7 @@ class Command(BaseCommand):
                     item.sellmin =(coin['USDT']['min_amount'])
                     item.sellmax =(coin['USDT']['max_amount'])
                 except:
-                    print('error')
+                    item.delete()
                 item.save()
             elif 'BTC' in item.symbol :
                 try:
@@ -32,4 +32,4 @@ class Command(BaseCommand):
                     item.sellmax =(coin['BTC']['max_amount'])
                     item.save()
                 except:
-                    print('error')
+                    item.delete()
