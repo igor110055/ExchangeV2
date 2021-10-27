@@ -11,7 +11,7 @@ class Command(BaseCommand):
         for item in Lev:
             if 'USDT' in item.symbol :
                 coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-                coin = coinex.margin_config()[item.symbol]
+                coin = coinex.margin_config(market =  item.symbol)
                 item.leverage = (coin['leverage'])
                 item.buymin = (coin[item.symbol.replace('USDT' , '')]['min_amount'])
                 item.buymax = (coin[item.symbol.replace('USDT' , '')]['max_amount'])
@@ -20,7 +20,7 @@ class Command(BaseCommand):
                 item.save()
             elif 'BTC' in item.symbol :
                 coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
-                coin = coinex.margin_config()[item.symbol]
+                coin = coinex.margin_config(market =  item.symbol)
                 item.leverage = (coin['leverage'])
                 item.buymin = (coin[item.symbol.replace('BTC' , '')]['min_amount'])
                 item.buymax = (coin[item.symbol.replace('BTC' , '')]['max_amount'])
