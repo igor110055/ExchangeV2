@@ -452,7 +452,7 @@ class Cp_Withdraw(models.Model):
         return  days + hours + minutes
 
 class Verify(models.Model):
-    user = models.ForeignKey(User , related_name='verifys' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User , on_delete=models.CASCADE)
     mobilev = models.BooleanField(default = False , null = True)
     mobilec = models.IntegerField(null = True,default=0)
     emailv = models.BooleanField(default = False , null = True)
