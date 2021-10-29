@@ -40,7 +40,7 @@ class UserInfo(models.Model):
     first_name=models.CharField(max_length=255)
     last_name=models.CharField(max_length=255)
     mobile = models.CharField(max_length=100)
-    phone = models.CharField(max_length=100,default='')
+    phone = models.CharField(max_length=100,null=True)
     email = models.EmailField()
     address = models.CharField(max_length=500, null=True)
     post = models.CharField(max_length=10, null=True)
