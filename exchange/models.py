@@ -39,7 +39,7 @@ class UserInfo(models.Model):
     user = models.OneToOneField(User , related_name='userinfo', on_delete=models.CASCADE)
     first_name=models.CharField(max_length=255)
     last_name=models.CharField(max_length=255)
-    mobile = models.CharField(max_length=100,)
+    mobile = models.CharField(max_length=100)
     phone = models.CharField(max_length=100,default=None, blank=True)
     email = models.EmailField()
     address = models.CharField(max_length=500, null=True)
