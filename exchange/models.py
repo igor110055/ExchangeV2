@@ -40,6 +40,7 @@ class UserInfo(models.Model):
     first_name=models.CharField(max_length=255)
     last_name=models.CharField(max_length=255)
     mobile = models.CharField(max_length=100,)
+    phone = models.CharField(max_length=100,default=None, blank=True)
     email = models.EmailField()
     address = models.CharField(max_length=500, null=True)
     post = models.CharField(max_length=10, null=True)
@@ -101,7 +102,7 @@ class buyrequest(models.Model):
     currency = models.CharField(max_length=20)
     ramount = models.BigIntegerField()
     camount = models.FloatField()
-    act = models.IntegerField(default=0 , max_length=15)
+    act = models.IntegerField(default=0 )
     def get_user(self):
         return self.user.username
     def get_age(self):
@@ -147,7 +148,7 @@ class sellrequest(models.Model):
     currency = models.CharField(max_length=20)
     ramount = models.BigIntegerField()
     camount = models.FloatField()
-    act = models.IntegerField(default=2 , max_length=15)
+    act = models.IntegerField(default=2)
     def get_user(self):
         return self.user.username
     def get_age(self):
@@ -194,7 +195,7 @@ class buyoutrequest(models.Model):
     address = models.CharField(max_length=200)
     ramount = models.BigIntegerField()
     camount = models.FloatField()
-    act = models.IntegerField(default=0 , max_length=15)
+    act = models.IntegerField(default=0)
     def get_user(self):
         return self.user.username
     def get_age(self):
@@ -241,7 +242,7 @@ class selloutrequest(models.Model):
     hash = models.CharField(max_length=200)
     ramount = models.BigIntegerField()
     camount = models.FloatField()
-    act = models.IntegerField(default=0 , max_length=15)
+    act = models.IntegerField(default=0)
     def get_user(self):
         return self.user.username
     def get_age(self):

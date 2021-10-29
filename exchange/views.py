@@ -95,7 +95,6 @@ def notification (user , date = datetime.now(), title = '' , text = '', pattern=
     sms(user , date, title, text, pattern)
     sendemail(user , date, title, text)
 
-@method_decorator(csrf_exempt, name='dispatch')
 class login(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [AllowAny]
@@ -450,6 +449,15 @@ class usersinfo(APIView):
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
 
+class addphone(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request , format=None):
+        user = UserInfo.objects.get(user = request.user)
+        user.phone = request.data['phonenum']
+        user.save()
+        return Response( status=status.HTTP_201_CREATED)
 
 class dashboardinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -2233,13 +2241,6 @@ class cpp_balance(APIView):
 
         result = robot.query_account()
         return Response(result)
-
-class cpp_mg_transfer(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
-    def get(self , request, format=None):   
-        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
-        return Response(coinex.margin_transfer(from_account=0, to_account=request.data['mid'], coin_type='USDT', amount='23'))
 
 class cpp_pending(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]

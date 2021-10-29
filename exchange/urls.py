@@ -7,6 +7,7 @@ urlpatterns = [
 
 #  < ------------ General
    path('review' , views.review , name='review'),
+   path('addphone' , views.addphone.as_view() , name='addphone'),
    path('login' , views.login.as_view() , name='mylogin'),
    path('loginsms' , views.loginsms.as_view() , name='loginsms'),
    path('welcomesms' , views.welcomesms.as_view() , name='welcomesms'),
@@ -139,8 +140,6 @@ urlpatterns = [
    path('cpp_close' , views.cpp_close.as_view() , name='cpp_close'),
    path('cpp_finished' , views.cpp_finished.as_view() , name='cpp_finished'),
    path('cpp_stop_finished' , views.cpp_stop_finished.as_view() , name='cpp_stop_finished'),
-   path('cpp_mg_transfer' , views.cpp_mg_transfer.as_view() , name='cpp_mg_transfer'),
-
 
 
 #  Perpetual Trades  ------------ >
