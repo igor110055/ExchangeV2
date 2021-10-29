@@ -457,11 +457,11 @@ class Verify(models.Model):
     mobilec = models.IntegerField(null = True,default=0)
     emailv = models.BooleanField(default = False , null = True)
     emailc = models.IntegerField(null = True ,default=0)
+    acceptv = models.BooleanField(default = False , null = True)
     melliv = models.BooleanField(default = False , null = True)
     bankv = models.BooleanField(default = False , null = True)
     accountv = models.BooleanField(default = False , null = True)
     idv = models.BooleanField(default = False , null = True)
-    acceptv = models.BooleanField(default = False , null = True)
     rulev = models.BooleanField(default = False , null = True)
     coinv = models.BooleanField(default = False , null = True)
     class meta:
