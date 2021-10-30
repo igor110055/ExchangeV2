@@ -2443,6 +2443,30 @@ class otherpages(APIView):
         serializer.delete()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def put(self , request , format=None):
+        pages = Pages.objects.filter(position = 'others', nam=request.data['name'])
+        serializer = PagesSerializer(pages , many=True)
+        return Response(serializer.data)
+
+class details(APIView):
+    def get(self , request , format=None):
+        pages = Pages.objects.filter(position = 'details')
+        serializer = PagesSerializer(pages , many=True)
+        return Response(serializer.data)
+        
+    def post(self , request , format=None):
+        serializer = PagesSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , format=None):
+        serializer = Pages.objects.get(id=request.data['id'])
+        serializer.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 def review(request):
     rev = Review()

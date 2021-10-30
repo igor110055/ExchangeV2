@@ -55,6 +55,7 @@ urlpatterns = [
    path('topsticker' , views.topsticker.as_view() , name='topsticker'),
    path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),
    path('otherpages' , views.otherpages.as_view() , name='otherpages'),
+   path('details' , views.details.as_view() , name='details'),
    path('buy' , views.buy.as_view() , name='buy'),
    path('sell' , views.sell.as_view() , name='sell'),
    path('buyout' , views.buyout.as_view() , name='buyout'),

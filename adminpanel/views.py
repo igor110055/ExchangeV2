@@ -723,7 +723,6 @@ class otherpages(APIView):
     def put(self , request , format=None):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
-        post.minitext = request.data['minitext']
         post.title = request.data['title']
         if 'pic' in request.data:
             print(request.data)
@@ -731,6 +730,32 @@ class otherpages(APIView):
         post.save()
         return Response(status=status.HTTP_201_CREATED)
 
+class details(APIView):
+    def get(self , request , format=None):
+        pages = Pages.objects.filter(position = 'details')
+        serializer = PagesSerializer(pages , many=True)
+        return Response(serializer.data)
+        
+    def post(self , request , format=None):
+        serializer = PagesSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request, id, format=None):
+        serializer = Pages.objects.get(id = id)
+        serializer.delete()
+        return Response(status=status.HTTP_201_CREATED)
+
+    def put(self , request , format=None):
+        post = Pages.objects.get(id=request.data['id'])
+        post.text = request.data['text']
+        post.title = request.data['title']
+        post.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 class wallets(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
