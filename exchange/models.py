@@ -676,6 +676,7 @@ class Tickets(models.Model):
 
 
 class Pages(models.Model):
+    nam = models.CharField(max_length=100, null=True)
     pic = models.ImageField(upload_to='pages' , null = True)
     title = models.CharField(max_length = 100)
     text = models.CharField(max_length = 10000)
