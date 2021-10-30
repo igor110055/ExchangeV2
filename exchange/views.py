@@ -2444,7 +2444,7 @@ class otherpages(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def put(self , request , format=None):
-        pages = Pages.objects.filter(position = 'others', nam=request.data['name'])
+        pages = Pages.objects.filter(position = 'others', name=request.data['name'])
         serializer = PagesSerializer(pages , many=True)
         return Response(serializer.data)
 
