@@ -174,6 +174,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 CRONJOBS = [
-    ('* * * * *', 'exchange.cron.TICKER')
+    ('* * * * *', 'exchange.cron.TICKER'),
     ('* * * * *', 'exchange.cron.INDEXINFO')
 ]
