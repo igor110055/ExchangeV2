@@ -497,8 +497,9 @@ class VerifyMelliRequest(models.Model):
     def get_image(self):
         return f'{ROOT}/media/{self.melliimg}'
     def get_user(self):
-        return self.user.id
-
+        user = UserInfo.objects.get(user = self.user)
+        return user.first_name + ' ' + user.last_name
+        
 class VerifyAcceptRequest(models.Model):
     user = models.ForeignKey(User , related_name='accept' , on_delete=models.CASCADE)
     acceptimg = models.ImageField(upload_to='accept')
