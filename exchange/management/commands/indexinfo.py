@@ -19,6 +19,7 @@ class Command(BaseCommand):
         sleep(2)
 
         response = requests.get('https://api.nomics.com/v1/currencies/ticker?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=BTC,ETH,TRX,DOGE,USDT')
-
+        for item in Indexprice.objects.all():
+            item.delete()
         ind = Indexprice(PriceHistory=r, price = response)
         ind.save()
