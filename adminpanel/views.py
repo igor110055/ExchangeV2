@@ -152,7 +152,7 @@ class users(APIView):
             if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         users = []
-        userinfo =  User.objects.all()
+        userinfo =  User.objects.all().order_by('-id')
         for item in userinfo :
             if len(UserInfo.objects.filter(user = item)) > 0:
                 userinfos = UserInfo.objects.get(user = item)
