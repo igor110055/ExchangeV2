@@ -1,10 +1,9 @@
 from exchange.views import currency
-from exchange.models import Price , Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
+from exchange.models import Indexprice, Price , Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages, Mainwalls , Forgetrequest
 from django.core.management.base import BaseCommand, CommandError
 import requests
 import datetime as DT
 import json
-from exchange.models import Indexprice
 import time
 from time import sleep
 
