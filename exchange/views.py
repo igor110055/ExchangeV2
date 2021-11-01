@@ -1859,6 +1859,10 @@ class cp_ticker(APIView):
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
         return Response(coinex.market_ticker(market =  request.data['sym']+'USDT'))
 
+class cp_address(APIView):
+    def post(self , request, format=None):
+        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        return Response(coinex.balance_deposit_address(coin_type =  request.data['sym']))
 
 class cp_mg_transfer(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
