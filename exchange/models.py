@@ -88,7 +88,7 @@ class General(models.Model):
     telegram=models.CharField(max_length=255)
     instagram=models.CharField(max_length=255)
     telephone=models.CharField(max_length=255)
-    rule = models.CharField(max_length=10000 , null=True)
+    rule = models.CharField(max_length=100000 , null=True)
     logo = models.ImageField(upload_to='general' , null = True)
 
 
