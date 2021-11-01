@@ -464,6 +464,19 @@ class Verify(models.Model):
     idv = models.BooleanField(default = False , null = True)
     rulev = models.BooleanField(default = False , null = True)
     coinv = models.BooleanField(default = False , null = True)
+
+    def get_melliphoto(self):
+        if VerifyMelliRequest.objects.filter(user = self.user):
+            return VerifyMelliRequest.objects.get(user = self.user).get_image()
+        else:
+            return ''
+
+    def get_acceptphoto(self):
+        if VerifyMelliRequest.objects.filter(user = self.user):
+            return VerifyAcceptRequest.objects.get(user = self.user).get_image()
+        else:
+            return ''
+
     class meta:
         verbose_name = ' تاییدیه '
         verbose_name_plural = ' تاییدیه ها'
@@ -499,7 +512,7 @@ class VerifyMelliRequest(models.Model):
     def get_user(self):
         user = UserInfo.objects.get(user = self.user)
         return user.first_name + ' ' + user.last_name
-        
+
 class VerifyAcceptRequest(models.Model):
     user = models.ForeignKey(User , related_name='accept' , on_delete=models.CASCADE)
     acceptimg = models.ImageField(upload_to='accept')

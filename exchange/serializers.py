@@ -163,7 +163,9 @@ class VerifySerializer(serializers.ModelSerializer):
             "bankv",
             "accountv",
             "rulev",
-            "coinv"
+            "coinv",
+            "get_acceptphoto",
+            "get_melliphoto"
         )
 class LevelFeeSerializer(serializers.ModelSerializer):
     class Meta:

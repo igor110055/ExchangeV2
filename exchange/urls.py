@@ -119,7 +119,8 @@ urlpatterns = [
    path('cp_deposit/<int:id>' , views.cp_deposit.as_view() , name='cp_deposit'),
    path('cp_wallets' , views.cp_wallets.as_view() , name='cp_wallets'),
    path('cp_wallet/<str:id>' , views.cp_wallet.as_view() , name='cp_wallet'),
-   path('cp_currencies' , views.cp_currencies.as_view() , name='cp_currencies'),
+   path('cp_currencies' , views.cp_currencies.as_view() , name='cp_address'),
+   path('cp_address' , views.cp_address.as_view() , name='cp_currencies'),
    path('cp_currencies/<str:id>' , views.cp_currency.as_view() , name='cp_currency'),
 #  Margin Trades  ------------ >
 
