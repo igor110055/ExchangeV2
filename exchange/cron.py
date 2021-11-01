@@ -30,3 +30,11 @@ def INDEXINFO():
         item.delete()
     ind = Indexprice(PriceHistory=r, price = response)
     ind.save()
+
+def RIALTICKER():
+        rial = requests.get(url = 'http://api.navasan.tech/latest/?api_key=1oFGrKOHDblbSXNvErx6Y2XIqMghp2h9')   
+        r = rial.json()
+        price = Price.objects.get(id = 1)
+        price.rial = r['usd_buy']['value'] * 10
+        price.usd = r['usd_buy']['value'] * 10
+        price.save()
