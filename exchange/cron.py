@@ -13,7 +13,6 @@ def TICKER():
     price.usdt = r[2]['price']
     price.doge = r[3]['price']
     price.trx = r[4]['price']
-    price.usd = 250000
     price.save()
 
 def INDEXINFO():
