@@ -250,6 +250,7 @@ class login(APIView):
                 raise ValidationError({"400": f'{str(e)}'})
 
             token = Token.objects.get_or_create(user=Account)[0].key
+            UserInfo.objects.get(user=Account).update(last_visit=timezone.now())
             print(token)
             if not check_password(password, Account.password):
                 raise ValidationError({"message": "Incorrect Login credentials"})
