@@ -132,7 +132,7 @@ class login(APIView):
                             Account = User.objects.get(username=username)
                         except BaseException as e:
                             raise ValidationError({"400": f'{str(e)}'})
-
+                        UserInfo.objects.get(user=Account).update(last_visit=timezone.now())
                         token = Token.objects.get_or_create(user=Account)[0].key
                         print(token)
                         if not check_password(password, Account.password):
@@ -212,7 +212,7 @@ class login(APIView):
                     Account = User.objects.get(username=username)
                 except BaseException as e:
                     raise ValidationError({"400": f'{str(e)}'})
-
+                UserInfo.objects.get(user=Account).update(last_visit=timezone.now())
                 token = Token.objects.get_or_create(user=Account)[0].key
                 print(token)
                 if not check_password(password, Account.password):
