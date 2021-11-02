@@ -250,7 +250,7 @@ class login(APIView):
                         if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
                             notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
                     if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
-                        ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
+                        ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='',phone='')
                         ui.save()
                     return Response(Res)
 
