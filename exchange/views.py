@@ -101,7 +101,7 @@ class timeout(APIView):
 
     def get(self, request, format=None):
         if request.user.is_authenticated:
-            if UserInfo.objects.get(user = request.user).last_visit < timezone.now() - timedelta(minutes=1):
+            if UserInfo.objects.get(user = request.user).last_visit < timezone.now() - timedelta(minutes=30):
                 Response(True)
             else:
                 # Update last visit time after request finished processing.
