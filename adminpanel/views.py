@@ -720,7 +720,9 @@ class otherpages(APIView):
         serializer.delete()
         return Response(status=status.HTTP_201_CREATED)
 
-    def put(self , request , format=None):
+class editotherpages(APIView):
+
+    def post(self , request , format=None):
         post = Pages.objects.get(id=request.data['id'])
         post.text = request.data['text']
         post.title = request.data['title']
