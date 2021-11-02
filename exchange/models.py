@@ -89,7 +89,7 @@ class General(models.Model):
     telegram=models.CharField(max_length=255)
     instagram=models.CharField(max_length=255)
     telephone=models.CharField(max_length=255)
-    rule = models.CharField(max_length=100000 , null=True)
+    rule = models.CharField(max_length=1000000 , null=True)
     logo = models.ImageField(upload_to='general' , null = True)
 
 
@@ -694,7 +694,7 @@ class Pages(models.Model):
     name = models.CharField(max_length=100, null=True)
     pic = models.ImageField(upload_to='pages' , null = True)
     title = models.CharField(max_length = 100)
-    text = models.CharField(max_length = 10000)
+    text = models.CharField(max_length = 1000000)
     minitext = models.CharField(max_length = 1000, default='', null=True)
     position = models.CharField(max_length=100 , null=True)
     
