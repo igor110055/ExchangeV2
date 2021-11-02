@@ -100,7 +100,7 @@ class timeout(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if UserInfo.objects.get(user = request.user).last_visit < datetime.datetime.now() - timedelta(minutes=1):
                 request.user.auth_token.delete()
                 Response(True)
