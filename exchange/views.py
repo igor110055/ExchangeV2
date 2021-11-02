@@ -132,7 +132,9 @@ class login(APIView):
                             Account = User.objects.get(username=username)
                         except BaseException as e:
                             raise ValidationError({"400": f'{str(e)}'})
-                        UserInfo.objects.get(user=Account).update(last_visit=timezone.now())
+                        use = UserInfo.objects.get(user=Account)
+                        use.last_visit=timezone.now()
+                        use.save()
                         token = Token.objects.get_or_create(user=Account)[0].key
                         print(token)
                         if not check_password(password, Account.password):
@@ -212,7 +214,9 @@ class login(APIView):
                     Account = User.objects.get(username=username)
                 except BaseException as e:
                     raise ValidationError({"400": f'{str(e)}'})
-                UserInfo.objects.get(user=Account).update(last_visit=timezone.now())
+                use = UserInfo.objects.get(user=Account)
+                use.last_visit=timezone.now()
+                use.save()
                 token = Token.objects.get_or_create(user=Account)[0].key
                 print(token)
                 if not check_password(password, Account.password):
@@ -248,9 +252,10 @@ class login(APIView):
                 Account = User.objects.get(username=username)
             except BaseException as e:
                 raise ValidationError({"400": f'{str(e)}'})
-
+            use = UserInfo.objects.get(user=Account)
+            use.last_visit=timezone.now()
+            use.save()
             token = Token.objects.get_or_create(user=Account)[0].key
-            UserInfo.objects.get(user=Account).update(last_visit=timezone.now())
             print(token)
             if not check_password(password, Account.password):
                 raise ValidationError({"message": "Incorrect Login credentials"})
