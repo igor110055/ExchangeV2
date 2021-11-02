@@ -7,6 +7,7 @@ urlpatterns = [
 
 #  < ------------ General
    path('review' , views.review , name='review'),
+   path('timeout' , views.timeout.as_view() , name='timeout'),
    path('addphone' , views.addphone.as_view() , name='addphone'),
    path('login' , views.login.as_view() , name='mylogin'),
    path('loginsms' , views.loginsms.as_view() , name='loginsms'),

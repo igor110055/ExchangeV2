@@ -1,4 +1,3 @@
-import re
 from requests.sessions import Request
 from django.contrib.auth.hashers import check_password
 from exchange.lib import request_client
@@ -6,6 +5,7 @@ from django.core.exceptions import ValidationError
 from typing import Text
 from django import http
 from django.http import response
+import datetime
 import requests
 from .lib.request_client import RequestClient
 from .lib.coinex import CoinEx
@@ -94,6 +94,21 @@ def notification (user , date = datetime.now(), title = '' , text = '', pattern=
     note.save()
     sms(user , date, title, text, pattern)
     sendemail(user , date, title, text)
+
+class timeout(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+        if request.user.is_authenticated():
+            if UserInfo.objects.get(user = request.user).last_visit < datetime.datetime.now() - timedelta(minutes=1):
+                request.user.auth_token.delete()
+                Response(True)
+            else:
+                # Update last visit time after request finished processing.
+                UserInfo.objects.get(user=request.user).update(last_visit=datetime.datetime.now())
+            return Response(False)
+        return Response(False)
 
 class login(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
