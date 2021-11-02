@@ -528,6 +528,9 @@ class price(APIView):
     permission_classes = [IsAuthenticated]
             
     def get(self , request , format=None):
+        price = Price.objects.get(id=1)
+        price.usd = price.rial
+        price.save()
         price = Price.objects.filter(id=1)
         serializer = PriceSerializer(price , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
