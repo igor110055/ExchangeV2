@@ -11,12 +11,12 @@ class Command(BaseCommand):
                 pe = PerpetualRequest(user = item.user)
                 pe.save()
             if len(Perpetual.objects.filter(user=item.user)) > 0:
-                for item in PerpetualRequest.objects.filter(user= item.user):
-                    item.delete()
+                for itemm in PerpetualRequest.objects.filter(user= item.user):
+                    itemm.delete()
             if len(VerifyBankAccountsRequest.objects.filter(user=item.user)) > 1:
-                for item in range(len(VerifyBankAccountsRequest.objects.filter(user=item.user)) - 2):
+                for a in range(len(VerifyBankAccountsRequest.objects.filter(user=item.user)) - 2):
                     VerifyBankAccountsRequest.objects.filter(user=item.user)[0].delete()
 
             if len(VerifyBankRequest.objects.filter(user=item.user)) > 1:
-                for item in range(len(VerifyBankRequest.objects.filter(user=item.user)) - 2):
+                for a in range(len(VerifyBankRequest.objects.filter(user=item.user)) - 2):
                     VerifyBankRequest.objects.filter(user=item.user)[0].delete()
