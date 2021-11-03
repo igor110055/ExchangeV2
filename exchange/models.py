@@ -50,7 +50,6 @@ class UserInfo(models.Model):
     smsverify = models.BooleanField(default=False)
     googleverify = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-    last_visit = models.DateTimeField(default=timezone.now())
     complete = models.BooleanField(default=False)
     class meta:
         ordering = ('-date_joined',)

@@ -150,6 +150,9 @@ class login(APIView):
                                     ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
                                     ui.save()
                                     notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                                use = UserInfo.objects.get(user=Account)
+                                use.last_visit=timezone.now()
+                                use.save()
                                 return Response(Res)
 
                             else:
@@ -211,9 +214,6 @@ class login(APIView):
                     Account = User.objects.get(username=username)
                 except BaseException as e:
                     raise ValidationError({"400": f'{str(e)}'})
-                use = UserInfo.objects.get(user=Account)
-                use.last_visit=timezone.now()
-                use.save()
                 token = Token.objects.get_or_create(user=Account)[0].key
                 print(token)
                 if not check_password(password, Account.password):
@@ -233,6 +233,9 @@ class login(APIView):
                             ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
                             ui.save()
                             notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                        use = UserInfo.objects.get(user=Account)
+                        use.last_visit=timezone.now()
+                        use.save()
                         return Response(Res)
 
                     else:
@@ -250,9 +253,6 @@ class login(APIView):
                 Account = User.objects.get(username=username)
             except BaseException as e:
                 raise ValidationError({"400": f'{str(e)}'})
-            use = UserInfo.objects.get(user=Account)
-            use.last_visit=timezone.now()
-            use.save()
             token = Token.objects.get_or_create(user=Account)[0].key
             print(token)
             if not check_password(password, Account.password):
@@ -272,6 +272,9 @@ class login(APIView):
                         ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='',phone='')
                         ui.save()
                         notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                    use = UserInfo.objects.get(user=Account)
+                    use.last_visit=timezone.now()
+                    use.save()
                     return Response(Res)
 
                 else:
