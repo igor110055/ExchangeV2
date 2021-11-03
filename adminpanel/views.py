@@ -293,8 +293,7 @@ class verifymelli(APIView):
         else:
             if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
-
-        bankcards = VerifyMelliRequest.objects.filter(Q(act=True))
+        bankcards = VerifyMelliRequest.objects.all()
         serializer = VerifyMelliRequestSerializer(bankcards , many=True)
         return Response(serializer.data)
 
@@ -338,7 +337,7 @@ class verifyaccept(APIView):
         else:
             if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
-        bankcards = VerifyAcceptRequest.objects.filter( Q(act=True))
+        bankcards = VerifyAcceptRequest.objects.all()
         serializer = VerifyAcceptRequestSerializer(bankcards , many=True)
         return Response(serializer.data)
 
