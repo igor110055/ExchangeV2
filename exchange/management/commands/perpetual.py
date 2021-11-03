@@ -14,9 +14,9 @@ class Command(BaseCommand):
                 for itemm in PerpetualRequest.objects.filter(user= item.user):
                     itemm.delete()
             if len(VerifyBankAccountsRequest.objects.filter(user=item.user)) > 1:
-                for a in range(len(VerifyBankAccountsRequest.objects.filter(user=item.user)) - 2):
+                for a in range(len(VerifyBankAccountsRequest.objects.filter(user=item.user)) - 1):
                     VerifyBankAccountsRequest.objects.filter(user=item.user)[0].delete()
 
             if len(VerifyBankRequest.objects.filter(user=item.user)) > 1:
-                for a in range(len(VerifyBankRequest.objects.filter(user=item.user)) - 2):
+                for a in range(len(VerifyBankRequest.objects.filter(user=item.user)) - 1):
                     VerifyBankRequest.objects.filter(user=item.user)[0].delete()
