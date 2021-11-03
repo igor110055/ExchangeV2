@@ -467,7 +467,7 @@ class Verify(models.Model):
     coinv = models.BooleanField(default = False , null = True)
 
     def __str__(self):
-        return self.user.username
+        return self.user.username + '--' + UserInfo.objects.get(user=self.user).first_name + ' ' + UserInfo.objects.get(user=self.user).last_name
 
     def get_melliphoto(self):
         if VerifyMelliRequest.objects.filter(user = self.user):
