@@ -7,6 +7,6 @@ from cryptos import *
 class Command(BaseCommand):
     def handle(self, *args, **options):
         for item in Verify.objects.all():
-            if PerpetualRequest.objects.filter(user= item.user) < 1:
+            if len(PerpetualRequest.objects.filter(user= item.user)) < 1:
                 pe = PerpetualRequest(user = item.user)
                 pe.save()

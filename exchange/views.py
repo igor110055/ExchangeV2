@@ -1734,7 +1734,7 @@ class perpetualrequest(APIView):
             return HttpResponse(1) 
         return HttpResponse(0) 
     def post(self , request, format=None):
-        if PerpetualRequest.objects.filter(user = request.user) == 0:
+        if len(PerpetualRequest.objects.filter(user = request.user)) < 1:
             per = PerpetualRequest(user = request.user)
             per.save()
         return Response(status=status.HTTP_201_CREATED)
