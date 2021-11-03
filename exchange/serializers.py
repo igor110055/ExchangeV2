@@ -189,7 +189,8 @@ class VerifyMelliRequestSerializer(serializers.ModelSerializer):
             "mellic",
             "action",
             "get_image",
-            "get_user"
+            "get_user",
+            "get_user_id"
         )
 
 class VerifyAcceptRequestSerializer(serializers.ModelSerializer):
@@ -201,7 +202,8 @@ class VerifyAcceptRequestSerializer(serializers.ModelSerializer):
             "acceptimg",
             "get_image",
             "action",
-            "get_user"
+            "get_user",
+            "get_user_id"
         )
 
 class BankCardsSerializer(serializers.ModelSerializer):
