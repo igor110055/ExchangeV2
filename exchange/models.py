@@ -516,6 +516,9 @@ class VerifyMelliRequest(models.Model):
     def get_user(self):
         user = UserInfo.objects.get(user = self.user)
         return user.first_name + ' ' + user.last_name
+    def get_user_id(self):
+        user = UserInfo.objects.get(user = self.user)
+        return user.id
 
 class VerifyAcceptRequest(models.Model):
     user = models.ForeignKey(User , related_name='accept' , on_delete=models.CASCADE)
@@ -530,6 +533,9 @@ class VerifyAcceptRequest(models.Model):
 
     def get_user(self):
         return self.user.id
+    def get_user_id(self):
+        user = UserInfo.objects.get(user = self.user)
+        return user.id
 
 class VerifyBankRequest(models.Model):
     user = models.ForeignKey(User , related_name='Banks' , on_delete=models.CASCADE)
