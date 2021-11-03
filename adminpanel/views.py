@@ -531,7 +531,8 @@ class perpetualreqccept(APIView):
                 user = UserInfo.objects.get(user = user)
                 user.level = 1
                 user.save()
-        PerpetualRequest.objects.get(id = id).delete()
+        pe = PerpetualRequest.objects.get(id = id)
+        pe.delete()
         return Response(status=status.HTTP_201_CREATED)
 
 
