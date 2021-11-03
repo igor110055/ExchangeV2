@@ -466,6 +466,9 @@ class Verify(models.Model):
     rulev = models.BooleanField(default = False , null = True)
     coinv = models.BooleanField(default = False , null = True)
 
+    def __str__(self):
+        return self.user.username
+
     def get_melliphoto(self):
         if VerifyMelliRequest.objects.filter(user = self.user):
             return VerifyMelliRequest.objects.get(user = self.user).get_image()
