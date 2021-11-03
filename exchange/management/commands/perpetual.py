@@ -1,4 +1,4 @@
-from exchange.models import Perpetual, PerpetualRequest, Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
+from exchange.models import Perpetual, PerpetualRequest, Staff,  UserInfo , Currencies, VerifyBankAccountsRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
 import requests
 from bit import Key
 from django.core.management.base import BaseCommand, CommandError
@@ -13,3 +13,6 @@ class Command(BaseCommand):
             if len(Perpetual.objects.filter(user=item.user)) > 0:
                 for item in PerpetualRequest.objects.filter(user= item.user):
                     item.delete()
+            if len(VerifyBankAccountsRequest.objects.filter(user=item.user)) > 1:
+                for item in range(len(VerifyBankAccountsRequest.objects.filter(user=item.user)) - 1):
+                    VerifyBankAccountsRequest.objects.filter(user=item.user)[0].delete()
