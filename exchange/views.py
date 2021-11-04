@@ -1041,8 +1041,6 @@ class subject(APIView):
         return Subjects.objects.filter(user = user).order_by('date')
 
     def get(self , request , format=None):
-        if len(self.get_object(request.user)) < 1 :
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         userinfo =  self.get_object(request.user)
         serializer = SubjectsSerializer(userinfo , many=True)
         return Response(serializer.data)
@@ -1076,8 +1074,6 @@ class ticket(APIView):
         return Tickets.objects.filter(subid = id)
 
     def get(self , request , id , format=None):
-        if len(self.get_object(id)) < 1 :
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         userinfo =  self.get_object(id)
         serializer = TicketsSerializer(userinfo , many=True)
         return Response(serializer.data)
