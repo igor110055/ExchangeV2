@@ -15,6 +15,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "googleverify",
             "phone",
             "email",
+            "adress",
             "level",
             "is_active",
             "is_admin",
