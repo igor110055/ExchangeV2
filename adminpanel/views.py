@@ -141,6 +141,15 @@ class user(APIView):
         user.save()
         return Response(status=status.HTTP_201_CREATED)
 
+class userinfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def post(self , request , format=None):
+        user = UserInfo.objects.get(user = User.objects.get(id = request.data['id']))
+        serializer = UserInfoSerializer(user , many=true)
+        return Response(serializer ,status=status.HTTP_201_CREATED)
+
 class users(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
