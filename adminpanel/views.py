@@ -293,7 +293,7 @@ class verifymelli(APIView):
         else:
             if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
-        bankcards = VerifyMelliRequest.objects.filter(act = False)
+        bankcards = VerifyMelliRequest.objects.filter(action = False)
         serializer = VerifyMelliRequestSerializer(bankcards , many=True)
         return Response(serializer.data)
 
@@ -312,7 +312,7 @@ class verifymelli(APIView):
             user.save()
         id = request.data['id']
         req = VerifyMelliRequest.objects.get(id = id)
-        req.act = True
+        req.action = True
         req.save()
         return Response(status=status.HTTP_201_CREATED)
 
@@ -337,7 +337,7 @@ class verifyaccept(APIView):
         else:
             if Staff.objects.get(user = request.user).level < 1 :
                 return Response(status= status.HTTP_400_BAD_REQUEST)
-        bankcards = VerifyAcceptRequest.objects.filter(act = False)
+        bankcards = VerifyAcceptRequest.objects.filter(action = False)
         serializer = VerifyAcceptRequestSerializer(bankcards , many=True)
         return Response(serializer.data)
 
@@ -356,7 +356,7 @@ class verifyaccept(APIView):
                 user.save()
         id = request.data['id']
         req = VerifyAcceptRequest.objects.get(id = id)
-        req.act = True
+        req.action = True
         req.save()
         return Response(status=status.HTTP_201_CREATED)
 
