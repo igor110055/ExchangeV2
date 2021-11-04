@@ -106,8 +106,8 @@ class timeout(APIView):
             else:
                 # Update last visit time after request finished processing.
                 UserInfo.objects.get(user=request.user).update(last_visit=timezone.now())
-            return Response(0)
-        return Response(0)
+            return Response(False)
+        return Response(False)
 
 class login(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -1735,11 +1735,9 @@ class perpetualrequest(APIView):
         return HttpResponse(0) 
     def post(self , request, format=None):
         if len(PerpetualRequest.objects.filter(user = request.user)) < 1:
-            per = PerpetualRequest(user = request.user)
-            per.save()
-        if len(Perpetual.objects.filter(user=item.user)) > 0:
-            for item in PerpetualRequest.objects.filter(user= item.user):
-                item.delete()
+            if len(Perpetual.objects.filter(user = request.user)) < 1:
+                per = PerpetualRequest(user = request.user)
+                per.save()
         return Response(status=status.HTTP_201_CREATED)
     def put(self , request, format=None):
         if Perpetual.objects.filter(user = request.user) :
