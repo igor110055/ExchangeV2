@@ -62,7 +62,7 @@ class UserInfo(models.Model):
         return f'/{self.username}/'
 
     def get_verify(self):
-        return Verify.objects.get(user= self.user)
+        return Verify.objects.get(user= self.user).mellic
 
     def is_staff(self):
         return self.user.is_staff
