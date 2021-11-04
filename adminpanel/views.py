@@ -146,7 +146,7 @@ class userinfo(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self , request ,user , format=None):
-        query = UserInfo.objects.filter(user = User.objects.get(username = user ))
+        query = UserInfo.objects.filter(user = user )
         serializer = UserInfoSerializer(query , many= True)
         return Response(serializer.data ,status=status.HTTP_201_CREATED)
 
