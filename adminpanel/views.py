@@ -147,7 +147,7 @@ class userinfo(APIView):
 
     def post(self , request , format=None):
         user = UserInfo.objects.get(user = User.objects.get(id = request.data['id']))
-        serializer = UserInfoSerializer(user , many=true)
+        serializer = UserInfoSerializer(user , many= True)
         return Response(serializer ,status=status.HTTP_201_CREATED)
 
 class users(APIView):
