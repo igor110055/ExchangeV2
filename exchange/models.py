@@ -62,7 +62,7 @@ class UserInfo(models.Model):
         return f'/{self.username}/'
 
     def get_verify(self):
-        return VerifySerializer(Verify.objects.get(user= self.user), many=True).data
+        return Verify.objects.get(user= self.user)
 
     def is_staff(self):
         return self.user.is_staff
