@@ -106,8 +106,8 @@ class timeout(APIView):
             else:
                 # Update last visit time after request finished processing.
                 UserInfo.objects.get(user=request.user).update(last_visit=timezone.now())
-            return Response(False)
-        return Response(False)
+            return Response(0)
+        return Response(0)
 
 class login(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
