@@ -20,7 +20,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "level",
             "is_active",
             "is_admin",
-            "is_staff"
+            "is_staff",
+            "get_verify",
         )
 
 class PriceSerializer(serializers.ModelSerializer):
