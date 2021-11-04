@@ -1,8 +1,6 @@
 from chat.models import ChatSession
-from django.db.models import fields
 from rest_framework import serializers
 from django.contrib.auth.models import User
-
 from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, TopSticker, VerifyAcceptRequest , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, buyoutrequest, buyrequest, selloutrequest, sellrequest
 
 class UserInfoSerializer(serializers.ModelSerializer):
