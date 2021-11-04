@@ -148,7 +148,7 @@ class userinfo(APIView):
     def get(self , request ,user , format=None):
         user = UserInfo.objects.get(user = User.objects.get(username = user ))
         serializer = UserInfoSerializer(user , many= True)
-        return Response(serializer ,status=status.HTTP_201_CREATED)
+        return Response(serializer.data ,status=status.HTTP_201_CREATED)
 
 class users(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
