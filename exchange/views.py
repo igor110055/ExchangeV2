@@ -105,7 +105,9 @@ class timeout(APIView):
                 return Response(True)
             else:
                 # Update last visit time after request finished processing.
-                UserInfo.objects.get(user=request.user).update(last_visit=timezone.now())
+                use = UserInfo.objects.get(user=request.user)
+                use.last_visit=timezone.now()
+                use.save()
             return Response(False)
         return Response(False)
 
