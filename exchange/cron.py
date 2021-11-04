@@ -15,6 +15,8 @@ def TICKER():
     price.trx = r[4]['price']
     price.save()
 
+    sleep(2)
+
 def INDEXINFO():
     end = DT.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ") 
     start = (DT.datetime.now() - DT.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ") 
@@ -29,6 +31,8 @@ def INDEXINFO():
         item.delete()
     ind = Indexprice(PriceHistory=r, price = response)
     ind.save()
+
+    sleep(2)
 
 def RIALTICKER():
         rial = requests.get(url = 'http://api.navasan.tech/latest/?api_key=7RPe7l7pwChjXtZ3vm3xM7vl0xrOoZgk')   
