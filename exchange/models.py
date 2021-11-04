@@ -61,7 +61,7 @@ class UserInfo(models.Model):
     def get_absolute_url(self):
         return f'/{self.username}/'
 
-    def get_verify(self):
+    def get_mellic(self):
         return Verify.objects.get(user= self.user).mellic
 
     def is_staff(self):
