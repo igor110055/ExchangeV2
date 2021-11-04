@@ -16,6 +16,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "phone",
             "email",
             "level",
+            "address",
             "is_active",
             "is_admin",
             "is_staff",
