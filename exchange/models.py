@@ -68,7 +68,7 @@ class UserInfo(models.Model):
             return ''
     def get_mellip(self):
         if len(VerifyMelliRequest.objects.filter(user= self.user)):
-            return VerifyMelliRequest.objects.get(user= self.user).melliimg
+            return f'{ROOT}/media/{VerifyMelliRequest.objects.get(user= self.user).melliimg}'
         else:
             return ''
     def is_staff(self):
