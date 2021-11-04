@@ -15,7 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ROOT = 'https://amizax.com'
+ROOT = 'http://127.0.0.1:8000'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ra$$l%4d2y4i!5#=(n58_u988+gdn8$st2^rtx-l0buiwhi7kc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['amizax.com', 'www.amizax.com']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -65,8 +65,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://amizax.com",
-    "https://www.amizax.com"
+    "http://localhost:8080"
 ]
 
 MIDDLEWARE = [
@@ -108,9 +107,9 @@ WSGI_APPLICATION = 'sarafi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'myproject',
-        'USER': 'myprojectuser',
-        'PASSWORD': 'password',
+        'NAME': 'mydb',
+        'USER': 'ars',
+        'PASSWORD': '2832318ars',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -174,7 +173,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 CRONJOBS = [
-    ('* * * * *', 'exchange.cron.TICKER'),
-    ('* * * * *', 'exchange.cron.INDEXINFO'),
-    ('* */6 * * *', 'exchange.cron.RIALTICKER')
+    ('* * * * *', 'exchange.cron.TICKER')
 ]
