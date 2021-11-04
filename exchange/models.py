@@ -9,6 +9,7 @@ import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
 from requests.api import post
+from exchange.serializers import VerifySerializer
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
@@ -60,7 +61,10 @@ class UserInfo(models.Model):
 
     def get_absolute_url(self):
         return f'/{self.username}/'
-        
+
+    def get_verify(self):
+        return VerifySerializer(Verify.objects.get(user= self.user), many=True).data
+
     def is_staff(self):
         return self.user.is_staff
 
