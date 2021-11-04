@@ -61,7 +61,7 @@ class UserInfo(models.Model):
     def get_absolute_url(self):
         return f'/{self.username}/'
 
-    def get_mellic(self):
+    def get_verify(self):
         if len(VerifyMelliRequest.objects.filter(user= self.user)):
             return VerifyMelliRequest.objects.get(user= self.user)
         else:
