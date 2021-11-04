@@ -20,6 +20,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "is_admin",
             "is_staff",
             "get_melli",
+            "get_mellip"
         )
 
 class PriceSerializer(serializers.ModelSerializer):
