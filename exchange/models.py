@@ -62,8 +62,10 @@ class UserInfo(models.Model):
         return f'/{self.username}/'
 
     def get_mellic(self):
-        return VerifyMelliRequest.objects.get(user= self.user).mellic
-
+        if len(VerifyMelliRequest.objects.filter(user= self.user)):
+            return VerifyMelliRequest.objects.get(user= self.user)
+        else:
+            return ''
     def is_staff(self):
         return self.user.is_staff
 
