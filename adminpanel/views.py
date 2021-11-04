@@ -145,8 +145,8 @@ class userinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
 
-    def post(self , request , format=None):
-        user = UserInfo.objects.get(user = User.objects.get(id = request.data['id']))
+    def post(self , request ,user , format=None):
+        user = UserInfo.objects.get(user = User.objects.get(username = user ))
         serializer = UserInfoSerializer(user , many= True)
         return Response(serializer ,status=status.HTTP_201_CREATED)
 

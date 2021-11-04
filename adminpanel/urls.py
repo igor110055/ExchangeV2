@@ -33,6 +33,7 @@ urlpatterns = [
    path('perpetualreq/<int:id>' , views.perpetualreq.as_view() , name='perpetualreq'),
    path('general' , views.general.as_view() , name='general'),
    path('user/<str:user>' , views.user.as_view() , name='user'),
+   path('userinfo/<str:user>' , views.userinfo.as_view() , name='userinfo'),
    path('users' , views.users.as_view() , name='users'),
    path('mainpageposts' , views.mainpageposts.as_view() , name='mainpageposts'),
    path('topsticker' , views.topsticker.as_view() , name='topsticker'),
