@@ -9,7 +9,6 @@ import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
 from requests.api import post
-from exchange.serializers import VerifyMelliRequestSerializer
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
@@ -64,7 +63,12 @@ class UserInfo(models.Model):
 
     def get_melli(self):
         if len(VerifyMelliRequest.objects.filter(user= self.user)):
-            return VerifyMelliRequestSerializer(VerifyMelliRequest.objects.filter(user= self.user),many=True).data
+            return VerifyMelliRequest.objects.get(user= self.user).mellic
+        else:
+            return ''
+    def get_mellip(self):
+        if len(VerifyMelliRequest.objects.filter(user= self.user)):
+            return VerifyMelliRequest.objects.get(user= self.user).melliimg
         else:
             return ''
     def is_staff(self):
