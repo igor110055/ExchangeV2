@@ -319,27 +319,28 @@ CallbackURL = 'https://amizax.com/api/v1/verify/'
 
 @csrf_exempt
 
-def send_request(request):
-    uid = str(uuid.uuid4())
-    transactionid(user = request.POST['user'] , id = uid)
-    req_data = {
-        "merchant_id": MERCHANT,
-        "amount": request.POST['amount'],
-        "callback_url": CallbackURL + uid ,
-        "description": description,
-        "metadata": {"mobile": mobile, "email": email, "card_pan":str(request.POST['card']) ,}
-    }
-    req_header = {"accept": "application/json",
-                "content-type": "application/json'"}
-    req = requests.post(url=ZP_API_REQUEST, data=json.dumps(
-        req_data), headers=req_header)
-    authority = req.json()['data']['authority']
-    if len(req.json()['errors']) == 0:
-        return redirect(ZP_API_STARTPAY.format(authority=authority))
-    else:
-        e_code = req.json()['errors']['code']
-        e_message = req.json()['errors']['message']
-        return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
+class send_request(APIView):
+    def post(self , request , format=None):
+        uid = str(uuid.uuid4())
+        transactionid(user = request.user , id = uid)
+        req_data = {
+            "merchant_id": MERCHANT,
+            "amount": request.POST['amount'],
+            "callback_url": CallbackURL + uid ,
+            "description": description,
+            "metadata": {"mobile": mobile, "email": email, "card_pan":str(request.data['card']) ,}
+        }
+        req_header = {"accept": "application/json",
+                    "content-type": "application/json'"}
+        req = requests.post(url=ZP_API_REQUEST, data=json.dumps(
+            req_data), headers=req_header)
+        authority = req.json()['data']['authority']
+        if len(req.json()['errors']) == 0:
+            return redirect(ZP_API_STARTPAY.format(authority=authority))
+        else:
+            e_code = req.json()['errors']['code']
+            e_message = req.json()['errors']['message']
+            return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
 
 def verify(request, id):
     t_status = request.GET.get('Status')
