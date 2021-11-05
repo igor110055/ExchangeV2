@@ -315,7 +315,7 @@ description = "توضیحات مربوط به تراکنش را در این قس
 email = 'email@example.com'  # Optional
 mobile = '09123456789'  # Optional
 # Important: need to edit for realy server.
-CallbackURL = 'https://amizax.com/api/v1/verify/'
+CallbackURL = 'https://amizax.com/api/v1/verifys/'
 
 class send_request(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
