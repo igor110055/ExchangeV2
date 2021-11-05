@@ -24,14 +24,14 @@ from rest_framework import authentication
 from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, LevelFee, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, Review, SmsVerified, TopSticker, VerifyAcceptRequest, buyoutrequest, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, sellrequest
+from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, LevelFee, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, Review, SmsVerified, TopSticker, VerifyAcceptRequest, buyoutrequest, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, sellrequest, transactionid
 from django.contrib.auth.models import AbstractUser , User, UserManager
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
-
+import uuid
 from py_crypto_hd_wallet import HdWalletFactory, HdWalletCoins, HdWalletSpecs , HdWalletWordsNum, HdWalletChanges
 import json
 from datetime import datetime ,timedelta
@@ -319,10 +319,12 @@ CallbackURL = 'http://{ROOT}/verify/'
 
 @csrf_exempt
 def send_request(request):
+    uid = uuid.uuid4 
+    transactionid(user = request.user , id = uid)
     req_data = {
         "merchant_id": MERCHANT,
         "amount": request.POST['amount'],
-        "callback_url": CallbackURL,
+        "callback_url": CallbackURL + uid ,
         "description": description,
         "metadata": {"mobile": mobile, "email": email, "card_pan":str(request.POST['card']) ,}
     }
@@ -338,7 +340,7 @@ def send_request(request):
         e_message = req.json()['errors']['message']
         return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
 
-def verify(request):
+def verify(request, id):
     t_status = request.GET.get('Status')
     t_authority = request.GET['Authority']
     if request.GET.get('Status') == 'OK':
@@ -353,10 +355,11 @@ def verify(request):
         if len(req.json()['errors']) == 0:
             t_status = req.json()['data']['code']
             if t_status == 100:
-                wallet = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 1))
+                user = transactionid.objects.get(id = id).user
+                wallet = Wallet.objects.get(user = user , currency = Currencies.objects.get(id = 1))
                 wallet.amount = wallet.amount + int(amount)
                 wallet.save()
-                Transactions(user = request.user, amount= amount, act = 1)
+                Transactions(user = user, amount= amount, act = 1)
                 return HttpResponse('Transaction success.\nRefID: ' + str(
                     req.json()['data']['ref_id']
                 ))
