@@ -338,7 +338,7 @@ class send_request(APIView):
             req_data), headers=req_header)
         authority = req.json()['data']['authority']
         if len(req.json()['errors']) == 0:
-            return redirect(ZP_API_STARTPAY.format(authority=authority))
+            return HttpResponse(ZP_API_STARTPAY.format(authority=authority))
         else:
             e_code = req.json()['errors']['code']
             e_message = req.json()['errors']['message']
