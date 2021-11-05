@@ -323,6 +323,8 @@ class send_request(APIView):
 
     def post(self , request , format=None):
         uid = str(uuid.uuid4())
+        for item in transactionid.objects.filter(user = request.user):
+            item.delete()
         tr = transactionid(user = request.user , transid = uid)
         tr.save()
         req_data = {
