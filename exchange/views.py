@@ -317,8 +317,6 @@ mobile = '09123456789'  # Optional
 # Important: need to edit for realy server.
 CallbackURL = 'https://amizax.com/api/v1/verify/'
 
-@csrf_exempt
-
 class send_request(APIView):
 
     def post(self , request , format=None):
