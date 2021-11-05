@@ -362,9 +362,9 @@ def verifys(request, transid):
             if t_status == 100:
                 user = transactioni.user
                 wallet = Wallet.objects.get(user = user , currency = Currencies.objects.get(id = 1))
-                wallet.amount = wallet.amount + int(amount)
+                wallet.amount = wallet.amount + int(transactioni.amount)
                 wallet.save()
-                tra = Transactions(user = user, amount= amount, act = 1, currency = Currencies.objects.get(id = 1))
+                tra = Transactions(user = user, amount= transactioni.amount, act = 1, currency = Currencies.objects.get(id = 1))
                 tra.save()
                 return HttpResponse('Transaction success.\nRefID: ' + str(
                     req.json()['data']['ref_id']
