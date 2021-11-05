@@ -496,7 +496,7 @@ class dashboardinfo(APIView):
                 wallets= []
                 price = 0
                 users=[]
-                if Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = 1)):
+                if len(Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = 1))) < 0:
                     wallet = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 1)).amount
                 userinfos = UserInfo.objects.get(user = request.user)
                 openorder = len(MainTradesBuyOrder.objects.filter(user = request.user)) + len(MainTradesSellOrder.objects.filter(user = request.user)) + len(ProTradesBuyOrder.objects.filter(user = request.user)) + len(ProTradesSellOrder.objects.filter(user = request.user))
