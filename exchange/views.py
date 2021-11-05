@@ -318,9 +318,10 @@ mobile = '09123456789'  # Optional
 CallbackURL = 'https://amizax.com/api/v1/verify/'
 
 @csrf_exempt
+
 def send_request(request):
     uid = str(uuid.uuid4())
-    transactionid(user = request.user , id = uid)
+    transactionid(user = request.POST['user'] , id = uid)
     req_data = {
         "merchant_id": MERCHANT,
         "amount": request.POST['amount'],
