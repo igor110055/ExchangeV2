@@ -346,44 +346,43 @@ class send_request(APIView):
             e_message = req.json()['errors']['message']
             return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
 
-class verify(APIView):
-    def get(self , request, idd , format=None):
-        t_status = request.GET.get('Status')
-        t_authority = request.GET['Authority']
-        if request.GET.get('Status') == 'OK':
-            req_header = {"accept": "application/json",
-                        "content-type": "application/json'"}
-            req_data = {
-                "merchant_id": MERCHANT,
-                "amount": amount,
-                "authority": t_authority
-            }
-            req = requests.post(url=ZP_API_VERIFY, data=json.dumps(req_data), headers=req_header)
-            if len(req.json()['errors']) == 0:
-                t_status = req.json()['data']['code']
-                if t_status == 100:
-                    user = transactionid.objects.get(transid = idd).user
-                    wallet = Wallet.objects.get(user = user , currency = Currencies.objects.get(id = 1))
-                    wallet.amount = wallet.amount + int(amount)
-                    wallet.save()
-                    Transactions(user = user, amount= amount, act = 1)
-                    return HttpResponse('Transaction success.\nRefID: ' + str(
-                        req.json()['data']['ref_id']
-                    ))
-                elif t_status == 101:
-                    return HttpResponse('Transaction submitted : ' + str(
-                        req.json()['data']['message']
-                    ))
-                else:
-                    return HttpResponse('Transaction failed.\nStatus: ' + str(
-                        req.json()['data']['message']
-                    ))
+def verify(request, transid):
+    t_status = request.GET.get('Status')
+    t_authority = request.GET['Authority']
+    if request.GET.get('Status') == 'OK':
+        req_header = {"accept": "application/json",
+                      "content-type": "application/json'"}
+        req_data = {
+            "merchant_id": MERCHANT,
+            "amount": amount,
+            "authority": t_authority
+        }
+        req = requests.post(url=ZP_API_VERIFY, data=json.dumps(req_data), headers=req_header)
+        if len(req.json()['errors']) == 0:
+            t_status = req.json()['data']['code']
+            if t_status == 100:
+                user = transactionid.objects.get(transid = transid).user
+                wallet = Wallet.objects.get(user = user , currency = Currencies.objects.get(id = 1))
+                wallet.amount = wallet.amount + int(amount)
+                wallet.save()
+                Transactions(user = user, amount= amount, act = 1)
+                return HttpResponse('Transaction success.\nRefID: ' + str(
+                    req.json()['data']['ref_id']
+                ))
+            elif t_status == 101:
+                return HttpResponse('Transaction submitted : ' + str(
+                    req.json()['data']['message']
+                ))
             else:
-                e_code = req.json()['errors']['code']
-                e_message = req.json()['errors']['message']
-                return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
+                return HttpResponse('Transaction failed.\nStatus: ' + str(
+                    req.json()['data']['message']
+                ))
         else:
-            return HttpResponse('Transaction failed or canceled by user')
+            e_code = req.json()['errors']['code']
+            e_message = req.json()['errors']['message']
+            return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
+    else:
+        return HttpResponse('Transaction failed or canceled by user')
 
 
 class bsc(APIView):
