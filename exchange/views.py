@@ -320,10 +320,11 @@ CallbackURL = 'https://amizax.com/api/v1/verify/'
 class send_request(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
-    
+
     def post(self , request , format=None):
         uid = str(uuid.uuid4())
-        transactionid(user = request.user , id = uid)
+        tr = transactionid(user = request.user , id = uid)
+        tr.save()
         req_data = {
             "merchant_id": MERCHANT,
             "amount": request.POST['amount'],
