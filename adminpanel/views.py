@@ -296,13 +296,7 @@ class verify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def get_object(self , user):
-        if(len(Verify.objects.filter(user = user))<1):
-            verif = Verify(user = user)
-            verif.save()
-        try:
-            return Verify.objects.filter(user = user)
-        except Wallet.DoesNotExist:
-            return Http404
+        return Verify.objects.filter(user = user)
             
     def get(self , request, user , format=None):
         verify = self.get_object(user)
