@@ -506,7 +506,6 @@ class dashboardinfo(APIView):
                 for items in Subjects.objects.filter(user = request.user):
                     if not items.read :
                         unread = unread + 1
-                wallet = 0
                 users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': userinfos.is_admin, 'id': item.id, 'openorder': openorder, 'unread': unread, 'openorders': openorders, 'wallets': wallets})
         return Response(users)
 
