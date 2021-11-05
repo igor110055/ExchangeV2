@@ -325,7 +325,7 @@ class send_request(APIView):
         uid = str(uuid.uuid4())
         for item in transactionid.objects.filter(user = request.user):
             item.delete()
-        tr = transactionid(user = request.user , transid = uid)
+        tr = transactionid(user = request.user , transid = uid , amount = int(request.data['amount']))
         tr.save()
         req_data = {
             "merchant_id": MERCHANT,
@@ -349,19 +349,20 @@ class send_request(APIView):
 def verifys(request, transid):
     t_status = request.GET.get('Status')
     t_authority = request.GET['Authority']
+    transactioni = transactionid.objects.get(transid = transid)
     if request.GET.get('Status') == 'OK':
         req_header = {"accept": "application/json",
                       "content-type": "application/json'"}
         req_data = {
             "merchant_id": MERCHANT,
-            "amount": amount,
+            "amount": transactioni.amount,
             "authority": t_authority
         }
         req = requests.post(url=ZP_API_VERIFY, data=json.dumps(req_data), headers=req_header)
         if len(req.json()['errors']) == 0:
             t_status = req.json()['data']['code']
             if t_status == 100:
-                user = transactionid.objects.get(transid = transid).user
+                user = transactioni.user
                 wallet = Wallet.objects.get(user = user , currency = Currencies.objects.get(id = 1))
                 wallet.amount = wallet.amount + int(amount)
                 wallet.save()
