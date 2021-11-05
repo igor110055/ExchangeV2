@@ -323,7 +323,7 @@ class send_request(APIView):
 
     def post(self , request , format=None):
         uid = str(uuid.uuid4())
-        tr = transactionid(user = request.user , id = uid)
+        tr = transactionid(user = request.user , transid = uid)
         tr.save()
         req_data = {
             "merchant_id": MERCHANT,
