@@ -324,7 +324,7 @@ def send_request(request):
     req_data = {
         "merchant_id": MERCHANT,
         "amount": request.POST['amount'],
-        "callback_url": CallbackURL + uid ,
+        "callback_url": CallbackURL + f'{uid}' ,
         "description": description,
         "metadata": {"mobile": mobile, "email": email, "card_pan":str(request.POST['card']) ,}
     }
