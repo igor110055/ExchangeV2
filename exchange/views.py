@@ -496,8 +496,8 @@ class dashboardinfo(APIView):
                 wallets= []
                 price = 0
                 users=[]
-                if Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(brand = 'rial')):
-                    wallet = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(brand = 'Rial')).amount
+                if Wallet.objects.filter(user = request.user , currency = Currencies.objects.get(id = 1)):
+                    wallet = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 1)).amount
                 userinfos = UserInfo.objects.get(user = request.user)
                 openorder = len(MainTradesBuyOrder.objects.filter(user = request.user)) + len(MainTradesSellOrder.objects.filter(user = request.user)) + len(ProTradesBuyOrder.objects.filter(user = request.user)) + len(ProTradesSellOrder.objects.filter(user = request.user))
                 opens = list(chain(MainTradesBuyOrder.objects.filter(user = request.user), MainTradesSellOrder.objects.filter(user = request.user), ProTradesBuyOrder.objects.filter(user = request.user), ProTradesSellOrder.objects.filter(user = request.user)))
