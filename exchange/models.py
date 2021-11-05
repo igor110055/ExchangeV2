@@ -37,7 +37,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 class transactionid(models.Model):
     user = models.OneToOneField(User , related_name='transactionid', on_delete=models.CASCADE)
-    id = models.UUIDField(editable=False)
+    transid = models.UUIDField(editable=False)
 
 class UserInfo(models.Model):
     user = models.OneToOneField(User , related_name='userinfo', on_delete=models.CASCADE)

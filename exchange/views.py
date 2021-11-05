@@ -355,7 +355,7 @@ def verify(request, id):
         if len(req.json()['errors']) == 0:
             t_status = req.json()['data']['code']
             if t_status == 100:
-                user = transactionid.objects.get(id = id).user
+                user = transactionid.objects.get(transid = id).user
                 wallet = Wallet.objects.get(user = user , currency = Currencies.objects.get(id = 1))
                 wallet.amount = wallet.amount + int(amount)
                 wallet.save()
