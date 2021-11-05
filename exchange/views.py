@@ -346,7 +346,7 @@ class send_request(APIView):
             e_message = req.json()['errors']['message']
             return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
 
-def verify(request):
+def verify(request, id):
     t_status = request.GET.get('Status')
     t_authority = request.GET['Authority']
     if request.GET.get('Status') == 'OK':
