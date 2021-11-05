@@ -315,7 +315,7 @@ description = "توضیحات مربوط به تراکنش را در این قس
 email = 'email@example.com'  # Optional
 mobile = '09123456789'  # Optional
 # Important: need to edit for realy server.
-CallbackURL = 'https://amizax.com/verify/'
+CallbackURL = 'https://amizax.com/api/v1/verify/'
 
 @csrf_exempt
 def send_request(request):
