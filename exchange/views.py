@@ -320,6 +320,7 @@ CallbackURL = 'https://amizax.com/api/v1/verify/'
 @csrf_exempt
 
 class send_request(APIView):
+
     def post(self , request , format=None):
         uid = str(uuid.uuid4())
         transactionid(user = request.user , id = uid)
