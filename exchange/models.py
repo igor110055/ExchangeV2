@@ -480,13 +480,13 @@ class Verify(models.Model):
         return self.user.username + '--' + UserInfo.objects.get(user=self.user).first_name + ' ' + UserInfo.objects.get(user=self.user).last_name
 
     def get_melliphoto(self):
-        if VerifyMelliRequest.objects.filter(user = self.user):
+        if len(VerifyMelliRequest.objects.filter(user = self.user)) > 0:
             return VerifyMelliRequest.objects.get(user = self.user).get_image()
         else:
             return ''
 
     def get_acceptphoto(self):
-        if VerifyMelliRequest.objects.filter(user = self.user):
+        if len(VerifyAcceptRequest.objects.filter(user = self.user)) > 0:
             return VerifyAcceptRequest.objects.get(user = self.user).get_image()
         else:
             return ''
