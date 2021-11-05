@@ -315,16 +315,16 @@ description = "توضیحات مربوط به تراکنش را در این قس
 email = 'email@example.com'  # Optional
 mobile = '09123456789'  # Optional
 # Important: need to edit for realy server.
-CallbackURL = 'http://{ROOT}/verify/'
+CallbackURL = 'https://amizax.com/verify/'
 
 @csrf_exempt
 def send_request(request):
-    uid = uuid.uuid4 
+    uid = str(uuid.uuid4())
     transactionid(user = request.user , id = uid)
     req_data = {
         "merchant_id": MERCHANT,
         "amount": request.POST['amount'],
-        "callback_url": CallbackURL + f'{uid}' ,
+        "callback_url": CallbackURL + uid ,
         "description": description,
         "metadata": {"mobile": mobile, "email": email, "card_pan":str(request.POST['card']) ,}
     }
