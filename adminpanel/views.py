@@ -292,6 +292,23 @@ class bankaccounts(APIView):
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
 
+class verify(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get_object(self , user):
+        if(len(Verify.objects.filter(user = user))<1):
+            verif = Verify(user = user)
+            verif.save()
+        try:
+            return Verify.objects.filter(user = user)
+        except Wallet.DoesNotExist:
+            return Http404
+            
+    def get(self , request, user , format=None):
+        verify = self.get_object(user)
+        serializer = VerifySerializer(verify , many=True)
+        return Response(serializer.data)
+
 class verifymelli(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
