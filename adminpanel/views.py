@@ -274,7 +274,7 @@ class cp_history(APIView):
             res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=request.user).name)
             return Response(res)
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
-        res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=User.objects.get(id = id)).name, coin_type=brand)
+        res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=User.objects.get(id = id)).name)
         print(res)
         return Response(res)
 
