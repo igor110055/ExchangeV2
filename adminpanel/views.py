@@ -23,7 +23,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from py_crypto_hd_wallet import HdWalletFactory, HdWalletCoins, HdWalletSpecs , HdWalletWordsNum
-import json
+import json as jj
 from datetime import datetime ,timedelta
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login, logout
@@ -250,7 +250,7 @@ class cp_wallet(APIView):
         coinex = CoinEx(Perpetual.objects.get(user=User.objects.get(id =id)).apikey, Perpetual.objects.get(user=User.objects.get(id =id)).secretkey)
         res = coinex.balance_info()
         r = Request('https://api.ipify.org')
-        print(r)
+        print(r.text)
         print(res)
         result = {}
         for item in Cp_Currencies.objects.all():
