@@ -19,8 +19,6 @@ from rest_framework import permissions
 from rest_framework import status
 
 class ChatSessionView(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         """create a new chat session."""
@@ -62,8 +60,6 @@ class ChatSessionView(APIView):
     
 
 class ChatSessionMessageView(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         """return all messages in a chat session."""
@@ -102,8 +98,7 @@ class ChatSessionMessageView(APIView):
         })
 
 class user(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         if len(ChatSession.objects.filter(owner = request.user)) > 0 :
             user = ChatSession.objects.get(owner = request.user)
@@ -111,8 +106,7 @@ class user(APIView):
         return Response({'uri' : 0})
 
 class seen(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
+
     def get(self, request, uri, *args, **kwargs):
         if request.user.is_staff:
             chat_session = ChatSession.objects.get(uri=uri)
@@ -129,8 +123,6 @@ class seen(APIView):
         return Response(True)
 
 class adminchat(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
         user = ChatSession.objects.all()
