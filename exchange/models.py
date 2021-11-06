@@ -496,6 +496,12 @@ class Verify(models.Model):
         else:
             return ''
 
+    def isphone(self):
+        if len(UserInfo.objects.filter(user = self.user)).phone:
+            return True
+        else:
+            return False
+
     class meta:
         verbose_name = ' تاییدیه '
         verbose_name_plural = ' تاییدیه ها'

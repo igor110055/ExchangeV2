@@ -165,6 +165,7 @@ class VerifySerializer(serializers.ModelSerializer):
             "accountv",
             "rulev",
             "coinv",
+            "isphone",
             "get_acceptphoto",
             "get_melliphoto"
         )
