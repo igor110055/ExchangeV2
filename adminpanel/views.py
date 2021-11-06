@@ -5,6 +5,7 @@ from exchange.views import cp_withdraw, currencies, currency, notifications, pri
 from django.shortcuts import get_object_or_404, render
 from django import http
 from django.db.models.fields import EmailField
+from .lib.coinex import CoinEx
 from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
 from rest_framework import request, serializers
@@ -14,7 +15,7 @@ from rest_framework import authentication
 from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
+from exchange.models import BottomSticker, Cp_Currencies, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -239,6 +240,21 @@ class bankcards(APIView):
         req = VerifyBankRequest.objects.get(id = id)
         req.delete()
         return Response(status=status.HTTP_201_CREATED)
+
+class cp_wallet(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def post(self , request ,id, format=None):
+        coinex = CoinEx(Perpetual.objects.get(user=User.objects.get(id =id)).apikey, Perpetual.objects.get(user=User.objects.get(id =id).secretkey ))
+        res = coinex.balance_info()
+        result = {}
+        for item in Cp_Currencies.objects.all():
+            if item.brand in res.keys() :
+                result[item.brand] = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':res[item.brand]}
+            else: 
+                result[item.brand] = {'name' : item.name ,  'brand' : item.brand,'chain' : item.chain,'can_deposit' : item.can_deposit,'can_withdraw' : item.can_withdraw,'deposit_least_amount' : item.deposit_least_amount,'withdraw_least_amount' : item.withdraw_least_amount,'withdraw_tx_fee' : item.withdraw_tx_fee,'balance':'0'}
+        return Response(result)
 
 class bankaccounts(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
