@@ -497,7 +497,7 @@ class Verify(models.Model):
             return ''
 
     def isphone(self):
-        if len(UserInfo.objects.filter(user = self.user)).phone:
+        if UserInfo.objects.filter(user = self.user).phone:
             return True
         else:
             return False
