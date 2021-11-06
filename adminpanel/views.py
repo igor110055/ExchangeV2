@@ -249,7 +249,7 @@ class cp_wallet(APIView):
     def post(self , request ,id, format=None):
         coinex = CoinEx(Perpetual.objects.get(user=User.objects.get(id =id)).apikey, Perpetual.objects.get(user=User.objects.get(id =id)).secretkey)
         res = coinex.balance_info()
-        r = Request('https://api.ipify.org').jj()
+        r = Request('https://api.ipify.org').data
         print(r)
         print(res)
         result = {}
