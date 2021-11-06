@@ -2,6 +2,7 @@ from typing import Text
 from django.utils import timezone
 from django.db.models import manager
 from requests.sessions import Request
+from requests import get
 from exchange.views import cp_withdraw, currencies, currency, notifications, price, usersinfo
 from django.shortcuts import get_object_or_404, render
 from django import http
@@ -249,8 +250,8 @@ class cp_wallet(APIView):
     def post(self , request ,id, format=None):
         coinex = CoinEx(Perpetual.objects.get(user=User.objects.get(id =id)).apikey, Perpetual.objects.get(user=User.objects.get(id =id)).secretkey)
         res = coinex.balance_info()
-        r = Request('https://api.ipify.org').data
-        print(r)
+        ip = get('https://api.ipify.org').text
+        print('My public IP address is: {}'.format(ip))
         print(res)
         result = {}
         for item in Cp_Currencies.objects.all():
