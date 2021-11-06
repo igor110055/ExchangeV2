@@ -835,8 +835,7 @@ class settings(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class pages(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
+    
     def get_object(self):
         try:
             return Pages.objects.all()
