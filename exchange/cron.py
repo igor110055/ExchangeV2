@@ -19,7 +19,7 @@ def TICKER():
 
 def INDEXINFO():
     i = 0
-    while i < 20:
+    while i < 12:
         end = DT.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ") 
         start = (DT.datetime.now() - DT.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ") 
         print(end)
