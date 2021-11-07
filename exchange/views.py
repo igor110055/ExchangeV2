@@ -118,49 +118,72 @@ class login(APIView):
     def post(self, request, format=None):
         reqBody = json.loads(request.body)
         utc=pytz.UTC
-        if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
-            if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
-                if SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile):
-                    ver = SmsVerified.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-                    if ver.date + timedelta(minutes = 10) > utc.localize(datetime.now()):
-                        data = {}
-                        reqBody = json.loads(request.body)
-                        username = reqBody['username']
-                        print(username)
-                        password = reqBody['password']
-                        try:
-                            Account = User.objects.get(username=username)
-                        except BaseException as e:
-                            return Response({f'{str(e)}'} , status=status.HTTP_400_BAD_REQUEST)
-                        token = Token.objects.get_or_create(user=Account)[0].key
-                        print(token)
-                        if not check_password(password, Account.password):
-                            return Response({"رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
+        if len(User.objects.get(username = reqBody['username']))>0:
+            if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
+                if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
+                    if SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile):
+                        ver = SmsVerified.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+                        if ver.date + timedelta(minutes = 10) > utc.localize(datetime.now()):
+                            data = {}
+                            reqBody = json.loads(request.body)
+                            username = reqBody['username']
+                            print(username)
+                            password = reqBody['password']
+                            try:
+                                Account = User.objects.get(username=username)
+                            except BaseException as e:
+                                return Response({f'{str(e)}'} , status=status.HTTP_400_BAD_REQUEST)
+                            token = Token.objects.get_or_create(user=Account)[0].key
+                            print(token)
+                            if not check_password(password, Account.password):
+                                return Response({"رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
 
-                        if Account:
-                            if Account.is_active:
-                                print(request.user)
-                                data["message"] = "user logged in"
-                                data["username"] = Account.email
+                            if Account:
+                                if Account.is_active:
+                                    print(request.user)
+                                    data["message"] = "user logged in"
+                                    data["username"] = Account.email
 
-                                Res = {"data": data, "auth_token": token}
-                                if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
-                                    if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
+                                    Res = {"data": data, "auth_token": token}
+                                    if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
+                                        if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
+                                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                                    if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
+                                        ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
+                                        ui.save()
                                         notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
-                                if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
-                                    ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
-                                    ui.save()
-                                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
-                                use = UserInfo.objects.get(user=Account)
-                                use.last_visit=timezone.now()
-                                use.save()
-                                return Response(Res)
+                                    use = UserInfo.objects.get(user=Account)
+                                    use.last_visit=timezone.now()
+                                    use.save()
+                                    return Response(Res)
+
+                                else:
+                                    return Response({"حساب شما مسدود شده است"} , status=status.HTTP_400_BAD_REQUEST)
 
                             else:
-                                return Response({"حساب شما مسدود شده است"} , status=status.HTTP_400_BAD_REQUEST)
-
+                                return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
                         else:
-                            return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
+                            vcode = randrange(123456,999999)
+                            a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+                            for item in a:
+                                item.delete()
+                            c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
+                            c.save()
+                            sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
+
+                            pattern_values = {
+                            "verification-code": f"{vcode}",
+                            }
+
+                            bulk_id = sms.send_pattern(
+                                "s1a8zjq33u",    # pattern code
+                                "+983000505",      # originator
+                                f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
+                                pattern_values,  # pattern values
+                            )
+
+                            message = sms.get_message(bulk_id)
+                            return Response(1)
                     else:
                         vcode = randrange(123456,999999)
                         a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
@@ -184,27 +207,44 @@ class login(APIView):
                         message = sms.get_message(bulk_id)
                         return Response(1)
                 else:
-                    vcode = randrange(123456,999999)
-                    a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-                    for item in a:
-                        item.delete()
-                    c = mobilecodes(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile, code = vcode)
-                    c.save()
-                    sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
+                    data = {}
+                    username = reqBody['username']
+                    print(username)
+                    password = reqBody['password']
+                    try:
 
-                    pattern_values = {
-                    "verification-code": f"{vcode}",
-                    }
+                        Account = User.objects.get(username=username)
+                    except BaseException as e:
+                        return Response({f'{str(e)}'} , status=status.HTTP_400_BAD_REQUEST)
+                    token = Token.objects.get_or_create(user=Account)[0].key
+                    print(token)
+                    if not check_password(password, Account.password):
+                        return Response({"رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
 
-                    bulk_id = sms.send_pattern(
-                        "s1a8zjq33u",    # pattern code
-                        "+983000505",      # originator
-                        f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
-                        pattern_values,  # pattern values
-                    )
+                    if Account:
+                        if Account.is_active:
+                            print(request.user)
+                            data["message"] = "user logged in"
+                            data["username"] = Account.username
 
-                    message = sms.get_message(bulk_id)
-                    return Response(1)
+                            Res = {"data": data, "auth_token": token}
+                            if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
+                                if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
+                                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                            if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
+                                ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
+                                ui.save()
+                                notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
+                            use = UserInfo.objects.get(user=Account)
+                            use.last_visit=timezone.now()
+                            use.save()
+                            return Response(Res)
+
+                        else:
+                            return Response({"حساب شما مسدود شده است"} , status=status.HTTP_400_BAD_REQUEST)
+
+                    else:
+                        return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
             else:
                 data = {}
                 username = reqBody['username']
@@ -231,7 +271,7 @@ class login(APIView):
                             if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
                                 notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
                         if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
-                            ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
+                            ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='',phone='')
                             ui.save()
                             notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
                         use = UserInfo.objects.get(user=Account)
@@ -245,44 +285,7 @@ class login(APIView):
                 else:
                     return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
         else:
-            data = {}
-            username = reqBody['username']
-            print(username)
-            password = reqBody['password']
-            try:
-
-                Account = User.objects.get(username=username)
-            except BaseException as e:
-                return Response({f'{str(e)}'} , status=status.HTTP_400_BAD_REQUEST)
-            token = Token.objects.get_or_create(user=Account)[0].key
-            print(token)
-            if not check_password(password, Account.password):
-                return Response({"رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
-
-            if Account:
-                if Account.is_active:
-                    print(request.user)
-                    data["message"] = "user logged in"
-                    data["username"] = Account.username
-
-                    Res = {"data": data, "auth_token": token}
-                    if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
-                        if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
-                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
-                    if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
-                        ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='',phone='')
-                        ui.save()
-                        notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text='خود وارد شدید Amizaxبا موفقیت به حساب ', pattern='gf9zbtg61v')
-                    use = UserInfo.objects.get(user=Account)
-                    use.last_visit=timezone.now()
-                    use.save()
-                    return Response(Res)
-
-                else:
-                    return Response({"حساب شما مسدود شده است"} , status=status.HTTP_400_BAD_REQUEST)
-
-            else:
-                return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
+            return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class loginsms(APIView):
