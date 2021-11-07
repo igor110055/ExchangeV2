@@ -1774,7 +1774,7 @@ class buy(APIView):
         request.data['user'] = request.user.id
         serializer = BuySerializer(data = request.data)
         if serializer.is_valid():
-            wallet = Wallet.objects.get(user = request.user)
+            wallet = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 1))
             if wallet.amount < float(request.data['ramount']):
                 return Response({'error':'موجودی کافی نیست'} )
             wallet.amount = wallet.amount - float(request.data['ramount'])
