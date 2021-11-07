@@ -131,11 +131,11 @@ class login(APIView):
                         try:
                             Account = User.objects.get(username=username)
                         except BaseException as e:
-                            raise ValidationError({"400": f'{str(e)}'})
+                            return Response({f'{str(e)}'} , status=status.HTTP_400_BAD_REQUEST)
                         token = Token.objects.get_or_create(user=Account)[0].key
                         print(token)
                         if not check_password(password, Account.password):
-                            return Response({"message": "رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
 
                         if Account:
                             if Account.is_active:
@@ -157,10 +157,10 @@ class login(APIView):
                                 return Response(Res)
 
                             else:
-                                raise ValidationError({"400": f'Account not active'})
+                                return Response({"حساب شما مسدود شده است"} , status=status.HTTP_400_BAD_REQUEST)
 
                         else:
-                            raise ValidationError({"400": f'Account doesnt exist'})
+                            return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
                     else:
                         vcode = randrange(123456,999999)
                         a = mobilecodes.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
@@ -214,11 +214,11 @@ class login(APIView):
 
                     Account = User.objects.get(username=username)
                 except BaseException as e:
-                    raise ValidationError({"400": f'{str(e)}'})
+                    return Response({f'{str(e)}'} , status=status.HTTP_400_BAD_REQUEST)
                 token = Token.objects.get_or_create(user=Account)[0].key
                 print(token)
                 if not check_password(password, Account.password):
-                    return Response({"message": "رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
 
                 if Account:
                     if Account.is_active:
@@ -240,10 +240,10 @@ class login(APIView):
                         return Response(Res)
 
                     else:
-                        raise ValidationError({"400": f'Account not active'})
+                        return Response({"حساب شما مسدود شده است"} , status=status.HTTP_400_BAD_REQUEST)
 
                 else:
-                    raise ValidationError({"400": f'Account doesnt exist'})
+                    return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
         else:
             data = {}
             username = reqBody['username']
@@ -253,11 +253,11 @@ class login(APIView):
 
                 Account = User.objects.get(username=username)
             except BaseException as e:
-                raise ValidationError({"400": f'{str(e)}'})
+                return Response({f'{str(e)}'} , status=status.HTTP_400_BAD_REQUEST)
             token = Token.objects.get_or_create(user=Account)[0].key
             print(token)
             if not check_password(password, Account.password):
-                return Response({"message": "رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
+                return Response({"رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
 
             if Account:
                 if Account.is_active:
@@ -279,10 +279,10 @@ class login(APIView):
                     return Response(Res)
 
                 else:
-                    raise ValidationError({"400": f'Account not active'})
+                    return Response({"حساب شما مسدود شده است"} , status=status.HTTP_400_BAD_REQUEST)
 
             else:
-                raise ValidationError({"400": f'Account doesnt exist'})
+                return Response({"حسابی با این مشخصات یافت نشد "} , status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class loginsms(APIView):
