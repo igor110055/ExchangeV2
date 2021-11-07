@@ -118,7 +118,7 @@ class login(APIView):
     def post(self, request, format=None):
         reqBody = json.loads(request.body)
         utc=pytz.UTC
-        if len(User.objects.get(username = reqBody['username']))>0:
+        if len(User.objects.filter(username = reqBody['username']))>0:
             if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
                 if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
                     if SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile):
