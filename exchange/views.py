@@ -129,14 +129,13 @@ class login(APIView):
                         print(username)
                         password = reqBody['password']
                         try:
-
                             Account = User.objects.get(username=username)
                         except BaseException as e:
                             raise ValidationError({"400": f'{str(e)}'})
                         token = Token.objects.get_or_create(user=Account)[0].key
                         print(token)
                         if not check_password(password, Account.password):
-                            raise ValidationError({"message": "Incorrect Login credentials"})
+                            return Response({"message": "رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
 
                         if Account:
                             if Account.is_active:
@@ -219,7 +218,7 @@ class login(APIView):
                 token = Token.objects.get_or_create(user=Account)[0].key
                 print(token)
                 if not check_password(password, Account.password):
-                    raise ValidationError({"message": "Incorrect Login credentials"})
+                    return Response({"message": "رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
 
                 if Account:
                     if Account.is_active:
@@ -258,7 +257,7 @@ class login(APIView):
             token = Token.objects.get_or_create(user=Account)[0].key
             print(token)
             if not check_password(password, Account.password):
-                raise ValidationError({"message": "Incorrect Login credentials"})
+                return Response({"message": "رمز عبور اشتباه است"} , status=status.HTTP_400_BAD_REQUEST)
 
             if Account:
                 if Account.is_active:
