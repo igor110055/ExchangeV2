@@ -605,7 +605,7 @@ class wallet(APIView):
 
     def get_object(self , user , id):
         try:
-            return Wallet.objects.filter(user = user , currency = id)
+            return Wallet.objects.filter(user = user , currency = Currencies.objects.get(id = id))
         except Wallet.DoesNotExist:
             return Http404
             
