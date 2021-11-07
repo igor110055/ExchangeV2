@@ -538,8 +538,7 @@ class VerifyMelliRequest(models.Model):
         user = UserInfo.objects.get(user = self.user)
         return user.first_name + ' ' + user.last_name
     def get_user_id(self):
-        user = UserInfo.objects.get(user = self.user)
-        return user.id
+        return self.user.id
 
 class VerifyAcceptRequest(models.Model):
     user = models.ForeignKey(User , related_name='accept' , on_delete=models.CASCADE)
