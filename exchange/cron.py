@@ -18,6 +18,7 @@ def TICKER():
     sleep(2)
 
 def INDEXINFO():
+    i = 0
     while i < 5:
         end = DT.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ") 
         start = (DT.datetime.now() - DT.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ") 
