@@ -610,7 +610,7 @@ class wallet(APIView):
             return Http404
             
     def get(self , request , id):
-        userinfo = self.get_object(request.user.id , id)
+        userinfo = self.get_object(request.user , id)
         serializer = WalletSerializer(userinfo , many=True)
         return Response(serializer.data)
 
