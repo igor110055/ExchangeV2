@@ -790,7 +790,7 @@ class bankaccounts(APIView):
         request.data['user'] = request.user.id
         serializer = VerifyBankAccountsRequestSerializer(data = request.data)
         if serializer.is_valid():
-            for item in VerifyBankAccountsRequest.objects.filter(bankc = request.data['bankc']):
+            for item in VerifyBankAccountsRequest.objects.filter(shebac = request.data['shebac']):
                 item.delete()
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

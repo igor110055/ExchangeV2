@@ -574,7 +574,7 @@ class VerifyBankRequest(models.Model):
 
 class VerifyBankAccountsRequest(models.Model):
     user = models.ForeignKey(User , related_name='BanksAccounts' , on_delete=models.CASCADE)
-    bankc = models.CharField(max_length=16 , null=True)
+    bankc = models.CharField(max_length=16 , null=True , blank=True)
     shebac = models.CharField(max_length=50 , null=True)
     action = models.BooleanField(default = False)
     class meta:
