@@ -1797,7 +1797,7 @@ class buyoutopen(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return buyoutrequest.objects.filter(user = request.user , act = 0).order_by('-date')
+        return buyoutrequest.objects.filter(user = user , act = 0).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
@@ -1809,7 +1809,7 @@ class buyouthis(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return buyoutrequest.objects.filter(user = request.user , act = 1).order_by('-date')
+        return buyoutrequest.objects.filter(user = user , act = 1).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
@@ -1835,7 +1835,7 @@ class selloutopen(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return selloutrequest.objects.filter(user = request.user , act = 0).order_by('-date')
+        return selloutrequest.objects.filter(user = user , act = 0).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
@@ -1847,7 +1847,7 @@ class sellouthis(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return selloutrequest.objects.filter(user = request.user , act = 1).order_by('-date')
+        return selloutrequest.objects.filter(user = user , act = 1).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
