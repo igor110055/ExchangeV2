@@ -8,18 +8,18 @@ def TICKER():
     r = requests.get(url = 'https://api.nomics.com/v1/currencies/ticker?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=BTC,ETH,TRX,DOGE,USDT')
     r = r.json()
     price = Price.objects.get(id = 1)
-    price.btc = r[0]['price'] * 0.998
-    price.eth = r[1]['price'] * 0.998
-    price.usdt = r[2]['price'] * 0.998
-    price.doge = r[3]['price'] * 0.998
-    price.trx = r[4]['price'] * 0.998
+    price.btc = r[0]['price'] 
+    price.eth = r[1]['price']
+    price.usdt = r[2]['price']
+    price.doge = r[3]['price']
+    price.trx = r[4]['price']
     price.save()
 
     sleep(2)
 
 def INDEXINFO():
     i = 0
-    while i < 12:
+    while i < 20:
         end = DT.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ") 
         start = (DT.datetime.now() - DT.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ") 
         print(end)
