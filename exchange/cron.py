@@ -8,11 +8,11 @@ def TICKER():
     r = requests.get(url = 'https://api.nomics.com/v1/currencies/ticker?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=BTC,ETH,TRX,DOGE,USDT')
     r = r.json()
     price = Price.objects.get(id = 1)
-    price.btc = r[0]['price']
-    price.eth = r[1]['price']
-    price.usdt = r[2]['price']
-    price.doge = r[3]['price']
-    price.trx = r[4]['price']
+    price.btc = r[0]['price'] * 0.998
+    price.eth = r[1]['price'] * 0.998
+    price.usdt = r[2]['price'] * 0.998
+    price.doge = r[3]['price'] * 0.998
+    price.trx = r[4]['price'] * 0.998
     price.save()
 
     sleep(2)
