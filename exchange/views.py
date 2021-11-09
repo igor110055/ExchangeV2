@@ -2094,7 +2094,7 @@ class withdraw(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request , format=None):
-        request.data['user'] = request.user.id
+        request.data['user'] = request.user
         serializer = WithdrawSerializer(data = request.data)
         if serializer.is_valid():
             wa = Wallet.objects.get(request.user , currency=1)
