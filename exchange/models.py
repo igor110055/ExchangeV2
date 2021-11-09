@@ -527,7 +527,7 @@ class BankAccounts(models.Model):
         verbose_name_plural = ' حساب های بانک'
 
 class WithdrawRequest(models.Model):
-    user = models.ForeignKey(User , related_name='buys' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User , related_name='withdraws' , on_delete=models.CASCADE)
     bankaccount = models.ForeignKey(BankAccounts , related_name='account' , on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now())
     amount = models.IntegerField()
