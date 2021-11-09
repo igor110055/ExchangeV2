@@ -511,6 +511,8 @@ class BankCards(models.Model):
     user =  models.ForeignKey(User , related_name='cards' , on_delete=models.CASCADE)
     number = models.CharField(max_length=16 , null=True)
     status = models.BooleanField(default=False)
+    def __str__(self):
+        return self.user.username + '--' + self.number
     class meta:
         verbose_name = ' کارت بانک '
         verbose_name_plural = ' کارت های بانک'
