@@ -9,6 +9,7 @@ import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
 from requests.api import post
+from exchange.views import bankaccounts
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
@@ -525,6 +526,55 @@ class BankAccounts(models.Model):
     class meta:
         verbose_name = ' حساب بانکی '
         verbose_name_plural = ' حساب های بانک'
+
+class WithdrawRequest(models.Model):
+    user = models.ForeignKey(User , related_name='buys' , on_delete=models.CASCADE)
+    bankaccount = models.ForeignKey(BankAccounts , related_name='account' , on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now())
+    amount = models.IntegerField()
+    act = models.IntegerField(default=0)
+    def get_user(self):
+        return self.user.username
+    def get_sheba(self):
+        return self.bankaccount.shebac
+    def get_number(self):
+        return self.bankaccount.shebac
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now()- self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes
 
 class VerifyMelliRequest(models.Model):
     user = models.ForeignKey(User , related_name='melli' , on_delete=models.CASCADE)

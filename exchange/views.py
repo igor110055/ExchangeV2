@@ -21,7 +21,7 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, selloutSerializer
+from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
 from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, LevelFee, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, Review, SmsVerified, TopSticker, VerifyAcceptRequest, buyoutrequest, buyrequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, selloutrequest, sellrequest, transactionid
@@ -2088,6 +2088,23 @@ class cp_withdraw(APIView):
             withdraw.save()
             return Response(res)
         return Response(res)
+
+class withdraw(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request , format=None):
+        request.data['user'] = request.user.id
+        serializer = WithdrawSerializer(data = request.data)
+        if serializer.is_valid():
+            wa = Wallet.objects.get(request.user , currency=1)
+            if request.data['amount'] > wa.amount :
+                return Response('موجودی کافی نیست')
+            else:
+                wa.amount = wa.amount - int(request.data['amount'])
+                wa.save()
+                serializer.save()
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class cp_deposit(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]

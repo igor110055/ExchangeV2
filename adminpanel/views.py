@@ -14,10 +14,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, selloutSerializer
+from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
+from exchange.models import BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, WithdrawRequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -663,6 +663,28 @@ class ticket(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class withdraw(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get(self, request , format=None):
+        serializer = WithdrawSerializer(WithdrawRequest.objects.all(), many = True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+        
+    def post(self, request , format=None):
+        wr = WithdrawRequest.objects.get(id = request.data['id'])
+        tr = Transactions(user = wr.user , amount = wr.amount , currency =Currencies.objects.get(id=1), act = 2)
+        tr.save()
+        wr.act = 1
+        wr.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+    def delete():
+        wr = WithdrawRequest.objects.get(id = request.data['id'])
+        wa = Wallet.objects.get(user = wr.user , currency = Currencies.objects.get(id = 1))
+        wa.amount = wa.amount + wr.amount
+        wa.save()
+        wr.delete()
+        return Response(status=status.HTTP_201_CREATED)
 
 class topsticker(APIView):
     def get(self , request , format=None):
