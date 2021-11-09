@@ -2098,7 +2098,7 @@ class withdraw(APIView):
         serializer = WithdrawSerializer(data = request.data)
         if serializer.is_valid():
             wa = Wallet.objects.get(user= request.user , currency=1)
-            if request.data['amount'] > wa.amount :
+            if int(request.data['amount']) > wa.amount :
                 return Response('موجودی کافی نیست')
             else:
                 wa.amount = wa.amount - int(request.data['amount'])
