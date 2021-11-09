@@ -425,7 +425,7 @@ class MainTradesBuyOrderSerializer(serializers.ModelSerializer):
 
 class Cp_WithdrawSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cp_Withdraw
+        model = WithdrawRequest
         fields = (
             "id",
             "date",
