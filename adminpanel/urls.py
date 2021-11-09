@@ -39,6 +39,7 @@ urlpatterns = [
    path('users' , views.users.as_view() , name='users'),
    path('mainpageposts' , views.mainpageposts.as_view() , name='mainpageposts'),
    path('topsticker' , views.topsticker.as_view() , name='topsticker'),
+   path('transactions' , views.transactions.as_view() , name='transactions'),
    path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),
    path('otherpages' , views.otherpages.as_view() , name='otherpages'),
    path('editotherpages' , views.editotherpages.as_view() , name='editotherpages'),

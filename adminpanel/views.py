@@ -663,6 +663,20 @@ class ticket(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class transactions(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get_object(self , user):
+        try:
+            return Transactions.objects.all()
+        except Wallet.DoesNotExist:
+            return Http404
+            
+    def get(self , request , format=None):
+        transactions = self.get_object(request.user)
+        serializer = TransactionsSerializer(transactions , many=True)
+        return Response(serializer.data)
+
 class withdraw(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
