@@ -372,9 +372,7 @@ def verifys(request, transid):
                     wa.save()
                 tra = Transactions(user = user, amount= transactioni.amount, act = 1, currency = Currencies.objects.get(id = 1))
                 tra.save()
-                return HttpResponse('Transaction success.\nRefID: ' + str(
-                    req.json()['data']['ref_id']
-                ))
+                return redirect('https://amizax.com/success')
             elif t_status == 101:
                 return HttpResponse('Transaction submitted : ' + str(
                     req.json()['data']['message']
