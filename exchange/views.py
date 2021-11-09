@@ -2095,6 +2095,7 @@ class withdraw(APIView):
     
     def post(self, request , format=None):
         request.data['user'] = request.user.id
+        request.data['bankaccount'] = BankAccounts.objects.get(id = request.data['bankaccount'])
         serializer = WithdrawSerializer(data = request.data)
         if serializer.is_valid():
             wa = Wallet.objects.get(user= request.user , currency=1)
