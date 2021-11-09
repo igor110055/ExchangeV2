@@ -198,4 +198,5 @@ CRONJOBS = [
     ('* * * * *', 'exchange.cron.TICKER'),
     ('* * * * *', 'exchange.cron.INDEXINFO'),
     ('* * * * *', 'exchange.cron.RIALTICKER')
+    ('* */30 * * *', 'exchange.cron.USDT')
 ]
