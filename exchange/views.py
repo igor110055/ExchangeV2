@@ -2094,10 +2094,10 @@ class withdraw(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request , format=None):
-        request.data['user'] = request.user
+        request.data['user'] = request.user.id
         serializer = WithdrawSerializer(data = request.data)
         if serializer.is_valid():
-            wa = Wallet.objects.get(request.user , currency=1)
+            wa = Wallet.objects.get(user= request.user , currency=1)
             if request.data['amount'] > wa.amount :
                 return Response('موجودی کافی نیست')
             else:
