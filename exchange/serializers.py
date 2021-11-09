@@ -271,7 +271,8 @@ class TransactionsSerializer(serializers.ModelSerializer):
             "amount",
             "user",
             "currency",
-            "act"
+            "act",
+            "get_user"
         )
 
 
