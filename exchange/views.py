@@ -2099,11 +2099,11 @@ class withdraw(APIView):
         if serializer.is_valid():
             wa = Wallet.objects.get(user= request.user , currency=1)
             if int(request.data['amount']) > wa.amount :
-                return Response('موجودی کافی نیست')
+                return Response('موجودی کافی نیست', status=status.HTTP_400_BAD_REQUEST)
             else:
+                serializer.save()
                 wa.amount = wa.amount - int(request.data['amount'])
                 wa.save()
-                serializer.save()
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class cp_deposit(APIView):
