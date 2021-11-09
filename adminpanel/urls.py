@@ -7,6 +7,7 @@ urlpatterns = [
    path('review' , views.review.as_view() , name='review'),
    path('levelfee' , views.levelfee.as_view() , name='levelfee'),
    path('buy' , views.buy.as_view() , name='buy'),
+   path('withdraw' , views.withdraw.as_view() , name='withdraw'),
    path('buyout' , views.buyout.as_view() , name='buyout'),
    path('sellout' , views.sellout.as_view() , name='sellout'),
    path('buyouthistory' , views.buyouthistory.as_view() , name='buyouthistory'),
