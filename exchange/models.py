@@ -380,6 +380,8 @@ class Wallet(models.Model):
     address = models.CharField(max_length=1000 , null = True, blank=True)
     key = models.CharField(max_length=1000 , null = True ,blank=True)
     accid = models.CharField(max_length=100 , null = True ,blank=True)
+    def __str__(self):
+        return self.user.username + '--' + self.currency.name
     class Meta:
         verbose_name = ' کیف پول '
         verbose_name_plural = ' کیف پول ها'
