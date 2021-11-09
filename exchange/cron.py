@@ -38,9 +38,9 @@ def INDEXINFO():
         i = i + 1
 
 def RIALTICKER():
-        rial = requests.get(url = 'http://api.navasan.tech/latest/?api_key=7RPe7l7pwChjXtZ3vm3xM7vl0xrOoZgk')   
+        rial = requests.get(url = 'https://dapi.p3p.repl.co/api/?currency=usd')   
         r = rial.json()
         price = Price.objects.get(id = 1)
-        price.rial = int(r['usd_buy']['value']) * 10
-        price.usd = int(r['usd_buy']['value']) * 10
+        price.rial = int(r['Price'])
+        price.usd = int(r['Price'])
         price.save()
