@@ -667,7 +667,7 @@ class withdraw(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def get(self, request , format=None):
-        serializer = WithdrawSerializer(WithdrawRequest.objects.all(), many = True)
+        serializer = WithdrawSerializer(WithdrawRequest.objects.filter(act = 0), many = True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
         
     def post(self, request , format=None):
