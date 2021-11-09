@@ -89,5 +89,5 @@ def USDT():
             balance = int(val, 16)
             print(balance)
             if balance :
-                item.amount = balance
+                item.amount = balance / 1000000
                 item.save()
