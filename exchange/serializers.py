@@ -221,6 +221,7 @@ class BankAccountsSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankAccounts
         fields = (
+            "id",
             "user",
             "number",
             "shebac",
