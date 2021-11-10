@@ -51,7 +51,7 @@ class ChatSession(TrackableDateModel):
 class ChatSessionMessage(TrackableDateModel):
     """Store messages for a session."""
 
-    user = models.ForeignKey(User, on_delete=models.PROTECT , null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE , null=True)
     name = models.CharField(max_length=100, null=True)
     email = models.EmailField(null=True)
     chat_session = models.ForeignKey(
