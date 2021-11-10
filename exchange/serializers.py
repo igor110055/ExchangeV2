@@ -486,6 +486,7 @@ class AdminChatSerializer(serializers.ModelSerializer):
             "id",
             "owner",
             "uri",
+            "email",
             "get_user",
             "get_seen"
         )
