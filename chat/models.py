@@ -55,7 +55,7 @@ class ChatSessionMessage(TrackableDateModel):
     name = models.CharField(max_length=100, null=True)
     email = models.EmailField(null=True)
     chat_session = models.ForeignKey(
-        ChatSession, related_name='messages', on_delete=models.PROTECT
+        ChatSession, related_name='messages', on_delete=models.CASCADE
     )
     message = models.TextField(max_length=2000)
     seen = models.BooleanField(default=False)
