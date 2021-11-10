@@ -262,16 +262,10 @@ class cp_history(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
 
-    def get_object(self , user , id):
-        try:
-            return Cp_Wallet.objects.filter(user = user , currency = id)
-        except Wallet.DoesNotExist:
-            return False
-    
     def get(self, request, id , format=None):
-        if id == 'false':
+        if id == 'all':
             coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
-            res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=request.user).name)
+            res = coinex.sub_account_transfer_history()
             return Response(res)
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
         res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=User.objects.get(id = id)).name)

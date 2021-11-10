@@ -956,7 +956,7 @@ class emailverify(APIView):
         
         send_mail(
             'Subject here',
-            f'به شرکت سرمایه گذاری ... خوش آمدید کد فعالسازی : {vcode} ',
+            f'به شرکت سرمایه گذاری Amizax خوش آمدید کد فعالسازی : {vcode} ',
             'info@ramabit.com',
             [f'{request.data["email"]}'],
             fail_silently=False,
@@ -2247,12 +2247,6 @@ class cp_wallet(APIView):
 class cp_history(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
-
-    def get_object(self , user , id):
-        try:
-            return Cp_Wallet.objects.filter(user = user , currency = id)
-        except Wallet.DoesNotExist:
-            return False
     
     def get(self, request, id , format=None):
         if id == 'false':

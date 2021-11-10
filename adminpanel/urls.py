@@ -50,4 +50,5 @@ urlpatterns = [
    path('otherpages/<int:id>' , views.otherpages.as_view() , name='otherpages'),
    path('cp_wallet/<int:id>' , views.cp_wallet.as_view() , name='cp_wallet'),
    path('cp_history/<int:id>' , views.cp_history.as_view() , name='cp_history'),
+   path('cp_history/<str:id>' , views.cp_history.as_view() , name='cp_history'),
 ]
