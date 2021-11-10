@@ -105,6 +105,9 @@ class user(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
+        if len(ChatSession.objects.filter(email = request.data['email'])) > 0 :
+            user = ChatSession.objects.get(email = request.data['email'])
+            return Response({'uri' : user.uri , 'username' : user.email})
         if len(ChatSession.objects.filter(owner = request.user)) > 0 :
             user = ChatSession.objects.get(owner = request.user)
             return Response({'uri' : user.uri , 'username' : request.user.username})
