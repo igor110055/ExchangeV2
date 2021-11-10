@@ -73,18 +73,21 @@ class ChatSessionMessageView(APIView):
         else: 
             email= request.data['email']
         chat_session = ChatSession.objects.get(uri=uri)
-        if request.data['email']:
+            
+        if not request.data['email']:
+            if request.user.is_staff:
+                ChatSessionMessage.objects.create(
+                    user=user, chat_session=chat_session, message=message, aseen=True
+                )
+            else:
+                ChatSessionMessage.objects.create(
+                    user=user, chat_session=chat_session, message=message, seen=True
+                )
+        else:
             ChatSessionMessage.objects.create(
                 email=email, chat_session=chat_session, message=message, seen=True
             )
-        if request.user.is_staff:
-            ChatSessionMessage.objects.create(
-                user=user, chat_session=chat_session, message=message, aseen=True
-            )
-        else:
-            ChatSessionMessage.objects.create(
-                user=user, chat_session=chat_session, message=message, seen=True
-            )
+            
         return Response ({
             'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
             'user': email
