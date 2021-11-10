@@ -24,42 +24,25 @@ class ChatSessionView(APIView):
 
     def post(self, request, *args, **kwargs):
         """create a new chat session."""
-        user = request.user
-        chats =  ChatSession.objects.filter(owner = request.user)
+        if not request.data['email']:
+            user = request.user
+        else: 
+            email= request.data['email']
+        if not request.data['email']:
+            chats =  ChatSession.objects.filter(owner = request.user)
+        else:
+            chats =  ChatSession.objects.filter(email = email)
         for item in chats :
             item.delete()
-        chat_session = ChatSession.objects.create(owner=user)
-
+        if not request.data['email']:
+            chat_session = ChatSession.objects.create(owner=user)
+        else:
+            chat_session = ChatSession.objects.create(email=email)
         return Response({
             'status': 'SUCCESS', 'uri': chat_session.uri,
             'message': 'New chat session created'
         })
 
-    def patch(self, request, *args, **kwargs):
-        """Add a user to a chat session."""
-        User = get_user_model()
-        print(kwargs['uri'])
-        uri = kwargs['uri']
-        username = request.user.username
-        user = User.objects.get(username=username)
-
-        chat_session = ChatSession.objects.get(uri=uri)
-        owner = chat_session.owner
-        print(chat_session.owner)
-        print(user)
-
-        owner = deserialize_user(owner)
-        members = [
-            deserialize_user(chat_session.user) 
-            for chat_session in chat_session.members.all()
-        ]
-        members.insert(0, owner)  # Make the owner the first member 
-        return Response ({
-            'status': 'SUCCESS', 'members': members,
-            'message': '%s joined the chat' % user.username,
-            'user': deserialize_user(user)
-        })
-    
 
 class ChatSessionMessageView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
