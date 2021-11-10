@@ -85,9 +85,15 @@ class ChatSessionMessageView(APIView):
         """create a new message in a chat session."""
         uri = kwargs['uri']
         message = request.data['message']
-
-        user = request.user
+        if not request.data['email']:
+            user = request.user
+        else: 
+            email= request.data['email']
         chat_session = ChatSession.objects.get(uri=uri)
+        if request.data['email']:
+            ChatSessionMessage.objects.create(
+                email=email, chat_session=chat_session, message=message, seen=True
+            )
         if request.user.is_staff:
             ChatSessionMessage.objects.create(
                 user=user, chat_session=chat_session, message=message, aseen=True
