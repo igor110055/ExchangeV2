@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 
 from exchange.models import LevelFee
 from .models import (
-    ChatSession, ChatSessionMember, ChatSessionMessage, deserialize_user
+    ChatSession, ChatSessionMessage, deserialize_user
 )
 from exchange.serializers import AdminChatSerializer, LevelFeeSerializer
 from rest_framework import status
