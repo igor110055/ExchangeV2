@@ -87,7 +87,7 @@ class ChatSessionMessageView(APIView):
             ChatSessionMessage.objects.create(
                 email=email, chat_session=chat_session, message=message, seen=True
             )
-            
+
         return Response ({
             'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
             'user': email
@@ -97,10 +97,10 @@ class user(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
-        if len(ChatSession.objects.filter(email = request.data['email'])) > 0 :
+        if 'email' in request.data :
             user = ChatSession.objects.get(email = request.data['email'])
             return Response({'uri' : user.uri , 'username' : user.email})
-        if len(ChatSession.objects.filter(owner = request.user)) > 0 :
+        else :
             user = ChatSession.objects.get(owner = request.user)
             return Response({'uri' : user.uri , 'username' : request.user.username})
         return Response({'uri' : 0})
