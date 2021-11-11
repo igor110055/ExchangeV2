@@ -1840,6 +1840,7 @@ class sellout(APIView):
         serializer = selloutSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
+            sms(user = User.objects.get(id = 1) ,date= datetime.now() ,title= 'درخواست فروش'  ,text= ' درخواست فروش ولت خارجی به مقدار' + request.data['amount'] + 'از ارز' + request.data['currency'] + 'برای ' + request.user.username, pattern= 'r4hxan3byx')
             return Response(serializer.data , status=status.HTTP_201_CREATED)
         print(serializer.errors)
         return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
