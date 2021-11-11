@@ -101,7 +101,11 @@ class ChatSessionMessageView(APIView):
             ChatSessionMessage.objects.create(
                 email=email, chat_session=chat_session, message=message, seen=True
             )
-
+        if not 'email' in request.data:
+            return Response ({
+                'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
+                'user': deserialize_user(user)
+            })
         return Response ({
             'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
             'user': email
