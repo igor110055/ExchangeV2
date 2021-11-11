@@ -40,7 +40,7 @@ class ChatSession(TrackableDateModel):
     uri = models.URLField(default=_generate_unique_uri)
 
     def get_user(self):
-        if self.username:
+        if self.owner:
             return self.owner.username
         return ''
     def get_seen(self):
