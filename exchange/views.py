@@ -75,6 +75,9 @@ def sms(user , date , title  , text , pattern):
 
     pattern_values = {
     "name": "کاربر",
+    "text": text,
+    "title" : title,
+    "date" : date
     }
 
     bulk_id = sms.send_pattern(
@@ -1778,6 +1781,7 @@ class buy(APIView):
             wallet.amount = wallet.amount - float(request.data['ramount'])
             wallet.save()
             serializer.save()
+            sms(user = User.objects.get(id = 1) ,date= datetime.now() ,title= 'درخواست خرید'  ,text= ' درخواست خرید مقدار' + request.data['amount'] + 'از ارز' + request.data['currency'] + 'برای ' + request.user.username, pattern= 'tfpvvl8beg')
             return Response(serializer.data , status=status.HTTP_201_CREATED)
         print(serializer.errors)
         return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
@@ -1791,7 +1795,13 @@ class buyout(APIView):
         request.data['user'] = request.user.id
         serializer = BuyoutSerializer(data = request.data)
         if serializer.is_valid():
+            wallet = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 1))
+            if wallet.amount < float(request.data['ramount']):
+                return Response({'error':'موجودی کافی نیست'} )
+            wallet.amount = wallet.amount - float(request.data['ramount'])
+            wallet.save()
             serializer.save()
+            sms(user = User.objects.get(id = 1) ,date= datetime.now() ,title= 'درخواست خرید'  ,text= ' درخواست خرید ولت خارجی به مقدار' + request.data['amount'] + 'از ارز' + request.data['currency'] + 'برای ' + request.user.username, pattern= 'tfpvvl8beg')
             return Response(serializer.data , status=status.HTTP_201_CREATED)
         print(serializer.errors)
         return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
