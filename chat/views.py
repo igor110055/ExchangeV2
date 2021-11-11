@@ -52,20 +52,9 @@ class ChatSessionView(APIView):
         user = User.objects.get(username=username)
 
         chat_session = ChatSession.objects.get(uri=uri)
-        owner = chat_session.owner
-        print(chat_session.owner)
-        print(user)
 
-        owner = deserialize_user(owner)
-        members = [
-            deserialize_user(chat_session.user) 
-            for chat_session in chat_session.members.all()
-        ]
-        members.insert(0, owner)  # Make the owner the first member 
         return Response ({
-            'status': 'SUCCESS', 'members': members,
-            'message': '%s joined the chat' % user.username,
-            'user': deserialize_user(user)
+            'status': 'SUCCESS',
         })
 
 
