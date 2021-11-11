@@ -9,6 +9,7 @@ import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
 from requests.api import post
+from exchange.views import emailverify
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
@@ -54,6 +55,7 @@ class UserInfo(models.Model):
     is_verify = models.BooleanField(default=False)
     smsverify = models.BooleanField(default=False)
     googleverify = models.BooleanField(default=False)
+    emailverify = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     last_visit = models.DateTimeField(default=timezone.now())
     complete = models.BooleanField(default=False)
