@@ -24,17 +24,17 @@ class ChatSessionView(APIView):
 
     def post(self, request, *args, **kwargs):
         """create a new chat session."""
-        if not request.data['email']:
+        if not 'email' in request.data:
             user = request.user
         else: 
             email= request.data['email']
-        if not request.data['email']:
+        if not 'email' in request.data:
             chats =  ChatSession.objects.filter(owner = request.user)
         else:
             chats =  ChatSession.objects.filter(email = email)
         for item in chats :
             item.delete()
-        if not request.data['email']:
+        if not 'email' in request.data:
             chat_session = ChatSession.objects.create(owner=user)
         else:
             chat_session = ChatSession.objects.create(email=email)
@@ -88,7 +88,7 @@ class ChatSessionMessageView(APIView):
             email= request.data['email']
         chat_session = ChatSession.objects.get(uri=uri)
             
-        if not request.data['email']:
+        if not 'email' in request.data:
             if request.user.is_staff:
                 ChatSessionMessage.objects.create(
                     user=user, chat_session=chat_session, message=message, aseen=True
