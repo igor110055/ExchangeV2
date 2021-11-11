@@ -9,7 +9,6 @@ import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
 from requests.api import post
-from exchange.views import emailverify
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
