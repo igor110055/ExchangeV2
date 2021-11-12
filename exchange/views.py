@@ -1933,6 +1933,13 @@ class cp_balance(APIView):
     def post(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_account(access_id=Perpetual.objects.get(user=request.user).apikey,market =  request.data['sym'],tonce=time.time()*1000,))
+
+class cp_borrow(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def post(self , request, format=None):   
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        return Response(coinex.margin_loan(access_id=Perpetual.objects.get(user=request.user).apikey,market =  request.data['market'],amount = request.data['amount'],coin_type=request.data['coin'],tonce=time.time()*1000,))
         
 class cp_ticker(APIView):
     def post(self , request, format=None):
