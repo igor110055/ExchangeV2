@@ -98,7 +98,7 @@ def notification (user , date = '', title = '' , text = '', pattern='gf9zbtg61v'
     note = Notification(user = user , title = title , text = text)
     note.save()
     sms(user , date, title, text, pattern)
-    sendemail(user , date, title, text)
+    sendemail(user , text)
 
 class timeout(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
