@@ -61,7 +61,7 @@ import requests
 import json
 from django.utils import timezone
 
-def sendemail(user , date , title , text) :
+def sendemail(user , date = '' , title = '' , text = '') :
     send_mail(
         'Subject here',
         f'{title}\n{text}',
