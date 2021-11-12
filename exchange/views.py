@@ -70,11 +70,15 @@ def sendemail(user , date , title , text) :
         fail_silently=False,
     )
 
-def sms(user , date , title  , text , pattern):
+def sms(user , date = False , text = False , pattern = 'gf9zbtg61v'):
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
-
-    pattern_values = {
+    if text  :
+        pattern_values = {
+    "text": text,
+    }
+    else :
+        pattern_values = {
     "name": "کاربر",
     }
 
@@ -90,11 +94,11 @@ def sms(user , date , title  , text , pattern):
     print(f"+98999999999")
     return True
 
-def notification (user , date = '', title = '' , text = '', pattern='gf9zbtg61v'):
+def notification (user , date = False, title = False , text = False, pattern='gf9zbtg61v'):
     note = Notification(user = user , title = title , text = text)
     note.save()
-    sms(user , date, title, text, pattern)
-    sendemail(user , text)
+    sms(user = user , date = date, text = text, pattern= pattern)
+    sendemail(user = user , text = text , title= title)
 
 class timeout(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]

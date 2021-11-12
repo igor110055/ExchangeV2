@@ -70,7 +70,7 @@ def sms(user , date , title  , text , pattern):
 def notification (user , date = datetime.now(), title = '' , text = ''):
     note = Notification(user = user , title = title , text = text)
     note.save()
-    sms(user , date, title, text)
+    sms(user , text)
     sendemail(user , date, title, text)
 
 class staff(APIView):
