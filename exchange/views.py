@@ -1946,7 +1946,7 @@ class cp_repay(APIView):
     permission_classes = [IsAuthenticated]
     def post(self , request, format=None):   
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
-        return Response(coinex.margin_loan(market =  request.data['market'],amount = request.data['amount'],coin_type=request.data['coin']))
+        return Response(coinex.margin_flat(market =  request.data['market'],amount = request.data['amount'],coin_type=request.data['coin']))
         
 
 class cp_borrowlist(APIView):
