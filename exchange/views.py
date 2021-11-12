@@ -77,7 +77,7 @@ def sms(user , date , title  , text , pattern):
     "name": "کاربر",
     "text": text,
     "title" : title,
-    "date" : date
+    "date" : ''
     }
 
     bulk_id = sms.send_pattern(
