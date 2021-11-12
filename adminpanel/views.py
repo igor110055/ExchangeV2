@@ -71,7 +71,7 @@ def notification (user , date = datetime.now(), title = '' , text = ''):
     note = Notification(user = user , title = title , text = text)
     note.save()
     sms(user , date, title, text)
-    email(user , date, title, text)
+    sendemail(user , date, title, text)
 
 class staff(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -233,7 +233,7 @@ class bankcards(APIView):
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
-                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -312,7 +312,7 @@ class bankaccounts(APIView):
                 user = UserInfo.objects.get(user = req.user)
                 user.level = 1
                 user.save()
-                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
             req = VerifyBankAccountsRequest.objects.get(id = id)
             req.delete()
             return Response(status=status.HTTP_201_CREATED)
@@ -369,7 +369,7 @@ class verifymelli(APIView):
             user = UserInfo.objects.get(user = request.data['user'])
             user.level = 1
             user.save()
-            sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+            notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
         id = request.data['id']
         req = VerifyMelliRequest.objects.get(id = id)
         req.action = True
@@ -414,7 +414,7 @@ class verifyaccept(APIView):
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
-                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
         id = request.data['id']
         req = VerifyAcceptRequest.objects.get(id = id)
         req.action = True
@@ -592,7 +592,7 @@ class perpetualreqccept(APIView):
                 user = UserInfo.objects.get(user = user)
                 user.level = 1
                 user.save()
-                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
         pe = PerpetualRequest.objects.get(id = id)
         pe.delete()
         return Response(status=status.HTTP_201_CREATED)
