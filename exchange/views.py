@@ -92,7 +92,7 @@ def sms(user , date , title  , text , pattern):
     print(f"+98999999999")
     return True
 
-def notification (user , date = datetime.now(), title = '' , text = '', pattern='gf9zbtg61v'):
+def notification (user , date = '', title = '' , text = '', pattern='gf9zbtg61v'):
     note = Notification(user = user , title = title , text = text)
     note.save()
     sms(user , date, title, text, pattern)
