@@ -73,7 +73,12 @@ def sendemail(user , date , title , text) :
 def sms(user , date , title  , text , pattern):
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
-    pattern_values = {
+    if text :
+        pattern_values = {
+    "text": text,
+    }
+    else :
+        pattern_values = {
     "name": "کاربر",
     }
 
@@ -412,6 +417,7 @@ class rulev(APIView):
             per = UserInfo.objects.get(user = request.user)
             per.level = 1
             per.save()
+            sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
         return Response(status=status.HTTP_201_CREATED)
 
 class general(APIView):
@@ -453,6 +459,7 @@ class usersinfo(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
+                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
             note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
             note.save()
             return Response( status=status.HTTP_201_CREATED)
@@ -471,6 +478,7 @@ class usersinfo(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
+                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
             return Response( status=status.HTTP_201_CREATED)
 
     def put(self, request , format=None):
@@ -938,6 +946,7 @@ class mobileverify(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
+                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -974,6 +983,7 @@ class emailverify(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
+                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)

@@ -34,24 +34,29 @@ import pytz
 from random import randrange
 from django.db.models import Q
 
-def email(user , date , title , text) :
+def sendemail(user , date , title , text) :
     send_mail(
         'Subject here',
-        f'به شرکت سرمایه گذاری ... خوش آمدید کد فعالسازی : {"vcode"} ',
+        f'{title}\n{text}',
         'info@ramabit.com',
-        [f'armansaheb@gmail.com'],
+        [f'{user.email}'],
         fail_silently=False,
     )
 
-def sms(user , date , title  , text ):
+def sms(user , date , title  , text , pattern):
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
-    pattern_values = {
-    "verification-code": f"dcsdcdscd",
+    if text :
+        pattern_values = {
+    "text": text,
+    }
+    else :
+        pattern_values = {
+    "name": "کاربر",
     }
 
     bulk_id = sms.send_pattern(
-        "nyxequ9zz4",    # pattern code
+        f"{pattern}",    # pattern code
         "+983000505",      # originator
         f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
         pattern_values,  # pattern values
@@ -228,6 +233,7 @@ class bankcards(APIView):
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
+                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -306,6 +312,7 @@ class bankaccounts(APIView):
                 user = UserInfo.objects.get(user = req.user)
                 user.level = 1
                 user.save()
+                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
             req = VerifyBankAccountsRequest.objects.get(id = id)
             req.delete()
             return Response(status=status.HTTP_201_CREATED)
@@ -362,6 +369,7 @@ class verifymelli(APIView):
             user = UserInfo.objects.get(user = request.data['user'])
             user.level = 1
             user.save()
+            sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
         id = request.data['id']
         req = VerifyMelliRequest.objects.get(id = id)
         req.action = True
@@ -406,6 +414,7 @@ class verifyaccept(APIView):
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
+                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
         id = request.data['id']
         req = VerifyAcceptRequest.objects.get(id = id)
         req.action = True
@@ -583,6 +592,7 @@ class perpetualreqccept(APIView):
                 user = UserInfo.objects.get(user = user)
                 user.level = 1
                 user.save()
+                sms(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
         pe = PerpetualRequest.objects.get(id = id)
         pe.delete()
         return Response(status=status.HTTP_201_CREATED)
