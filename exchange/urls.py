@@ -103,6 +103,7 @@ urlpatterns = [
    path('olboardinfo' , views.olboardinfo.as_view() , name='olboardinfo'),
    path('cp_balance' , views.cp_balance.as_view() , name='cp_balance'),
    path('cp_borrow' , views.cp_borrow.as_view() , name='cp_borrow'),
+   path('cp_repay' , views.cp_repay.as_view() , name='cp_repay'),
    path('cp_borrowlist' , views.cp_borrowlist.as_view() , name='cp_borrowlist'),
    path('cp_history/<str:id>' , views.cp_history.as_view() , name='cp_history'),
    path('cp_history/' , views.cp_history.as_view() , name='cp_history'),
