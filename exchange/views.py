@@ -73,12 +73,8 @@ def sendemail(user , date , title , text) :
 def sms(user , date , title  , text , pattern):
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
-    if not text == '' :
-        pattern_values = {
-    "text": text,
-    }
-    else :
-        pattern_values = {
+
+    pattern_values = {
     "name": "کاربر",
     }
 
