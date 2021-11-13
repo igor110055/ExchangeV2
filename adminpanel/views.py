@@ -43,7 +43,7 @@ def sendemail(user , date = '' , title = '' , text = '') :
         fail_silently=False,
     )
 
-def sms(user , date , title  , text , pattern='gf9zbtg61v'):
+def sms(user , date = False , text = False , pattern='gf9zbtg61v'):
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
     if text :
