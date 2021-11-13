@@ -118,7 +118,7 @@ class buyrequest(models.Model):
     date = models.DateTimeField(default=timezone.now())
     currency = models.CharField(max_length=20)
     ramount = models.BigIntegerField()
-    rramount = models.BigIntegerField(null=True)
+    rramount = models.FloatField(null=True)
     camount = models.FloatField()
     act = models.IntegerField(default=0 )
     def get_user(self):
@@ -212,7 +212,7 @@ class buyoutrequest(models.Model):
     currency = models.CharField(max_length=20)
     address = models.CharField(max_length=200)
     ramount = models.BigIntegerField()
-    rramount = models.BigIntegerField(null=True)
+    rramount = models.FloatField(null=True)
     camount = models.FloatField()
     act = models.IntegerField(default=0)
     def get_user(self):
@@ -260,7 +260,7 @@ class selloutrequest(models.Model):
     currency = models.CharField(max_length=20)
     hash = models.CharField(max_length=200)
     ramount = models.BigIntegerField()
-    rramount = models.BigIntegerField(null=True)
+    rramount = models.FloatField(null=True)
     camount = models.FloatField()
     act = models.IntegerField(default=0)
     def get_user(self):
