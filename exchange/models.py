@@ -9,6 +9,7 @@ import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
 from requests.api import post
+from exchange.views import currency
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
@@ -774,6 +775,59 @@ class Tickets(models.Model):
     def get_user(self):
         return self.user.username
 
+class ProfitList(models.Model):
+    user = models.ForeignKey(User ,related_name='harchi', on_delete=models.CASCADE , null=True)
+    date = models.DateTimeField(default=timezone.now())
+    amount = models.FloatField()
+    currency = models.CharField(max_length=10)
+    operation = models.CharField(200)
+    def __str__(self):
+        return self.user.username + '  ' + 'amount:' + self.amount + self.currency + '  ' + self.operation
+
+    def get_user(self):
+        return self.user.username
+
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes 
+
+    def get_title(self):
+        return self.subid.title
+    def get_user(self):
+        return self.user.username
 
 class Pages(models.Model):
     name = models.CharField(max_length=100, null=True)

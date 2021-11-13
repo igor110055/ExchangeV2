@@ -17,7 +17,7 @@ from rest_framework import authentication
 from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, WithdrawRequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
+from exchange.models import BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, ProfitList, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, WithdrawRequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -939,6 +939,8 @@ class buy(APIView):
             req.save()
             return Response(status=status.HTTP_201_CREATED)
         req = buyrequest.objects.get(id = request.data['id'])
+        profit = ProfitList(user = req.user , amount = int(request.data['ramount']) - int(request.data['rramount'] , currency = 'ریال' , operation = 'خرید'))
+        profit.save()
         note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
         note.save()
         req.act = 2
@@ -966,6 +968,8 @@ class buyout(APIView):
             req.save()
             return Response(status=status.HTTP_201_CREATED)
         req = buyoutrequest.objects.get(id = request.data['id'])
+        profit = ProfitList(user = req.user , amount = int(request.data['ramount']) - int(request.data['rramount'] , currency = 'ریال' , operation = ' خرید خارجی'))
+        profit.save()
         note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
         note.save()
         req.act = 2
@@ -993,6 +997,8 @@ class sellout(APIView):
             req.save()
             return Response(status=status.HTTP_201_CREATED)
         req = selloutrequest.objects.get(id = request.data['id'])
+        profit = ProfitList(user = req.user , amount = int(request.data['rramount']) - int(request.data['ramount'] , currency = 'ریال' , operation = 'فروش خارجی'))
+        profit.save()
         note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
         note.save()
         req.act = 2
