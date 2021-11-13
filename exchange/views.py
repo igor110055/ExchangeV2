@@ -73,7 +73,7 @@ def sendemail(user , date = '' , title = '' , text = '') :
 def sms(user , date = False , text = False , pattern = 'gf9zbtg61v'):
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
-    if text  :
+    if pattern == 'r4hxan3byx' or pattern == 'tfpvvl8beg'  :
         pattern_values = {
     "text": text,
     }
@@ -94,10 +94,10 @@ def sms(user , date = False , text = False , pattern = 'gf9zbtg61v'):
     print(f"+98999999999")
     return True
 
-def notification (user , date = False, title = False , text = False, pattern='gf9zbtg61v'):
+def notification (user , date = '', title = '' , text = '', pattern='gf9zbtg61v'):
     note = Notification(user = user , title = title , text = text)
     note.save()
-    sms(user = user , date = date, text = text, pattern= pattern)
+    sms(user = user , pattern= pattern)
     sendemail(user = user , text = text , title= title)
 
 class timeout(APIView):
@@ -417,7 +417,7 @@ class rulev(APIView):
             per = UserInfo.objects.get(user = request.user)
             per.level = 1
             per.save()
-            notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+            notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
         return Response(status=status.HTTP_201_CREATED)
 
 class general(APIView):
@@ -459,7 +459,7 @@ class usersinfo(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-                notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+            notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
             note.save()
             return Response( status=status.HTTP_201_CREATED)
@@ -478,7 +478,7 @@ class usersinfo(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-                notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             return Response( status=status.HTTP_201_CREATED)
 
     def put(self, request , format=None):
@@ -948,7 +948,7 @@ class mobileverify(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-                notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -985,7 +985,7 @@ class emailverify(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-                notification(user = User.objects.get(id = 1) ,date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
