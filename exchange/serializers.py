@@ -479,6 +479,19 @@ class PerpetualRequestSerializer(serializers.ModelSerializer):
             "get_user",
         )
 
+class ProfitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PerpetualRequest
+        fields = (
+            "id",
+            "user",
+            "amount",
+            "currency",
+            "operation",
+            "get_age",
+            "get_user",
+        )
+
 class AdminChatSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatSession
