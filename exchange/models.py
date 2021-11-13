@@ -785,7 +785,7 @@ class ProfitList(models.Model):
     operation = models.CharField(max_length=200)
 
     def __str__(self):
-        return f'{self.user.username}   amount: {self.amount } {self.currency} operation:   {self.operation}'
+        return f'{self.user.username}   ,   amount: {self.amount } {self.currency}   ,   operation:   {self.operation}'
 
     def get_user(self):
         return self.user.username
