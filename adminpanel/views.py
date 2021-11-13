@@ -917,7 +917,7 @@ class review(APIView):
                 months = months + 1
         return Response({'days': days,'weeks': weeks, 'months': months, 'hours': hours })
 
-class profit_rial():
+class profit_rial(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
 
