@@ -71,7 +71,7 @@ def notification (user , date = datetime.now(), title = '' , text = '',pattern='
     note = Notification(user = user , title = title , text = text)
     note.save()
     sms(user=user , text=text , pattern=pattern)
-    sendemail(user=user  , date, title, text)
+    sendemail(user=user  , date=date, title=title, text = text)
 
 class staff(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
