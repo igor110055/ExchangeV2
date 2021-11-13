@@ -947,7 +947,7 @@ class buy(APIView):
         if request.data['act'] == 'reject':
             req = buyrequest.objects.get(id = request.data['id'])
             wal = Wallet.objects.get(user= req.user , currency = Currencies.objects.get(id = 1))
-            wal.amount = wal.amount + req.amount
+            wal.amount = wal.amount + req.ramount
             wal.save()
             note = Notification(user=req.user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
             note.save()
@@ -979,7 +979,7 @@ class buyout(APIView):
         if request.data['act'] == 'reject':
             req = buyoutrequest.objects.get(id = request.data['id'])
             wal = Wallet.objects.get(user= req.user , currency = Currencies.objects.get(id = 1))
-            wal.amount = wal.amount + req.amount
+            wal.amount = wal.amount + req.ramount
             wal.save()
             note = Notification(user=req.user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
             note.save()
