@@ -307,6 +307,9 @@ class Perpetual(models.Model):
     name = models.CharField(max_length=255, null=True)
     secretkey = models.CharField(max_length=255)
     apikey = models.CharField(max_length=255)
+    def __str__(self):
+        return f'{self.user.username}'
+
 
 class PerpetualRequest(models.Model):
     user = models.ForeignKey(User , related_name='Perpetualreq' , on_delete=models.CASCADE , null=True,)
