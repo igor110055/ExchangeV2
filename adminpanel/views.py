@@ -584,6 +584,12 @@ class perpetualreqccept(APIView):
         if not len(Perpetual.objects.filter(user = user)):
             per = Perpetual(user = user ,name = request.data['name'], apikey = request.data['apikey'] , secretkey = request.data['secretkey'])
             per.save()
+        else : 
+            per = Perpetual.objects.get(user = user)
+            per.name = request.data['name'], 
+            per.apikey = request.data['apikey'] , 
+            per.secretkey = request.data['secretkey']
+            per.save()
         ver = Verify.objects.get(user = user)
         ver.coinv = True
         ver.save()
