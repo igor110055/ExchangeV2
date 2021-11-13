@@ -775,7 +775,7 @@ class Tickets(models.Model):
         return self.user.username
 
 class ProfitList(models.Model):
-    user = models.ForeignKey(User ,related_name='harchi', on_delete=models.CASCADE , null=True)
+    user = models.ForeignKey(User ,related_name='profit', on_delete=models.CASCADE , null=True)
     date = models.DateTimeField(default=timezone.now())
     amount = models.FloatField()
     currency = models.CharField(max_length=10)
