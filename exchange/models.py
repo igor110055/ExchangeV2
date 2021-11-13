@@ -783,6 +783,7 @@ class ProfitList(models.Model):
     amount = models.FloatField()
     currency = models.CharField(max_length=10)
     operation = models.CharField(max_length=200)
+    
     def __str__(self):
         return self.user.username + '  ' + 'amount:' + self.amount + self.currency + '  ' + self.operation
 
@@ -825,11 +826,6 @@ class ProfitList(models.Model):
 
 
         return  days + hours + minutes 
-
-    def get_title(self):
-        return self.subid.title
-    def get_user(self):
-        return self.user.username
 
 class Pages(models.Model):
     name = models.CharField(max_length=100, null=True)
