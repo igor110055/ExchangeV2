@@ -905,6 +905,8 @@ class mobileverify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def put(self , request):
+        if len(UserInfo.objects.filter(mobile = request.data['number'])):
+            return Response('حساب دیگری با این شماره ثبت شده است', status=status.HTTP_400_BAD_REQUEST)
         if not 'number' in request.data:
             request.data['number'] = UserInfo.objects.get(user = request.user).mobile
         vcode = randrange(123456,999999)
