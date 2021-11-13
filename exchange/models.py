@@ -779,7 +779,7 @@ class ProfitList(models.Model):
     date = models.DateTimeField(default=timezone.now())
     amount = models.FloatField()
     currency = models.CharField(max_length=10)
-    operation = models.CharField(200)
+    operation = models.CharField(max_length=200)
     def __str__(self):
         return self.user.username + '  ' + 'amount:' + self.amount + self.currency + '  ' + self.operation
 
