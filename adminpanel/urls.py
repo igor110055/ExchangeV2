@@ -40,6 +40,7 @@ urlpatterns = [
    path('mainpageposts' , views.mainpageposts.as_view() , name='mainpageposts'),
    path('topsticker' , views.topsticker.as_view() , name='topsticker'),
    path('transactions' , views.transactions.as_view() , name='transactions'),
+   path('profit_rial' , views.profit_rial.as_view() , name='profit_rial'),
    path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),
    path('otherpages' , views.otherpages.as_view() , name='otherpages'),
    path('editotherpages' , views.editotherpages.as_view() , name='editotherpages'),
