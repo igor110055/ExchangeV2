@@ -46,6 +46,7 @@ class BuySerializer(serializers.ModelSerializer):
             "user",
             "currency",
             "ramount",
+            "rramount",
             "camount",
             "date",
             "act"
@@ -61,6 +62,7 @@ class BuyoutSerializer(serializers.ModelSerializer):
             "address",
             "currency",
             "ramount",
+            "rramount",
             "camount",
             "date",
             "act"
@@ -76,6 +78,7 @@ class selloutSerializer(serializers.ModelSerializer):
             "hash",
             "currency",
             "ramount",
+            "rramount",
             "camount",
             "date",
             "act"
