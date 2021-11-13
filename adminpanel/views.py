@@ -923,7 +923,7 @@ class profit_rial(APIView):
 
 
     def get_object(self, user):
-        return ProfitList.objects.all(currency = 'ریال')
+        return ProfitList.objects.filter(currency = 'ریال')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
