@@ -43,7 +43,7 @@ def sendemail(user , date = '' , title = '' , text = '') :
         fail_silently=False,
     )
 
-def sms(user , date , title  , text , pattern):
+def sms(user , date , title  , text , pattern='gf9zbtg61v'):
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
     if text :
@@ -67,10 +67,10 @@ def sms(user , date , title  , text , pattern):
     print(f"+98999999999")
     return True
 
-def notification (user , date = datetime.now(), title = '' , text = ''):
+def notification (user , date = datetime.now(), title = '' , text = '',pattern='gf9zbtg61v'):
     note = Notification(user = user , title = title , text = text)
     note.save()
-    sms(user , text)
+    sms(user , text , pattern)
     sendemail(user , date, title, text)
 
 class staff(APIView):
