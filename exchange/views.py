@@ -1928,10 +1928,10 @@ class oltradeinfo(APIView):
 class oltradeinfo2(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
-    def get(self , request, format=None):   
+    def post(self , request, format=None):   
         cmc = CoinMarketCapAPI('922daa52-37ae-43df-a102-89f97ffb7d51')
   
-        r = cmc.cryptocurrency_quotes_latest()
+        r = cmc.cryptocurrency_quotes_latest(symbol = request.data['symbol'])
 
         return Response(r.data)
 
