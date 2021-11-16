@@ -2,6 +2,7 @@ from requests.sessions import Request
 from django.contrib.auth.hashers import check_password
 from exchange.lib import request_client
 from django.core.exceptions import ValidationError
+from coinmarketcapapi import CoinMarketCapAPI, CoinMarketCapAPIError
 from typing import Text
 from django import http
 from django.http import response
@@ -1923,6 +1924,16 @@ class oltradeinfo(APIView):
         for item in Leverage.objects.all():
             list2[item.symbol] = list[item.symbol]
         return Response(list2)
+
+class oltradeinfo2(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get(self , request, format=None):   
+        cmc = CoinMarketCapAPI('922daa52-37ae-43df-a102-89f97ffb7d51')
+  
+        r = cmc.cryptocurrency_info(symbol='BTC')
+
+        return Response(r.data)
 
 class olboardinfo(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
