@@ -1931,7 +1931,7 @@ class oltradeinfo2(APIView):
     def get(self , request, format=None):   
         cmc = CoinMarketCapAPI('922daa52-37ae-43df-a102-89f97ffb7d51')
   
-        r = cmc.cryptocurrency_info(symbol='BTC')
+        r = cmc.cryptocurrency_quotes_latest(symbol='BTC')
 
         return Response(r.data)
 
