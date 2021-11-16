@@ -101,6 +101,7 @@ urlpatterns = [
 
    path('oltradeinfo' , views.oltradeinfo.as_view() , name='oltradeinfo'),
    path('olboardinfo' , views.olboardinfo.as_view() , name='olboardinfo'),
+   path('olboardinfo2' , views.olboardinfo2.as_view() , name='olboardinfo2'),
    path('cp_balance' , views.cp_balance.as_view() , name='cp_balance'),
    path('cp_borrow' , views.cp_borrow.as_view() , name='cp_borrow'),
    path('cp_repay' , views.cp_repay.as_view() , name='cp_repay'),
