@@ -298,7 +298,7 @@ class loginsms(APIView):
     def post(self, request, format=None):
         reqBody = json.loads(request.body)
         c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-        if(int(reqBody['code']) == int(c.code)):
+        if(str(reqBody['code']) == str(c.code)):
             smss = SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
             for item in smss:
                 item.delete()
