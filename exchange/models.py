@@ -164,7 +164,7 @@ class sellrequest(models.Model):
     user = models.ForeignKey(User , related_name='sells' , on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now())
     currency = models.CharField(max_length=20)
-    ramount = models.BigIntegerField()
+    ramount = models.FloatField()
     camount = models.FloatField()
     act = models.IntegerField(default=2)
     def get_user(self):
@@ -259,7 +259,7 @@ class selloutrequest(models.Model):
     date = models.DateTimeField(default=timezone.now())
     currency = models.CharField(max_length=20)
     hash = models.CharField(max_length=200)
-    ramount = models.BigIntegerField()
+    ramount = models.FloatField()
     rramount = models.FloatField(null=True)
     camount = models.FloatField()
     act = models.IntegerField(default=0)
