@@ -1893,6 +1893,8 @@ class sell(APIView):
     def post(self , request, format=None):
         request.data['user'] = request.user.id
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        if not coinex.balance_info()[request.data['currency']]:
+            return Response({'error':'موجودی کافی نیست'} )
         balance = coinex.balance_info()[request.data['currency']]['available']
         if float(balance) < float(request.data['camount']):
             return Response({'error':'موجودی کافی نیست'} )
