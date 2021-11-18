@@ -129,7 +129,7 @@ class login(APIView):
                 if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).smsverify:
                     if SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile):
                         ver = SmsVerified.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
-                        if ver.date + timedelta(0,10) > utc.localize(datetime.now()):
+                        if ver.date + timedelta(0,20) > utc.localize(datetime.now()):
                             data = {}
                             reqBody = json.loads(request.body)
                             username = reqBody['username']
