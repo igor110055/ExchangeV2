@@ -22,11 +22,11 @@ from django.utils.timezone import utc
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
-    email_plaintext_message = f"{ROOT}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+    email_plaintext_message = f"{ROOT}" + "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
 
     send_mail(
         # title:
-        "Password Reset for {title}".format(title="Some website title"),
+        "برای تغییر کلمه عبور خود از لینک زیر استفاده کنید",
         # message:
         email_plaintext_message,
         # from:
