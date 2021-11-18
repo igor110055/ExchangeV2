@@ -2041,8 +2041,12 @@ class cp_transfer(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def post(self , request):
+        print(request.data['from_account'])
+        print(request.data['to_account'])
+        print(request.data['coin_type'])
+        print(request.data['amount'])
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
-        return Response(coinex.margin_transfer(from_account=36, to_account=0, coin_type='USDT' , amount=1))
+        return Response(coinex.margin_transfer(from_account=request.data['from_account'], to_account=request.data['to_account'], coin_type=request.data['coin_type'] , amount=request.data['amount']))
 
 class cp_market_order(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
