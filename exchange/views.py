@@ -2041,7 +2041,6 @@ class cp_transfer(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def post(self , request):
-        print(f"{int(request.data['fa']), int(request.data['ta']), request.data['coin'] , str(request.data['amount']}")
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_transfer(from_account=int(request.data['fa']), to_account=int(request.data['ta']), coin_type=request.data['coin'] , amount=str(request.data['amount'])))
 
