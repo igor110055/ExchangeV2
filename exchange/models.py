@@ -70,7 +70,7 @@ class UserInfo(models.Model):
         return f'/{self.username}/'
 
     def get_otp(self):
-        return User.objects.get(id = self.user).otp_device
+        return User.objects.get(id = self.user.id).otp_device
 
     def get_melli(self):
         if len(VerifyMelliRequest.objects.filter(user= self.user)):
