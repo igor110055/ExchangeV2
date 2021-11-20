@@ -71,7 +71,7 @@ class UserInfo(models.Model):
         return f'/{self.username}/'
 
     def get_otp(self):
-        return  base64.b32decode(self.otp.decode("ascii"))
+        return  base64.b32decode(self.otp.decode())
 
     def get_melli(self):
         if len(VerifyMelliRequest.objects.filter(user= self.user)):
