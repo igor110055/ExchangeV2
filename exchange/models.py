@@ -59,7 +59,7 @@ class UserInfo(models.Model):
     is_admin = models.BooleanField(default=False)
     last_visit = models.DateTimeField(default=timezone.now())
     complete = models.BooleanField(default=False)
-    otp = models.DecimalField(default=pyotp.random_base32())
+    otp = models.DecimalField(default=pyotp.random_base32(),max_digits=None, decimal_places=None)
     class meta:
         ordering = ('-date_joined',)
         
