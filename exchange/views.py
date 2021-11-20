@@ -153,11 +153,11 @@ class login(APIView):
                                 Res = {"data": data, "auth_token": token}
                                 if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
                                     if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
-                                        notification(user = User.objects.get(username = reqBody['username']), title='Amizax', pattern='gf9zbtg61v')
+                                        notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text = 'با موفقیت به حساب خود وارد شدید' ,  pattern='gf9zbtg61v')
                                 if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
                                     ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
                                     ui.save()
-                                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', pattern='gf9zbtg61v')
+                                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text = 'با موفقیت به حساب خود وارد شدید' , pattern='gf9zbtg61v')
                                 use = UserInfo.objects.get(user=Account)
                                 use.last_visit=timezone.now()
                                 use.save()
@@ -214,11 +214,11 @@ class login(APIView):
                             Res = {"data": data, "auth_token": token}
                             if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
                                 if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
-                                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', pattern='gf9zbtg61v')
+                                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
                             if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
                                 ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
                                 ui.save()
-                                notification(user = User.objects.get(username = reqBody['username']), title='Amizax', pattern='gf9zbtg61v')
+                                notification(user = User.objects.get(username = reqBody['username']), title='Amizax',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
                             use = UserInfo.objects.get(user=Account)
                             use.last_visit=timezone.now()
                             use.save()
@@ -253,11 +253,11 @@ class login(APIView):
                         Res = {"data": data, "auth_token": token}
                         if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
                             if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
-                                notification(user = User.objects.get(username = reqBody['username']), title='Amizax', pattern='gf9zbtg61v')
+                                notification(user = User.objects.get(username = reqBody['username']), title='Amizax',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
                         if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
                             ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='',phone='')
                             ui.save()
-                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax', pattern='gf9zbtg61v')
+                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
                         use = UserInfo.objects.get(user=Account)
                         use.last_visit=timezone.now()
                         use.save()
