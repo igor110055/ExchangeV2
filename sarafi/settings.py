@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     'chat',
     'infura',
     'pyotp',
+    'django_otp',
+    'django_otp.plugins.otp_totp'
 ]
 
 CORS_ALLOWED_ORIGINS = [
