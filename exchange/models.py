@@ -19,6 +19,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail  
 from django.utils.timezone import utc
 import pyotp
+import base64
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -59,7 +60,7 @@ class UserInfo(models.Model):
     is_admin = models.BooleanField(default=False)
     last_visit = models.DateTimeField(default=timezone.now())
     complete = models.BooleanField(default=False)
-    otp = models.BigAutoField(default=pyotp.random_base32())
+    otp = models.CharField(max_length=100 ,default= base64.b32decode(pyotp.random_base32()))
     class meta:
         ordering = ('-date_joined',)
         
