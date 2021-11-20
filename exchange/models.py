@@ -60,7 +60,6 @@ class UserInfo(models.Model):
     is_admin = models.BooleanField(default=False)
     last_visit = models.DateTimeField(default=timezone.now())
     complete = models.BooleanField(default=False)
-    otp = models.CharField(max_length=100 ,default= base32_lib.generate(length=16, checksum=True))
     class meta:
         ordering = ('-date_joined',)
         
@@ -71,7 +70,7 @@ class UserInfo(models.Model):
         return f'/{self.username}/'
 
     def get_otp(self):
-        return self.otp
+        return User.objects.get(id = self.user).otp_device
 
     def get_melli(self):
         if len(VerifyMelliRequest.objects.filter(user= self.user)):
