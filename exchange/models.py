@@ -83,7 +83,7 @@ class UserInfo(models.Model):
 
 class SmsVerified(models.Model):
     number = models.CharField(max_length=20)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=datetime.now())
 
 class LevelFee(models.Model):
     id = models.IntegerField(primary_key=True)
