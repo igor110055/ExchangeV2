@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     'chat',
     'infura',
     'pyotp',
-    'base32-lib',
 ]
 
 CORS_ALLOWED_ORIGINS = [
