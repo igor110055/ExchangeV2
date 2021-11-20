@@ -4,10 +4,10 @@ from bit import Key
 from django.core.management.base import BaseCommand, CommandError
 from cryptos import *
 import pyotp
-import base32_lib as base32
+import base32_lib 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         for item in UserInfo.objects.all():
-            item.otp = pyotp.random_base32()
+            item.otp = base32_lib.generate(length=16, checksum=True)
             item.save()
