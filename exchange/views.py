@@ -954,6 +954,44 @@ class mobileverify(APIView):
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
 
+class regemailverify(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def post(self , request):
+        user = Verify.objects.get(user= User.objects.get(username = request.data['username']))
+        vcode = randrange(123456, 999999)
+        user.emailc = vcode
+        user.save()
+        
+        send_mail(
+            'Subject here',
+            f'به شرکت سرمایه گذاری Amizax خوش آمدید کد فعالسازی : /n برای تایید حساب خود روی لینک زیر کلیک کنید /n https://www.amizax.com/api/v1/email/{vcode} ',
+            'info@ramabit.com',
+            [f'{request.data["email"]}'],
+            fail_silently=False,
+        )
+        return Response(status=status.HTTP_200_OK)
+
+    def get(self , request ,code ):
+        user = Verify.objects.get(user= request.user)
+        if(int(code) == int(user.emailc)):
+            user.emailv = True
+            user.save()
+            mail = request.user
+            mail.email = request.data['email']
+            mail.save()
+            verify = Verify.objects.get(user = request.user)
+            if verify.bankv and verify.melliv and verify.mobilev and verify.emailv and verify.acceptv and verify.coinv and verify.accountv :
+                per = UserInfo.objects.get(user = request.user)
+                per.level = 1
+                per.save()
+                notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
+
+
 class emailverify(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]

@@ -69,6 +69,8 @@ urlpatterns = [
    path('request/', views.send_request.as_view(), name='request'),
    path('verifys/<uuid:transid>/', views.verifys , name='verifys'),
    path('levelfee', views.levelfee.as_view() , name='levelfee'),
+   path('regemailverify', views.regemailverify.as_view() , name='regemailverify'),
+   path('email/<str:code>', views.regemailverify.as_view() , name='regemailverify'),
 #  General  ------------ >   
 #  < ------------ Main Trades 
 
