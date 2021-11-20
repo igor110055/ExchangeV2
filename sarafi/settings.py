@@ -62,7 +62,8 @@ INSTALLED_APPS = [
     'websockets',
     'chat',
     'infura',
-    'pyotp'
+    'pyotp',
+    'base32-lib'
 ]
 
 CORS_ALLOWED_ORIGINS = [
