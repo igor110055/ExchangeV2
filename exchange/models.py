@@ -72,6 +72,7 @@ class UserInfo(models.Model):
 
     def get_otp(self):
         return  base64.b32decode(pyotp.random_base32())
+        
     def get_melli(self):
         if len(VerifyMelliRequest.objects.filter(user= self.user)):
             return VerifyMelliRequest.objects.get(user= self.user).mellic
