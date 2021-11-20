@@ -297,12 +297,12 @@ class login(APIView):
 class loginsms(APIView):
     def post(self, request, format=None):
         reqBody = json.loads(request.body)
-        c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+        c = mobilecodes.objects.get(number = UserInfo.objects.get(user = User.objects.get(username = request.data['username'])).mobile)
         if(int(request.data['code']) == int(c.code)):
-            smss = SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+            smss = SmsVerified.objects.filter(number = UserInfo.objects.get(user = User.objects.get(username = request.data['username'])).mobile)
             for item in smss:
                 item.delete()
-            sms = SmsVerified(number = UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile)
+            sms = SmsVerified(number = UserInfo.objects.get(user = User.objects.get(username = request.data['username'])).mobile)
             sms.save()
             return Response(status=status.HTTP_200_OK)
         else:
