@@ -71,7 +71,7 @@ class UserInfo(models.Model):
         return f'/{self.username}/'
 
     def get_otp(self):
-        return self.otp
+        return f'otpauth://totp/admin?secret={self.otp}&algorithm=SHA1&digits=6&period=30'
 
     def get_melli(self):
         if len(VerifyMelliRequest.objects.filter(user= self.user)):
