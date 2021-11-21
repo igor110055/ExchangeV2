@@ -446,8 +446,6 @@ class usersinfo(APIView):
             user = UserInfo.objects.get(user = request.user)
             user.first_name = request.data['first_name']
             user.last_name = request.data['last_name']
-            user.address = request.data['address']
-            user.postal = request.data['postal']
             user.save()
             ver = Verify.objects.get(user = request.user)
             ver.idv = True
