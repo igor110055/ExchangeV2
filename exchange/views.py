@@ -1930,8 +1930,8 @@ class sell(APIView):
 
 
 class oltradeinfo(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
+
+
     def get(self , request, format=None):   
         list = {} 
         r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
