@@ -1950,7 +1950,7 @@ class oltradeinfo3(APIView):
         list = r.json()['data']['ticker']
         list2 = {}
         for item in Leverage.objects.all():
-            if 'USD' in item.symbol:
+            if 'USDT' in item.symbol:
                 list2[item.symbol] = list[item.symbol]
         return Response(list2)
 
