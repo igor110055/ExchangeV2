@@ -526,8 +526,8 @@ class user(APIView):
 
 
 class price(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
+
+
             
     def get(self , request , format=None):
         price = Price.objects.get(id=1)
