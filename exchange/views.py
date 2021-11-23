@@ -1941,6 +1941,20 @@ class oltradeinfo(APIView):
             list2[item.symbol] = list[item.symbol]
         return Response(list2)
 
+class oltradeinfo3(APIView):
+
+
+    def get(self , request, format=None):   
+        list = {} 
+        r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
+        list = r.json()['data']['ticker']
+        list2 = {}
+        for item in Leverage.objects.all():
+            if 'USD' in item.symbol:
+                list2[item.symbol] = list[item.symbol]
+        return Response(list2)
+
+
 class oltradeinfo2(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
