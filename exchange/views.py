@@ -1819,7 +1819,7 @@ class buyout(APIView):
         if serializer.is_valid():
             wallet = Wallet.objects.get(user = request.user , currency = Currencies.objects.get(id = 1))
             if wallet.amount < float(request.data['ramount']):
-                return Response({'error':'موجودی کافی نیست'} )
+                return Response({'error':' موجودی کافی نیست . ابتدا حساب ریالی خود را شارژ نمایید'} )
             wallet.amount = wallet.amount - float(request.data['ramount'])
             wallet.save()
             serializer.save()
