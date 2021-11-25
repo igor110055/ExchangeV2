@@ -125,8 +125,7 @@ class user(APIView):
                 price = 0
                 for itemm in Wallet.objects.get(user = item):
                     if itemm.currency.id == 1:
-                        price = 1
-                    wallet = wallet + (itemm.amount * price)
+                        wallet = wallet + (itemm.amount)
                 users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
         return Response(users)
     def post(self , request , format=None):
@@ -167,8 +166,7 @@ class users(APIView):
                 price = 0
                 for itemm in Wallet.objects.filter(user = item):
                     if itemm.currency.id == 1:
-                        price = 1
-                    wallet = wallet + (itemm.amount * price)
+                        wallet = wallet + (itemm.amount)
                 users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
         return Response(users)
     def post(self , request , format=None):
