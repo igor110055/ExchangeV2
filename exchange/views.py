@@ -1919,8 +1919,6 @@ class sell(APIView):
         serializer = SellSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
-        profit = ProfitList(user = request.user , amount = int(request.data['rramount']) - int(request.data['ramount']) , currency = 'ریال' , operation = 'فروش')
-        profit.save()
         note = Notification(user=request.user, title = 'فروش موفق' , text = ' درخواست فروش شما با موفقیت انجام شد . ')
         note.save()
         return Response(status=status.HTTP_201_CREATED)

@@ -953,12 +953,31 @@ class buydone(APIView):
         serializer = BuySerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
-class selldone(APIView):
+class sell(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
         return sellrequest.objects.filter(act = 2).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = SellSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+    def post(self , request, format=None):
+        req = buyrequest.objects.get(id = request.data['id'])
+        profit = ProfitList(user = req.user , amount = (int(request.data['rramount']) - int(req.ramount)), currency = 'ریال' , operation = f'{req.currency}فروش')
+        profit.save()
+        req.act = 3
+        return Response( status=status.HTTP_201_CREATED)
+
+class selldone(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return sellrequest.objects.filter(~Q(act = 0)).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
