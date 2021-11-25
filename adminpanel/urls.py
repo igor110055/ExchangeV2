@@ -11,6 +11,7 @@ urlpatterns = [
    path('buyreject' , views.buyreject.as_view() , name='buyreject'),
    path('withdraw' , views.withdraw.as_view() , name='withdraw'),
    path('buyout' , views.buyout.as_view() , name='buyout'),
+   path('sell' , views.sell.as_view() , name='sell'),
    path('sellout' , views.sellout.as_view() , name='sellout'),
    path('selldone' , views.selldone.as_view() , name='selldone'),
    path('buyouthistory' , views.buyouthistory.as_view() , name='buyouthistory'),
