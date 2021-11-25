@@ -953,6 +953,17 @@ class buydone(APIView):
         serializer = BuySerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
+class selldone(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return sellrequest.objects.filter(act = 2).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = SellSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class buyreject(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
