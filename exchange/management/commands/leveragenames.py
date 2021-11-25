@@ -7,6 +7,8 @@ from .lib.coinex import CoinEx
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        for itemm in Leverage.objects.all():
+            itemm.delete()
         r = requests.get(url = 'https://api.coinex.com/v1/margin/market')
         list = r.json()['data'].keys()
         for item in list :
