@@ -121,12 +121,7 @@ class user(APIView):
         for item in userinfo :
             if len(UserInfo.objects.filter(user = item)) > 0:
                 userinfos = UserInfo.objects.get(user = item)
-                wallet= 0
-                price = 0
-                for itemm in Wallet.objects.get(user = item):
-                    if itemm.currency.id == 1:
-                        wallet = wallet + (itemm.amount)
-                users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
+                users.append({'username': item.username, 'level': userinfos.level, 'balance': Wallet.objects.get(user = item , currency = Currencies.objects.get(id = 1)).amount, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
         return Response(users)
     def post(self , request , format=None):
         user = UserInfo.objects.get(user = User.objects.get(id = request.data['id']))
@@ -162,12 +157,7 @@ class users(APIView):
         for item in userinfo :
             if len(UserInfo.objects.filter(user = item)) > 0:
                 userinfos = UserInfo.objects.get(user = item)
-                wallet= 0
-                price = 0
-                for itemm in Wallet.objects.filter(user = item):
-                    if itemm.currency.id == 1:
-                        wallet = wallet + (itemm.amount)
-                users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
+                users.append({'username': item.username, 'level': userinfos.level, 'balance': Wallet.objects.get(user = item , currency = Currencies.objects.get(id = 1)).amount, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
         return Response(users)
     def post(self , request , format=None):
         user = UserInfo.objects.get(user = User.objects.get(id = request.data['id']))
