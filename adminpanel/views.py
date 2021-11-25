@@ -168,16 +168,6 @@ class users(APIView):
                 for itemm in Wallet.objects.filter(user = item):
                     if itemm.currency.id == 1:
                         price = 1
-                    elif itemm.currency.id == 2:
-                        price = Price.objects.get(id = 1).btc * Price.objects.get(id = 1).usd
-                    elif itemm.currency.id == 3:
-                        price = Price.objects.get(id = 1).eth * Price.objects.get(id = 1).usd
-                    elif itemm.currency.id == 4:
-                        price = Price.objects.get(id = 1).usdt * Price.objects.get(id = 1).usd
-                    elif itemm.currency.id == 5:
-                        price = Price.objects.get(id = 1).trx * Price.objects.get(id = 1).usd
-                    elif itemm.currency.id == 6:
-                        price = Price.objects.get(id = 1).doge * Price.objects.get(id = 1).usd
                     wallet = wallet + (itemm.amount * price)
                 users.append({'username': item.username, 'level': userinfos.level, 'balance': wallet, 'is_active': userinfos.is_active, 'is_admin': item.is_staff, 'id': item.id })
         return Response(users)
