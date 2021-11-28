@@ -22,22 +22,6 @@ METHOD_TRANSFER = 'transfer(address,uint256)'
 
 DEFAULT_FEE_LIMIT = 1_000_000  # 1 TRX
 
-
-
-
-def TICKER():
-    r = requests.get(url = 'https://api.nomics.com/v1/currencies/ticker?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=BTC,ETH,TRX,DOGE,USDT')
-    r = r.json()
-    price = Price.objects.get(id = 1)
-    price.btc = r[0]['price'] 
-    price.eth = r[1]['price']
-    price.usdt = r[2]['price']
-    price.doge = r[3]['price']
-    price.trx = r[4]['price']
-    price.save()
-
-    sleep(2)
-
 def INDEXINFO():
     i = 0
     while i < 20:
