@@ -104,15 +104,16 @@ class Review(models.Model):
     date = models.DateTimeField(default=timezone.now())
 
 class General(models.Model):
-    name=models.CharField(max_length=255)
-    email=models.CharField(max_length=255)
-    mobile=models.CharField(max_length=255)
-    whatsapp=models.CharField(max_length=255)
-    telegram=models.CharField(max_length=255)
-    instagram=models.CharField(max_length=255)
-    telephone=models.CharField(max_length=255)
+    name= models.CharField(max_length=255)
+    email= models.CharField(max_length=255)
+    mobile= models.CharField(max_length=255)
+    whatsapp= models.CharField(max_length=255)
+    telegram= models.CharField(max_length=255)
+    instagram= models.CharField(max_length=255)
+    telephone= models.CharField(max_length=255)
     rule = models.CharField(max_length=1000000 , null=True)
     logo = models.ImageField(upload_to='general' , null = True)
+    USDTpercent = models.FloatField()
 
 
 class mobilecodes(models.Model):
