@@ -1,9 +1,10 @@
-from exchange.models import Indexprice, Price , Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
+from exchange.models import General, Indexprice, Price , Staff,  UserInfo , Currencies , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest
 from django.core.management.base import BaseCommand, CommandError
 import requests
 import datetime as DT
 from time import sleep
 import base58
+
 
 from tronapi import Tron
 full_node = 'https://api.trongrid.io'
@@ -46,8 +47,8 @@ def RIALTICKER():
         rial = requests.get(url = 'https://dapi.p3p.repl.co/api/?currency=usd')   
         r = rial.json()
         price = Price.objects.get(id = 1)
-        price.rial = int(r['Price']) * 1.02
-        price.usd = int(r['Price']) * 1.02
+        price.rial = int(r['Price']) * General.objects.get(id = 1).USDTpercent
+        price.usd = int(r['Price']) * General.objects.get(id = 1).USDTpercent
         price.save()
 
 def USDT():
