@@ -37,6 +37,7 @@ urlpatterns = [
    path('perpetualreqccept' , views.perpetualreqccept.as_view() , name='perpetualreqccept'),
    path('perpetualreq/<int:id>' , views.perpetualreq.as_view() , name='perpetualreq'),
    path('general' , views.general.as_view() , name='general'),
+   path('USDTP' , views.USDTP.as_view() , name='USDTP'),
    path('user/<str:user>' , views.user.as_view() , name='user'),
    path('verify/<str:user>' , views.verify.as_view() , name='verify'),
    path('userinfo/<str:user>' , views.userinfo.as_view() , name='userinfo'),
