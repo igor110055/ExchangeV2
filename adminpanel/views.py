@@ -147,6 +147,20 @@ class userinfo(APIView):
         serializer = UserInfoSerializer(query , many= True)
         return Response(serializer.data ,status=status.HTTP_201_CREATED)
 
+class USDTP(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request , format=None):
+        query = General.objects.get(id = 1 )
+        return Response(query.USDTpercent)
+
+    def post(self, request , format=None):
+        query = General.objects.get(id = 1 )
+        query.USDTpercent = request.data['USDTp']
+        query.save()
+        return Response(query.USDTpercent)
+
 class users(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
