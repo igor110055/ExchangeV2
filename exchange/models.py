@@ -113,7 +113,7 @@ class General(models.Model):
     telephone= models.CharField(max_length=255)
     rule = models.CharField(max_length=1000000 , null=True)
     logo = models.ImageField(upload_to='general' , null = True)
-    USDTpercent = models.FloatField()
+    USDTpercent = models.FloatField(null=True)
 
 
 class mobilecodes(models.Model):
