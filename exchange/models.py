@@ -596,6 +596,9 @@ class VerifyMelliRequest(models.Model):
     melliimg = models.ImageField(upload_to='melli' , null = True)
     mellic = models.CharField(max_length=16 , null=True)
     action = models.BooleanField(default = False)
+    def __str__(self):
+        return self.user.username 
+
     class meta:
         verbose_name = ' درخواست تایید کارت ملی '
         verbose_name_plural = ' درخواست های تایید کارت ملی '
