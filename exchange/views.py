@@ -531,7 +531,7 @@ class price(APIView):
             
     def get(self , request , format=None):
         price = Price.objects.get(id=1)
-        price.usd = price.rial
+        price.rial = price.usd + (price.usd * (General.objects.get(id = 1).USDTpercent / 100))
         price.save()
         price = Price.objects.filter(id=1)
         serializer = PriceSerializer(price , many=True)

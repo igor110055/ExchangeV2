@@ -47,8 +47,8 @@ def RIALTICKER():
         rial = requests.get(url = 'https://dapi.p3p.repl.co/api/?currency=usd')   
         r = rial.json()
         price = Price.objects.get(id = 1)
-        price.rial = int(r['Price']) + (int(r['Price']) * (General.objects.get(id = 1).USDTpercent / 100))
-        price.usd = int(r['Price']) + (int(r['Price']) * (General.objects.get(id = 1).USDTpercent / 100))
+        price.rial = int(r['Price']) 
+        price.usd = int(r['Price']) 
         price.save()
 
 def USDT():
