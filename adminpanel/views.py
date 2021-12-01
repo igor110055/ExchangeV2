@@ -1063,9 +1063,13 @@ class sellout(APIView):
             req.save()
             return Response(status=status.HTTP_201_CREATED)
         req = selloutrequest.objects.get(id = request.data['id'])
-        wall = Wallet.objects.get(user = req.user , currency = Currencies.objects.get( id = 1))
-        wall.amount = wall.amount + float(req.amount)
-        wall.save()
+        if len(Wallet.objects.filter(user = req.user , currency = Currencies.objects.get( id = 1))):
+            wall = Wallet.objects.get(user = req.user , currency = Currencies.objects.get( id = 1))
+            wall.amount = wall.amount + float(req.amount)
+            wall.save()
+        else:
+            wa = Wallet(user = req.user , currency = Currencies.objects.get( id = 1) , amount = float(req.amount))
+            wa.save()
         profit = ProfitList(user = req.user , amount = (int(request.data['rramount']) - int(req.ramount)), currency = 'ریال' , operation = f'{req.currency} فروش خارجی')
         profit.save()
         note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
