@@ -98,7 +98,10 @@ def sms(user , date = False , text = False , pattern = 'gf9zbtg61v'):
 def notification (user , date = '', title = '' , text = '', pattern='gf9zbtg61v'):
     note = Notification(user = user , title = title , text = text)
     note.save()
-    sms(user = user , pattern= pattern)
+    try:
+        sms(user = user , pattern= pattern)
+    except Exception: 
+        pass
     sendemail(user = user , text = text , title= title)
 
 class timeout(APIView):
