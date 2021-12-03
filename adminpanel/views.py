@@ -694,7 +694,7 @@ class withdraw(APIView):
         wr.save()
         return Response(status=status.HTTP_201_CREATED)
 
-    def delete():
+    def delete(self, request , format=None):
         wr = WithdrawRequest.objects.get(id = request.data['id'])
         wa = Wallet.objects.get(user = wr.user , currency = Currencies.objects.get(id = 1))
         wa.amount = wa.amount + wr.amount
