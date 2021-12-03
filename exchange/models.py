@@ -546,7 +546,7 @@ class WithdrawRequest(models.Model):
     user = models.ForeignKey(User , related_name='withdraws' , on_delete=models.CASCADE)
     bankaccount = models.ForeignKey(BankAccounts , related_name='account' , on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now())
-    amount = models.IntegerField()
+    amount = models.BigIntegerField()
     act = models.IntegerField(default=0)
     def get_user(self):
         return self.user.username
