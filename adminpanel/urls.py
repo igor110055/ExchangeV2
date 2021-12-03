@@ -10,6 +10,7 @@ urlpatterns = [
    path('buydone' , views.buydone.as_view() , name='buydone'),
    path('buyreject' , views.buyreject.as_view() , name='buyreject'),
    path('withdraw' , views.withdraw.as_view() , name='withdraw'),
+   path('withdraw/<int:id>' , views.withdraw.as_view() , name='withdraw'),
    path('buyout' , views.buyout.as_view() , name='buyout'),
    path('sell' , views.sell.as_view() , name='sell'),
    path('sellout' , views.sellout.as_view() , name='sellout'),
