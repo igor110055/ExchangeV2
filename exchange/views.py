@@ -2189,7 +2189,7 @@ class withdraw(APIView):
                 wa.amount = wa.amount - int(request.data['amount'])
                 wa.save()
                 serializer.save()
-        return Response(serializer.data , status=status.HTTP_201_CREATED)
+                return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class cp_deposit(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
