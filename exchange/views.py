@@ -1952,7 +1952,7 @@ class oltradeinfo3(APIView):
         r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
         list = r.json()['data']['ticker']
         for itemm in list:
-            itemm['last'] = float(itemm['last']) / r2
+            list['itemm']['last'] = float(list['itemm']['last']) / r2
         list2 = {}
         for item in Leverage.objects.all():
             if 'USDT' in item.symbol:
