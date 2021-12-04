@@ -62,6 +62,7 @@ urlpatterns = [
    path('sell' , views.sell.as_view() , name='sell'),
    path('buyout' , views.buyout.as_view() , name='buyout'),
    path('buyoutopen' , views.buyoutopen.as_view() , name='buyoutopen'),
+   path('buyopen' , views.buyopen.as_view() , name='buyopen'),
    path('buyouthis' , views.buyouthis.as_view() , name='buyouthis'),
    path('sellout' , views.sellout.as_view() , name='sellout'),
    path('selloutopen' , views.selloutopen.as_view() , name='selloutopen'),

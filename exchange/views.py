@@ -1843,6 +1843,20 @@ class buyoutopen(APIView):
         serializer = BuyoutSerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
+        
+class buyopen(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return buyrequest.objects.filter(user = user , act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuySerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+
 class buyouthis(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
