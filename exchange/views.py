@@ -1929,7 +1929,7 @@ class sellhis(APIView):
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
-        serializer = sellSerializer(maintrade , many=True)
+        serializer = SellSerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class sell(APIView):
