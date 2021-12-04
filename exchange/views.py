@@ -1925,7 +1925,7 @@ class sellhis(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return sellrequest.objects.filter(user = user , act = 2).order_by('-date')
+        return sellrequest.objects.filter(user = user , act_gte = 2).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
