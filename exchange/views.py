@@ -1862,11 +1862,23 @@ class buyouthis(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return buyoutrequest.objects.filter(user = user , act = 1).order_by('-date')
+        return buyoutrequest.objects.filter(user = user , act = 2).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
         serializer = BuyoutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class buyhis(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return buyrequest.objects.filter(user = user , act = 2).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = BuySerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class sellout(APIView):
@@ -1901,11 +1913,23 @@ class sellouthis(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return selloutrequest.objects.filter(user = user , act = 1).order_by('-date')
+        return selloutrequest.objects.filter(user = user , act = 2).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
         serializer = selloutSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class sellhis(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return sellrequest.objects.filter(user = user , act = 2).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = sellSerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class sell(APIView):
