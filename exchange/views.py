@@ -2007,7 +2007,7 @@ class cp_ticker(APIView):
     def post(self , request, format=None):
         if request.data['sym'] == 'USDT':
             r = requests.get(url = 'https://api.coinex.com/v1/common/currency/rate')
-            r = r.json()
+            r = r.json()['data']
             print(r)
             return Response({'ticker':{'buy' : float(r[0]['price'])}})
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
