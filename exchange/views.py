@@ -2006,8 +2006,8 @@ class cp_borrowlist(APIView):
 class cp_ticker(APIView):
     def post(self , request, format=None):
         if request.data['sym'] == 'USDT':
-            r = requests.get(url = 'https://api.nomics.com/v1/currencies/ticker?key=5f176269caf5ea0dfab684904f9316bf1f4f2bc6&ids=USDT')
-            r = r.json()
+            r = requests.get(url = 'https://api.coinex.com/v1/common/currency/rate')
+            r = r.json()['data']['USDT_to_USD']
             return Response({'ticker':{'buy' : float(r[0]['price'])}})
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
         return Response(coinex.market_ticker(market =  request.data['sym']+'USDT'))
