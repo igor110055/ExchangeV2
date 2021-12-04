@@ -2051,7 +2051,7 @@ class cp_ticker(APIView):
             r = requests.get(url = 'https://api.coinex.com/v1/common/currency/rate')
             r = r.json()['data']['USDT_to_USD']
             print(r)
-            return Response({'ticker':{'buy' : float(r)}})
+            return Response({'ticker':{'buy' : float(r), 'last' : float(r)}})
         r = requests.get(url = 'https://api.coinex.com/v1/common/currency/rate')
         r = float(r.json()['data']['USDT_to_USD'])
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
