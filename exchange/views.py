@@ -1985,12 +1985,12 @@ class oltradeinfo3(APIView):
 
     def get(self , request, format=None):   
         r2 = requests.get(url = 'https://api.coinex.com/v1/common/currency/rate')
-        r2 = float(r2.json()['data']['USDT_to_USD'])
+        r2 = float(r2.json()['data']['USDT_to_USD']) * General.objects.get(id =1).USDTpercent2
         list = {} 
         r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
         list = r.json()['data']['ticker']
         for itemm in list.keys():
-            list[itemm]['last'] = float(list[itemm]['last']) / r2
+            list[itemm]['last'] = float(list[itemm]['last']) / r2 
         list2 = {}
         for item in Leverage.objects.all():
             if 'USDT' in item.symbol:
@@ -2051,7 +2051,7 @@ class cp_ticker(APIView):
             r = requests.get(url = 'https://api.coinex.com/v1/common/currency/rate')
             r = r.json()['data']['USDT_to_USD']
             print(r)
-            return Response({'ticker':{'buy' : float(r), 'last' : float(r)}})
+            return Response({'ticker':{'buy' : float(r) * General.objects.get(id =1).USDTpercent2, 'last' : float(r) * General.objects.get(id =1).USDTpercent2}})
         r = requests.get(url = 'https://api.coinex.com/v1/common/currency/rate')
         r = float(r.json()['data']['USDT_to_USD'])
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
