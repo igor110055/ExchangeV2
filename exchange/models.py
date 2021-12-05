@@ -114,6 +114,7 @@ class General(models.Model):
     rule = models.CharField(max_length=1000000 , null=True)
     logo = models.ImageField(upload_to='general' , null = True)
     USDTpercent = models.FloatField(null=True)
+    USDTpercent2 = models.FloatField(null=True)
 
 
 class mobilecodes(models.Model):

@@ -158,6 +158,7 @@ class USDTP(APIView):
     def post(self, request , format=None):
         query = General.objects.get(id = 1 )
         query.USDTpercent = request.data['USDTp']
+        query.USDTpercent2 = request.data['USDTp2']
         query.save()
         return Response(query.USDTpercent)
 
