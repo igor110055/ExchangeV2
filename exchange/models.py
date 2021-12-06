@@ -120,6 +120,8 @@ class General(models.Model):
 class mobilecodes(models.Model):
     number = models.CharField(max_length=15)
     code = models.CharField(max_length=15)
+    def __str__(self):
+        return self.number
 
 class buyrequest(models.Model):
     user = models.ForeignKey(User , related_name='buys' , on_delete=models.CASCADE)
@@ -174,6 +176,53 @@ class sellrequest(models.Model):
     currency = models.CharField(max_length=20)
     ramount = models.FloatField()
     camount = models.FloatField()
+    act = models.IntegerField(default=2)
+    def get_user(self):
+        return self.user.username
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now()- self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes
+
+class exchangerequest(models.Model):
+    user = models.ForeignKey(User , related_name='sells' , on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now())
+    currency = models.CharField(max_length=20)
+    currency2 = models.CharField(max_length=20)
+    camount = models.FloatField()
+    camount2 = models.FloatField()
     act = models.IntegerField(default=2)
     def get_user(self):
         return self.user.username
