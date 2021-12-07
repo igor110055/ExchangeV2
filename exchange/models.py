@@ -217,7 +217,7 @@ class sellrequest(models.Model):
         return  days + hours + minutes
 
 class exchangerequest(models.Model):
-    user = models.ForeignKey(User , related_name='sells' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User , related_name='exchanges' , on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now())
     currency = models.CharField(max_length=20)
     currency2 = models.CharField(max_length=20)
