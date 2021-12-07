@@ -14,10 +14,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, ProfitSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
+from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, ExchangeSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, ProfitSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, ProfitList, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, WithdrawRequest, buyoutrequest, buyrequest, selloutrequest, sellrequest
+from exchange.models import BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, ProfitList, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, WithdrawRequest, buyoutrequest, buyrequest, exchangerequest, selloutrequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -955,6 +955,62 @@ class buy(APIView):
         req.act = 2
         req.save()
         return Response( status=status.HTTP_201_CREATED)
+
+class exchange(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return exchangerequest.objects.filter(act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = ExchangeSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+    def post(self , request, format=None):
+        if request.data['act'] == 'reject':
+            req = exchangerequest.objects.get(id = request.data['id'])
+            wal = Wallet.objects.get(user= req.user , currency = Currencies.objects.get(id = 1))
+            wal.amount = wal.amount + req.ramount
+            wal.save()
+            note = Notification(user=req.user, title = 'اکسچینج نا موفق' , text = 'متاسفانه درخواست اکسچینج شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
+            note.save()
+            req.act = 1
+            req.save()
+            return Response(status=status.HTTP_201_CREATED)
+        req = exchangerequest.objects.get(id = request.data['id'])
+        profit = ProfitList(user = req.user , amount = (int(req.ramount) - int(request.data['rramount'])), currency = 'ریال' , operation = f'{req.currency}خرید')
+        profit.save()
+        note = Notification(user=req.user, title = 'اکسچینج موفق' , text = ' درخواست اکسچینج شما با موفقیت انجام شد . ')
+        note.save()
+        req.act = 2
+        req.save()
+        return Response( status=status.HTTP_201_CREATED)
+
+class exchangedone(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return exchangerequest.objects.filter(act = 2).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = ExchangeSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class exchangereject(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return exchangerequest.objects.filter(act = 1).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = ExchangeSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class buydone(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]

@@ -1973,7 +1973,6 @@ class exchange(APIView):
         request.data['user'] = request.user.id
         serializer = ExchangeSerializer(data = request.data)
         if serializer.is_valid():
-            serializer.save()
             coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
             if not request.data['currency'] in coinex.balance_info():
                 return Response({'error':'موجودی کافی نیست'} )
@@ -1983,6 +1982,7 @@ class exchange(APIView):
             coinex.sub_account_transfer(coin_type=request.data['currency'],amount=request.data['camount'])
             note = Notification(user=request.user, title = 'فروش موفق' , text = ' درخواست فروش شما با موفقیت انجام شد . ')
             note.save()
+            serializer.save()
             return Response(status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)

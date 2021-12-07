@@ -69,6 +69,7 @@ urlpatterns = [
    path('selloutopen' , views.selloutopen.as_view() , name='selloutopen'),
    path('sellouthis' , views.sellouthis.as_view() , name='sellouthis'),
    path('sellhis' , views.sellhis.as_view() , name='sellhis'),
+   path('exchange' , views.exchange.as_view() , name='exchange'),
    path('request/', views.send_request.as_view(), name='request'),
    path('verifys/<uuid:transid>/', views.verifys , name='verifys'),
    path('levelfee', views.levelfee.as_view() , name='levelfee'),
