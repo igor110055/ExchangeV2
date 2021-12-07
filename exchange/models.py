@@ -137,16 +137,19 @@ class buyrequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
-        while (dif > 86400):
-            dif = dif - 86400
-            days = days + 1
-        while (dif > 3600):
-            dif = dif - 3600
-            hours = hours + 1
-        while (dif > 60):
-            dif = dif - 60
-            minutes = minutes + 1
+        dif = (timezone.now() - self.date).total_seconds()
+        if dif > 86400:
+            while (dif > 86400):
+                dif = dif - 86400
+                days = days + 1
+                if dif > 3600:
+                    while (dif > 3600):
+                        dif = dif - 3600
+                        hours = hours + 1
+                        if dif > 60:
+                            while (dif > 60):
+                                dif = dif - 60
+                                minutes = minutes + 1
 
 
         if hours > 0:
@@ -1118,15 +1121,18 @@ class ProTradesBuyOrder(models.Model):
         hours=0
         minutes=0
         dif = (timezone.now() - self.date).total_seconds()
-        while (dif > 86400):
-            dif = dif - 86400
-            days = days + 1
-        while (dif > 3600):
-            dif = dif - 3600
-            hours = hours + 1
-        while (dif > 60):
-            dif = dif - 60
-            minutes = minutes + 1
+        if dif > 86400:
+            while (dif > 86400):
+                dif = dif - 86400
+                days = days + 1
+                if dif > 3600:
+                    while (dif > 3600):
+                        dif = dif - 3600
+                        hours = hours + 1
+                        if dif > 60:
+                            while (dif > 60):
+                                dif = dif - 60
+                                minutes = minutes + 1
 
 
         if hours > 0:
