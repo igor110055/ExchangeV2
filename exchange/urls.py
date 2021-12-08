@@ -71,6 +71,7 @@ urlpatterns = [
    path('sellhis' , views.sellhis.as_view() , name='sellhis'),
    path('exchange' , views.exchange.as_view() , name='exchange'),
    path('request/', views.send_request.as_view(), name='request'),
+   path('request2/', views.send_request2.as_view(), name='request2'),
    path('verifys/<uuid:transid>/', views.verifys , name='verifys'),
    path('buyappback/<uuid:transid>/', views.buyappback , name='buyappback'),
    path('levelfee', views.levelfee.as_view() , name='levelfee'),
