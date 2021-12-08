@@ -430,9 +430,9 @@ def buyappback(request, transid):
                 user = transactioni.user
                 if int(transactioni.amount) == 300000000:
                     type = 1
-                elif int(transactioni.amount) == 300000000:
+                elif int(transactioni.amount) == 400000000:
                     type = 2
-                elif int(transactioni.amount) == 300000000:
+                elif int(transactioni.amount) == 500000000:
                     type = 3
                 buyapp(user = user , type = type)
                 return redirect('https://amizax.com/success')
