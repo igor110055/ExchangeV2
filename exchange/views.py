@@ -25,7 +25,7 @@ from rest_framework import authentication
 from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpWalletSerializer, ExchangeSerializer, GeneralSerializer, LevelFeeSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, LevelFee, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, ProfitList, Review, SmsVerified, TopSticker, VerifyAcceptRequest, buyoutrequest, buyrequest, exchangerequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, selloutrequest, sellrequest, transactionid
+from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, LevelFee, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, ProfitList, Review, SmsVerified, TopSticker, VerifyAcceptRequest, buyapp, buyoutrequest, buyrequest, exchangerequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, selloutrequest, sellrequest, transactionid
 from django.contrib.auth.models import AbstractUser , User, UserManager
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -333,6 +333,41 @@ class send_request(APIView):
             e_message = req.json()['errors']['message']
             return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
 
+class send_request2(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def post(self , request , format=None):
+        CallbackURL2 = 'https://amizax.com/api/v1/buyappback/'
+        uid = str(uuid.uuid4())
+        tr = transactionid(user = request.user , transid = uid , amount = int(request.data['amount']))
+        tr.save()
+        amount = 0
+        if int(request.data['option']) == 1:
+            amount = 300000000
+        elif int(request.data['option']) == 2:
+            amount = 400000000
+        elif int(request.data['option']) == 3:
+            amount = 500000000
+        req_data = {
+            "merchant_id": MERCHANT,
+            "amount": int(amount),
+            "callback_url": CallbackURL2 + uid ,
+            "description": description,
+            "metadata": {}
+        }
+        req_header = {"accept": "application/json",
+                    "content-type": "application/json'"}
+        req = requests.post(url=ZP_API_REQUEST, data=json.dumps(
+            req_data), headers=req_header)
+        authority = req.json()['data']['authority']
+        if len(req.json()['errors']) == 0:
+            return HttpResponse(ZP_API_STARTPAY.format(authority=authority))
+        else:
+            e_code = req.json()['errors']['code']
+            e_message = req.json()['errors']['message']
+            return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
+
 def verifys(request, transid):
     t_status = request.GET.get('Status')
     t_authority = request.GET['Authority']
@@ -375,6 +410,46 @@ def verifys(request, transid):
     else:
         return HttpResponse('Transaction failed or canceled by user')
 
+
+def buyappback(request, transid):
+    t_status = request.GET.get('Status')
+    t_authority = request.GET['Authority']
+    transactioni = transactionid.objects.get(transid = transid)
+    if request.GET.get('Status') == 'OK':
+        req_header = {"accept": "application/json",
+                      "content-type": "application/json'"}
+        req_data = {
+            "merchant_id": MERCHANT,
+            "amount": transactioni.amount,
+            "authority": t_authority
+        }
+        req = requests.post(url=ZP_API_VERIFY, data=json.dumps(req_data), headers=req_header)
+        if len(req.json()['errors']) == 0:
+            t_status = req.json()['data']['code']
+            if t_status == 100:
+                user = transactioni.user
+                if int(transactioni.amount) == 300000000:
+                    type = 1
+                elif int(transactioni.amount) == 300000000:
+                    type = 2
+                elif int(transactioni.amount) == 300000000:
+                    type = 3
+                buyapp(user = user , type = type)
+                return redirect('https://amizax.com/success')
+            elif t_status == 101:
+                return HttpResponse('Transaction submitted : ' + str(
+                    req.json()['data']['message']
+                ))
+            else:
+                return HttpResponse('Transaction failed.\nStatus: ' + str(
+                    req.json()['data']['message']
+                ))
+        else:
+            e_code = req.json()['errors']['code']
+            e_message = req.json()['errors']['message']
+            return HttpResponse(f"Error code: {e_code}, Error Message: {e_message}")
+    else:
+        return HttpResponse('Transaction failed or canceled by user')
 
 class bsc(APIView):
 
