@@ -351,7 +351,7 @@ class send_request2(APIView):
         tr.save()
         req_data = {
             "merchant_id": MERCHANT,
-            "amount": int(amount),
+            "amount": amount,
             "callback_url": CallbackURL2 + uid ,
             "description": description,
             "metadata": {}
