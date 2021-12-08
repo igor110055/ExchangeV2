@@ -347,7 +347,7 @@ class send_request2(APIView):
             amount = 400000000
         elif int(request.data['option']) == 3:
             amount = 500000000
-        tr = transactionid(user = request.user , transid = uid , amount = amount))
+        tr = transactionid(user = request.user , transid = uid , amount = amount)
         tr.save()
         req_data = {
             "merchant_id": MERCHANT,
