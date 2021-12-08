@@ -171,7 +171,7 @@ class buyrequest(models.Model):
         return  days + hours + minutes
 
 class buyapp(models.Model):
-    user = models.ForeignKey(User , related_name='buys' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User , related_name='buyapps' , on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now())
     type = models.IntegerField()
     def get_user(self):
