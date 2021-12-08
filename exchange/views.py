@@ -340,8 +340,6 @@ class send_request2(APIView):
     def post(self , request , format=None):
         CallbackURL2 = 'https://amizax.com/api/v1/buyappback/'
         uid = str(uuid.uuid4())
-        tr = transactionid(user = request.user , transid = uid , amount = int(request.data['amount']))
-        tr.save()
         amount = 0
         if int(request.data['option']) == 1:
             amount = 300000000
@@ -349,6 +347,8 @@ class send_request2(APIView):
             amount = 400000000
         elif int(request.data['option']) == 3:
             amount = 500000000
+        tr = transactionid(user = request.user , transid = uid , amount = amount))
+        tr.save()
         req_data = {
             "merchant_id": MERCHANT,
             "amount": int(amount),
