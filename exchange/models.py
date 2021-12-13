@@ -266,7 +266,7 @@ class exchangerequest(models.Model):
     currency2 = models.CharField(max_length=20)
     camount = models.FloatField()
     camount2 = models.FloatField()
-    act = models.IntegerField(default=2)
+    act = models.IntegerField(default=0)
     def get_user(self):
         return self.user.username
     def get_age(self):
