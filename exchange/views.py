@@ -2058,6 +2058,10 @@ class exchange(APIView):
             note = Notification(user=request.user, title = 'فروش موفق' , text = ' درخواست فروش شما با موفقیت انجام شد . ')
             note.save()
             serializer.save()
+            try:
+                sms(user = User.objects.get(id = 5) ,text= ' درخواست تبدیل مقدار' + str(request.data['camount']) + 'از ارز' + request.data['currency'] + 'برای ' + request.user.username, pattern= 'tfpvvl8beg')
+            except:
+                pass
             return Response(status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
