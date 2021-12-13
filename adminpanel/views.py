@@ -1127,7 +1127,7 @@ class sellout(APIView):
         else:
             wa = Wallet(user = req.user , currency = Currencies.objects.get( id = 1) , amount = float(req.amount))
             wa.save()
-        profit = ProfitList(user = req.user , amount = (int(request.data['rramount']) - int(req.ramount)), currency = 'ریال' , operation = f'{req.currency} فروش خارجی')
+        profit = ProfitList(user = req.user , amount = (float(request.data['rramount']) - float(req.ramount)), currency = 'ریال' , operation = f'{req.currency} فروش خارجی')
         profit.save()
         note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
         note.save()
