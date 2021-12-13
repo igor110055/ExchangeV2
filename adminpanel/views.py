@@ -980,7 +980,7 @@ class exchange(APIView):
             req.save()
             return Response(status=status.HTTP_201_CREATED)
         req = exchangerequest.objects.get(id = request.data['id'])
-        profit = ProfitList(user = req.user , amount = (int(req.ramount) - int(request.data['rramount'])), currency = 'ریال' , operation = f'{req.currency}خرید')
+        profit = ProfitList(user = req.user , amount = (int(req.camount2) - int(request.data['rramount'])), currency = f' {req.currency2}' , operation = f' {req.currency2} به {req.currency}تبدیل ')
         profit.save()
         note = Notification(user=req.user, title = 'اکسچینج موفق' , text = ' درخواست اکسچینج شما با موفقیت انجام شد . ')
         note.save()
