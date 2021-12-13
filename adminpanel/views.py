@@ -916,7 +916,7 @@ class profit_rial(APIView):
 
 
     def get_object(self, user):
-        return ProfitList.objects.filter(currency = 'ریال')
+        return ProfitList.objects.filter(currency = 'ریال').order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
