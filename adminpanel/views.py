@@ -1122,7 +1122,7 @@ class sellout(APIView):
         req = selloutrequest.objects.get(id = request.data['id'])
         if len(Wallet.objects.filter(user = req.user , currency = Currencies.objects.get( id = 1))):
             wall = Wallet.objects.get(user = req.user , currency = Currencies.objects.get( id = 1))
-            wall.amount = wall.amount + float(req.amount)
+            wall.amount = wall.amount + float(req.ramount)
             wall.save()
         else:
             wa = Wallet(user = req.user , currency = Currencies.objects.get( id = 1) , amount = float(req.amount))
