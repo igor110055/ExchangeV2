@@ -22,7 +22,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "is_staff",
             "get_melli",
             "get_mellip",
-            "get_otp"
+            "get_otp",
+            "referalid"
         )
 
 class PriceSerializer(serializers.ModelSerializer):

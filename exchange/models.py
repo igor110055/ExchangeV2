@@ -42,6 +42,11 @@ class transactionid(models.Model):
     transid = models.UUIDField(editable=False)
     amount = models.BigIntegerField(null=True)
 
+class Referal(models.Model):
+    inviting = models.ForeignKey(User , related_name='referals' , on_delete=models.CASCADE)
+    inviter = models.IntegerField()
+
+
 class UserInfo(models.Model):
     user = models.OneToOneField(User , related_name='userinfo', on_delete=models.CASCADE)
     first_name=models.CharField(max_length=255)
