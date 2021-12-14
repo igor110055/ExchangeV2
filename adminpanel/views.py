@@ -1091,7 +1091,7 @@ class buyout(APIView):
             req.save()
             return Response(status=status.HTTP_201_CREATED)
         req = buyoutrequest.objects.get(id = request.data['id'])
-        profit = ProfitList(user = req.user , amount = (int(req.ramount) - int(request.data['rramount'])) , currency = 'ریال' , operation = f'{req.currency} خرید خارجی')
+        profit = ProfitList(user = req.user , amount = (float(req.ramount) - float(request.data['rramount'])) , currency = 'ریال' , operation = f'{req.currency} خرید خارجی')
         profit.save()
         note = Notification(user=req.user, title = 'خرید موفق' , text = ' درخواست خرید شما با موفقیت انجام شد . ')
         note.save()
