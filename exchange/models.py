@@ -61,7 +61,7 @@ class UserInfo(models.Model):
     last_visit = models.DateTimeField(default=timezone.now())
     complete = models.BooleanField(default=False)
     otp = models.CharField(max_length=100 ,default= base32_lib.generate(length=16, checksum=True))
-    referalid = models.UUIDField(default=uuid.uuid4, editable=False , null=False)
+    referalid = models.UUIDField(default=uuid.uuid4 , null=False)
     class meta:
         ordering = ('-date_joined',)
         
