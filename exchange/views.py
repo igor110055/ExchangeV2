@@ -291,8 +291,9 @@ class loginsms(APIView):
 
 class addreferal(APIView):
     def post(self, request, format=None):
-            Referal(inviting = User.objects.get(username = request.data['username']) , inviter = UserInfo.objects.get(referalid = request.data['referal']).user)
-            
+            ref = Referal(inviting = User.objects.get(username = request.data['username']) , inviter = UserInfo.objects.get(referalid = request.data['referal']).user)
+            ref.save()
+            return Response(status=status.HTTP_200_OK)
 class welcomesms(APIView):
     def get(self, request, format=None):
             notification(user = request.user, title='Amizax', text='خود وارد شدید Amizax با موفقیت به حساب  ')
