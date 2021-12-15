@@ -971,9 +971,6 @@ class exchange(APIView):
     def post(self , request, format=None):
         if request.data['act'] == 'reject':
             req = exchangerequest.objects.get(id = request.data['id'])
-            wal = Wallet.objects.get(user= req.user , currency = Currencies.objects.get(id = 1))
-            wal.amount = wal.amount + req.ramount
-            wal.save()
             note = Notification(user=req.user, title = 'اکسچینج نا موفق' , text = 'متاسفانه درخواست اکسچینج شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
             note.save()
             req.act = 1
@@ -1080,12 +1077,14 @@ class buyout(APIView):
     def post(self , request, format=None):
         if request.data['act'] == 'reject':
             req = buyoutrequest.objects.get(id = request.data['id'])
+            wal = Wallet.objects.get(user= req.user , currency = Currencies.objects.get(id = 1))
+            wal.amount = wal.amount + req.ramount
+            wal.save()
             note = Notification(user=req.user, title = 'خرید نا موفق' , text = 'متاسفانه درخواست خرید شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
             note.save()
             req.act = 1
             req.save()
             return Response(status=status.HTTP_201_CREATED)
-        print('hi1')
         req = buyoutrequest.objects.get(id = request.data['id'])
         profit = ProfitList(user = req.user , amount = (float(req.ramount) - float(request.data['rramount'])) , currency = 'ریال' , operation = f'{req.currency} خرید خارجی')
         profit.save()
@@ -1093,7 +1092,6 @@ class buyout(APIView):
         note.save()
         req.act = 2
         req.save()
-        print('hi2')
         return Response( status=status.HTTP_201_CREATED)
 
 class sellout(APIView):
