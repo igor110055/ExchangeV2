@@ -21,7 +21,7 @@ from django.utils.timezone import utc
 import pyotp
 import base32_lib
 
-timezone = timezone('UTC')
+timezones = timezone('UTC')
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -65,7 +65,7 @@ class UserInfo(models.Model):
     googleverify = models.BooleanField(default=False)
     emailverify = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-    last_visit = models.DateTimeField(default=timezone.now())
+    last_visit = models.DateTimeField(default=timezones.now())
     complete = models.BooleanField(default=False)
     otp = models.CharField(max_length=100 ,default= base32_lib.generate(length=16, checksum=True))
     referalid = models.UUIDField(default=uuid.uuid4 , null=False)
@@ -109,7 +109,7 @@ class LevelFee(models.Model):
 
 
 class Review(models.Model):
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
 
 class General(models.Model):
     name= models.CharField(max_length=255)
@@ -133,7 +133,7 @@ class mobilecodes(models.Model):
 
 class buyrequest(models.Model):
     user = models.ForeignKey(User , related_name='buys' , on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     currency = models.CharField(max_length=20)
     ramount = models.BigIntegerField()
     rramount = models.FloatField(null=True)
@@ -145,7 +145,7 @@ class buyrequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -180,7 +180,7 @@ class buyrequest(models.Model):
 
 class buyapp(models.Model):
     user = models.ForeignKey(User , related_name='buyapps' , on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     type = models.IntegerField()
     def get_user(self):
         return self.user.username
@@ -188,7 +188,7 @@ class buyapp(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -223,7 +223,7 @@ class buyapp(models.Model):
 
 class sellrequest(models.Model):
     user = models.ForeignKey(User , related_name='sells' , on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     currency = models.CharField(max_length=20)
     ramount = models.FloatField()
     camount = models.FloatField()
@@ -234,7 +234,7 @@ class sellrequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -269,7 +269,7 @@ class sellrequest(models.Model):
 
 class exchangerequest(models.Model):
     user = models.ForeignKey(User , related_name='exchanges' , on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     currency = models.CharField(max_length=20)
     currency2 = models.CharField(max_length=20)
     camount = models.FloatField()
@@ -281,7 +281,7 @@ class exchangerequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -316,7 +316,7 @@ class exchangerequest(models.Model):
 
 class buyoutrequest(models.Model):
     user = models.ForeignKey(User , related_name='buyout' , on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     currency = models.CharField(max_length=20)
     address = models.CharField(max_length=200)
     ramount = models.BigIntegerField()
@@ -329,7 +329,7 @@ class buyoutrequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -364,7 +364,7 @@ class buyoutrequest(models.Model):
 
 class selloutrequest(models.Model):
     user = models.ForeignKey(User , related_name='sellout' , on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     currency = models.CharField(max_length=20)
     hash = models.CharField(max_length=200)
     ramount = models.FloatField()
@@ -377,7 +377,7 @@ class selloutrequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -421,7 +421,7 @@ class Perpetual(models.Model):
 
 class PerpetualRequest(models.Model):
     user = models.ForeignKey(User , related_name='Perpetualreq' , on_delete=models.CASCADE , null=True,)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
 
     def get_user(self):
         return self.user.username
@@ -430,7 +430,7 @@ class PerpetualRequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -532,7 +532,7 @@ class Cp_Wallet(models.Model):
         return f'{self.currency.name}'
 
 class Cp_Withdraw(models.Model):
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     user = models.ForeignKey(User , on_delete=models.CASCADE)
     currency = models.ForeignKey(Cp_Currencies , on_delete=models.CASCADE ,default=0)
     chain = models.CharField(max_length=10)
@@ -551,7 +551,7 @@ class Cp_Withdraw(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -646,7 +646,7 @@ class BankAccounts(models.Model):
 class WithdrawRequest(models.Model):
     user = models.ForeignKey(User , related_name='withdraws' , on_delete=models.CASCADE)
     bankaccount = models.ForeignKey(BankAccounts , related_name='account' , on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     amount = models.BigIntegerField()
     act = models.IntegerField(default=0)
     def get_user(self):
@@ -659,7 +659,7 @@ class WithdrawRequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -758,7 +758,7 @@ class VerifyBankAccountsRequest(models.Model):
         return f'{UserInfo.objects.get(user=self.user).last_name}'
 
 class Transactions(models.Model):
-    date = models.DateField(default=timezone.now()) 
+    date = models.DateField(default=timezones.now()) 
     amount = models.FloatField()
     user = models.ForeignKey(User , related_name='transaction' , on_delete=models.CASCADE)
     currency = models.ForeignKey(Currencies , related_name='transaction' , on_delete=models.CASCADE)
@@ -784,7 +784,7 @@ class Settings(models.Model):
 
 
 class Subjects(models.Model):
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     user = models.ForeignKey(User , related_name='Subject' , on_delete=models.CASCADE)
     act = models.IntegerField(null=True , default = 0)
     read = models.BooleanField(default = True)
@@ -803,7 +803,7 @@ class Subjects(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezones.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -838,7 +838,7 @@ class Subjects(models.Model):
     
 class Tickets(models.Model):
     user = models.ForeignKey(User ,related_name='harchi', on_delete=models.CASCADE , null=True)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     subid = models.ForeignKey(Subjects , related_name='ticket' , on_delete=models.CASCADE)
     text = models.CharField(max_length = 1000)
     pic = models.ImageField(upload_to='ticket' , null = True)
@@ -853,7 +853,7 @@ class Tickets(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now() - self.date).total_seconds()
+        dif = (timezones.now() - self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -893,7 +893,7 @@ class Tickets(models.Model):
 
 class ProfitList(models.Model):
     user = models.ForeignKey(User ,related_name='profit', on_delete=models.CASCADE , null=True)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     amount = models.FloatField()
     currency = models.CharField(max_length=10)
     operation = models.CharField(max_length=200)
@@ -908,7 +908,7 @@ class ProfitList(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now() - self.date).total_seconds()
+        dif = (timezones.now() - self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -959,7 +959,7 @@ class Pages(models.Model):
 class Forgetrequest(models.Model):
     email = models.CharField(max_length=200,null=True)
     key = models.UUIDField(max_length=100, primary_key=True, default=uuid.uuid4)
-    date = models.DateTimeField(default=django.utils.timezone.now())
+    date = models.DateTimeField(default=django.utils.timezones.now())
 
 class Price(models.Model):
     rial = models.FloatField(default=1)
@@ -993,12 +993,12 @@ class Notification(models.Model):
     title = models.CharField(max_length=100)
     text = models.CharField(max_length=300)
     seen = models.BooleanField(default=False)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     def get_age(self):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now() - self.date).total_seconds()
+        dif = (timezones.now() - self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -1067,12 +1067,12 @@ class MainTradesBuyOrder(models.Model):
     amount = models.FloatField()
     price = models.FloatField()
     start = models.FloatField(null=True)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     def get_age(self):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now() - self.date).total_seconds()
+        dif = (timezones.now() - self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -1116,12 +1116,12 @@ class MainTradesSellOrder(models.Model):
     amount = models.FloatField()
     price = models.FloatField()
     start = models.FloatField(null=True)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     def get_age(self):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now() - self.date).total_seconds()
+        dif = (timezones.now() - self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -1163,12 +1163,12 @@ class ProTradesBuyOrder(models.Model):
     amount = models.FloatField()
     price = models.FloatField()
     start = models.FloatField(null=True)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     def get_age(self):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now() - self.date).total_seconds()
+        dif = (timezones.now() - self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
@@ -1209,12 +1209,12 @@ class ProTradesSellOrder(models.Model):
     amount = models.FloatField()
     price = models.FloatField()
     start = models.FloatField(null=True)
-    date = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(default=timezones.now())
     def get_age(self):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now() - self.date).total_seconds()
+        dif = (timezones.now() - self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
