@@ -21,6 +21,8 @@ from django.utils.timezone import utc
 import pyotp
 import base32_lib
 
+timezone = timezone('UTC')
+
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
@@ -279,7 +281,7 @@ class exchangerequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date)
+        dif = (timezone.now()- self.date).total_seconds()
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
