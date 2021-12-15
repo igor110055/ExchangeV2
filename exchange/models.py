@@ -310,7 +310,7 @@ class exchangerequest(models.Model):
             days = ''
 
 
-        return  days + hours + minutes
+        return  dif
 
 class buyoutrequest(models.Model):
     user = models.ForeignKey(User , related_name='buyout' , on_delete=models.CASCADE)
