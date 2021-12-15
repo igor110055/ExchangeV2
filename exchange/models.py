@@ -279,7 +279,7 @@ class exchangerequest(models.Model):
         days=0
         hours=0
         minutes=0
-        dif = (timezone.now()- self.date).total_seconds()
+        dif = (timezone.now()- self.date)
         while (dif > 86400):
             dif = dif - 86400
             days = days + 1
