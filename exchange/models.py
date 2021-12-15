@@ -956,7 +956,7 @@ class Pages(models.Model):
 class Forgetrequest(models.Model):
     email = models.CharField(max_length=200,null=True)
     key = models.UUIDField(max_length=100, primary_key=True, default=uuid.uuid4)
-    date = models.DateTimeField(default=django.utils.datetime.now())
+    date = models.DateTimeField(default=datetime.now())
 
 class Price(models.Model):
     rial = models.FloatField(default=1)
