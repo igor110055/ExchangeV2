@@ -23,7 +23,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "get_melli",
             "get_mellip",
             "get_otp",
-            "referalid"
+            "referalid",
+            "get_referal"
         )
 
 class PriceSerializer(serializers.ModelSerializer):

@@ -92,6 +92,9 @@ class UserInfo(models.Model):
     def is_staff(self):
         return self.user.is_staff
 
+    def get_referal(self):
+        return 'https://www.amizax.com/register/' + self.referalid
+
 
 class SmsVerified(models.Model):
     number = models.CharField(max_length=20)
