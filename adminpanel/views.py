@@ -983,6 +983,30 @@ class exchange(APIView):
         req.save()
         return Response( status=status.HTTP_201_CREATED)
 
+class exchangedone(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return exchangerequest.objects.filter(act = 2).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = ExchangeSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+class exchangereject(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return exchangerequest.objects.filter(act = 1).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = ExchangeSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
 class cp_deposit(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
@@ -1010,28 +1034,28 @@ class cp_deposit(APIView):
         req.save()
         return Response( status=status.HTTP_201_CREATED)
 
-class exchangedone(APIView):
+class cp_depositdone(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return exchangerequest.objects.filter(act = 2).order_by('-date')
+        return CpDepositRequest.objects.filter(act = 2).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
-        serializer = ExchangeSerializer(maintrade , many=True)
+        serializer = CpDepositRequestSerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
-class exchangereject(APIView):
+class cp_depositreject(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     
     def get_object(self, user):
-        return exchangerequest.objects.filter(act = 1).order_by('-date')
+        return CpDepositRequest.objects.filter(act = 1).order_by('-date')
 
     def get(self , request, format=None):
         maintrade =  self.get_object(request.user)
-        serializer = ExchangeSerializer(maintrade , many=True)
+        serializer = CpDepositRequestSerializer(maintrade , many=True)
         return Response(serializer.data , status=status.HTTP_201_CREATED)
 
 class buydone(APIView):
