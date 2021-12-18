@@ -1027,7 +1027,7 @@ class cp_deposit(APIView):
             req.act = 1
             req.save()
             return Response(status=status.HTTP_201_CREATED)
-        req = exchangerequest.objects.get(id = request.data['id'])
+        req = CpDepositRequest.objects.get(id = request.data['id'])
         note = Notification(user=req.user, title = 'شارژ حساب موفق' , text = ' درخواست شارژ حساب شما با موفقیت انجام شد . ')
         note.save()
         req.act = 2
