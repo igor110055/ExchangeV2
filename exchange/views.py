@@ -2351,7 +2351,7 @@ class withdraw(APIView):
 class cp_deposit(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
-    def post(self, request, id , format=None):
+    def post(self, request , format=None):
         serializer = CpDepositRequestSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save
