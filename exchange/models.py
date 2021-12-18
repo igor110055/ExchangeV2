@@ -93,7 +93,7 @@ class UserInfo(models.Model):
         return self.user.is_staff
 
     def get_referal(self):
-        return 'https://www.amizax.com/register/' + self.referalid
+        return 'https://www.amizax.com/register/' + str(self.referalid)
 
 
 class SmsVerified(models.Model):
