@@ -691,7 +691,7 @@ class WithdrawRequest(models.Model):
         return  days + hours + minutes
 
 class CpDepositRequest(models.Model):
-    user = models.ForeignKey(User , related_name='withdraws' , on_delete=models.CASCADE)
+    user = models.ForeignKey(User , related_name='cpdeposits' , on_delete=models.CASCADE)
     hash = models.CharField(max_length=1000)
     date = models.DateTimeField(default=timezone.now())
     amount = models.BigIntegerField()
