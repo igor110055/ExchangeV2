@@ -22,7 +22,7 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpWalletSerializer, ExchangeSerializer, GeneralSerializer, LevelFeeSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
+from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpDepositRequestSerializer, CpWalletSerializer, ExchangeSerializer, GeneralSerializer, LevelFeeSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
 from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, LevelFee, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, ProfitList, Referal, Review, SmsVerified, TopSticker, VerifyAcceptRequest, buyapp, buyoutrequest, buyrequest, exchangerequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, selloutrequest, sellrequest, transactionid
@@ -2352,78 +2352,13 @@ class cp_deposit(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
     def post(self, request, id , format=None):
-        if id == 4 :
-            cur = Currencies.objects.get(id = id)
-            amount = request.data['amount']
-            wallet = Wallet.objects.get(user = request.user , currency = cur)
-            tr = Tron(address = wallet.address , key = wallet.key)
-            balance = tr.usdt_transfer(to='TP3QTZjc7LLd9on1fLY3ttWCpAz6z2mQwd',amount=amount)
-            res = balance
-            print(res)
-            return Response(res)
-        if id == 5 :
-            cur = Currencies.objects.get(id = id)
-            amount = request.data['amount']
-            wallet = Wallet.objects.get(user = request.user , currency = cur)
-            tr = Tron(address = wallet.address , key = wallet.key)
-            balance = tr.transfer(to='TP3QTZjc7LLd9on1fLY3ttWCpAz6z2mQwd',amount=amount)
-            res = balance
-            print(res)
-            return Response(res)
-
-        if id == 2 :
-            cur = Currencies.objects.get(id = id)
-            amount = request.data['amount']
-            wallet = Wallet.objects.get(user = request.user , currency = cur)
-            BTC(to = '14Tr4HaKkKuC1Lmpr2YMAuYVZRWqAdRTcr', key = wallet.key, amount = amount)
-            return Response('res')
-
-        if id == 3 :
-            cur = Currencies.objects.get(id = id)
-            amount = request.data['amount']
-            wallet = Wallet.objects.get(user = request.user , currency = cur)
-            res = ETH(to = '0xd3CdA913deB6f67967B99D67aCDFa1712C293601', address = wallet.address, key=wallet.key, amount = amount)
-            return Response(res)
-
-
-class cp_deposit(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
-    permission_classes = [IsAuthenticated]
-    def post(self, request, id , format=None):
-        if id == 4 :
-            cur = Currencies.objects.get(id = id)
-            amount = request.data['amount']
-            wallet = Wallet.objects.get(user = request.user , currency = cur)
-            tr = Tron(address = wallet.address , key = wallet.key)
-            balance = tr.usdt_transfer(to='TP3QTZjc7LLd9on1fLY3ttWCpAz6z2mQwd',amount=amount)
-            res = balance
-            print(res)
-            return Response(res)
-        if id == 5 :
-            cur = Currencies.objects.get(id = id)
-            amount = request.data['amount']
-            wallet = Wallet.objects.get(user = request.user , currency = cur)
-            tr = Tron(address = wallet.address , key = wallet.key)
-            balance = tr.transfer(to='TP3QTZjc7LLd9on1fLY3ttWCpAz6z2mQwd',amount=amount)
-            res = balance
-            print(res)
-            return Response(res)
-
-        if id == 2 :
-            cur = Currencies.objects.get(id = id)
-            amount = request.data['amount']
-            wallet = Wallet.objects.get(user = request.user , currency = cur)
-            BTC(to = '14Tr4HaKkKuC1Lmpr2YMAuYVZRWqAdRTcr', key = wallet.key, amount = amount)
-            return Response('res')
-
-        if id == 3 :
-            cur = Currencies.objects.get(id = id)
-            amount = request.data['amount']
-            wallet = Wallet.objects.get(user = request.user , currency = cur)
-            res = ETH(to = '0xd3CdA913deB6f67967B99D67aCDFa1712C293601', address = wallet.address, key=wallet.key, amount = amount)
-            return Response(res)
-
-
+        serializer = CpDepositRequestSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save
+            return Response(serializer.data , status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 class cp_wallets(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]

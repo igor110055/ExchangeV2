@@ -14,10 +14,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpWalletSerializer, ExchangeSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, ProfitSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
+from exchange.serializers import  BottomStickerSerializer, BuySerializer, BuyoutSerializer, Cp_WithdrawSerializer, CpDepositRequestSerializer, CpWalletSerializer, ExchangeSerializer, GeneralSerializer, LevelFeeSerializer, PerpetualRequestSerializer, PostsSerializer, ProfitSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyMelliRequest , BankAccountsSerializer, StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from exchange.models import BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, ProfitList, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, WithdrawRequest, buyoutrequest, buyrequest, exchangerequest, selloutrequest, sellrequest
+from exchange.models import BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, CpDepositRequest, General, LevelFee, News, Notification, Perpetual, PerpetualRequest, Posts ,  Price, ProfitList, Review, Staff, TopSticker,  UserInfo , Currencies, VerifyAcceptRequest, VerifyBankAccountsRequest, VerifyBankRequest, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest, WithdrawRequest, buyoutrequest, buyrequest, exchangerequest, selloutrequest, sellrequest
 from django.contrib.auth.models import AbstractUser , User
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -978,6 +978,33 @@ class exchange(APIView):
             return Response(status=status.HTTP_201_CREATED)
         req = exchangerequest.objects.get(id = request.data['id'])
         note = Notification(user=req.user, title = 'اکسچینج موفق' , text = ' درخواست اکسچینج شما با موفقیت انجام شد . ')
+        note.save()
+        req.act = 2
+        req.save()
+        return Response( status=status.HTTP_201_CREATED)
+
+class cp_deposit(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, user):
+        return CpDepositRequest.objects.filter(act = 0).order_by('-date')
+
+    def get(self , request, format=None):
+        maintrade =  self.get_object(request.user)
+        serializer = CpDepositRequestSerializer(maintrade , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+    def post(self , request, format=None):
+        if request.data['act'] == 'reject':
+            req = CpDepositRequest.objects.get(id = request.data['id'])
+            note = Notification(user=req.user, title = 'شارژ حساب نا موفق' , text = 'متاسفانه درخواست شارژ حساب شما با مشکل مواجه شده . لطفا با پشتیبانی تماس بگیرید')
+            note.save()
+            req.act = 1
+            req.save()
+            return Response(status=status.HTTP_201_CREATED)
+        req = exchangerequest.objects.get(id = request.data['id'])
+        note = Notification(user=req.user, title = 'شارژ حساب موفق' , text = ' درخواست شارژ حساب شما با موفقیت انجام شد . ')
         note.save()
         req.act = 2
         req.save()
