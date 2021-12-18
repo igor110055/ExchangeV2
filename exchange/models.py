@@ -9,6 +9,7 @@ import uuid
 from django.core.files import File
 from django.utils.translation import deactivate
 from requests.api import post
+from exchange.views import currency
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
@@ -693,6 +694,7 @@ class WithdrawRequest(models.Model):
 class CpDepositRequest(models.Model):
     user = models.ForeignKey(User , related_name='cpdeposits' , on_delete=models.CASCADE)
     hash = models.CharField(max_length=1000)
+    currency = models.CharField(max_length=10)
     date = models.DateTimeField(default=timezone.now())
     amount = models.BigIntegerField()
     act = models.IntegerField(default=0)

@@ -148,6 +148,7 @@ class CpDepositRequestSerializer(serializers.ModelSerializer):
             "id",
             "get_user",
             "hash",
+            "currency",
             "get_age",
             "amount",
             "act",
