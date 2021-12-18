@@ -146,6 +146,7 @@ class CpDepositRequestSerializer(serializers.ModelSerializer):
         model = CpDepositRequest
         fields = (
             "id",
+            "user",
             "get_user",
             "hash",
             "currency",
