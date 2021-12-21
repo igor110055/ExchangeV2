@@ -70,7 +70,10 @@ def sms(user , date = False , text = False , pattern='gf9zbtg61v'):
 def notification (user , date = datetime.now(), title = '' , text = '',pattern='gf9zbtg61v'):
     note = Notification(user = user , title = title , text = text)
     note.save()
-    sms(user=user , text=text , pattern=pattern)
+    try:
+        sms(user=user , text=text , pattern=pattern)
+    except:
+        pass
     sendemail(user=user  , date=date, title=title, text = text)
 
 class staff(APIView):
