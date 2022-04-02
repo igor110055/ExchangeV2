@@ -10,6 +10,7 @@ django_rest_passwordreset
 djangorestframework
 django-cors-headers
 django_crontab
+django_otp
 websockets
 djoser
 ecdsa
