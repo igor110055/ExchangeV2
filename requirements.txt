@@ -6,6 +6,7 @@ blockcypher
 cryptos
 Django == 3.0.14
 django_jsonfield
+gunicorn
 django_rest_passwordreset
 djangorestframework
 django-cors-headers
