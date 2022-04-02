@@ -2,7 +2,6 @@ from requests.sessions import Request
 from django.contrib.auth.hashers import check_password
 from exchange.lib import request_client
 from django.core.exceptions import ValidationError
-from coinmarketcapapi import CoinMarketCapAPI, CoinMarketCapAPIError
 from typing import Text
 from django import http
 from django.http import response
