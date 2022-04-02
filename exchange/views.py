@@ -10,10 +10,6 @@ import datetime
 import requests
 from .lib.request_client import RequestClient
 from .lib.coinex import CoinEx
-from .lib.TRON import Tron
-from .lib.BTC import BTC
-from .lib.ETH import ETH
-from bitmerchant.wallet import Wallet as Wall
 import time
 from django.db.models.fields import EmailField
 from django.http.response import JsonResponse
@@ -33,7 +29,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 import uuid
-from py_crypto_hd_wallet import HdWalletFactory, HdWalletCoins, HdWalletSpecs , HdWalletWordsNum, HdWalletChanges
 import json
 from datetime import datetime ,timedelta
 from django.contrib.auth.hashers import make_password
