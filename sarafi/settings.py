@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'djoser',
     'exchange',
     'adminpanel',
-    'py_crypto_hd_wallet',
     'jsonfield',
     'ippanel',
     'django_rest_passwordreset',
