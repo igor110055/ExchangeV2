@@ -4,7 +4,7 @@ bit
 bitmerchant
 blockcypher
 cryptos
-Django
+Django = 3.0.14
 django_jsonfield
 django_rest_passwordreset
 djangorestframework
