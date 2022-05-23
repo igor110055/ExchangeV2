@@ -1330,3 +1330,50 @@ class News(models.Model):
 
     def get_image(self):
         return f'{ROOT}/media/{self.img}'
+
+
+class Grid(models.Model):
+    user = models.ForeignKey(User , related_name='bots', on_delete=models.CASCADE)
+    market = models.CharField(max_length=100, null = True)
+    upper = models.FloatField()
+    lower = models.FloatField()
+    grid = models.IntegerField()
+    total = models.FloatField()
+    done = models.FloatField(default = 0.0)
+    date = models.DateTimeField(default=timezone.now())
+    def get_age(self):
+        days=0
+        hours=0
+        minutes=0
+        dif = (timezone.now() - self.date).total_seconds()
+        while (dif > 86400):
+            dif = dif - 86400
+            days = days + 1
+        while (dif > 3600):
+            dif = dif - 3600
+            hours = hours + 1
+        while (dif > 60):
+            dif = dif - 60
+            minutes = minutes + 1
+
+
+        if hours > 0:
+            hours = f' {hours}  ساعت  و'
+        else:
+            hours = ''
+
+
+        if minutes > 0:
+            minutes = f' {minutes} دقیقه  '
+        else:
+            minutes = ''
+
+
+
+        if days > 0:
+            days = f'{days}  روز و '
+        else:
+            days = ''
+
+
+        return  days + hours + minutes 

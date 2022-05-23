@@ -83,6 +83,9 @@ class CoinEx:
     def balance_info(self):
         return self._v1('balance/info', auth=True)
 
+    def credit(self):
+        return self._v1('credit/info', auth=True)
+
     def balance_coin_withdraw_list(self, **params):
         return self._v1('balance/coin/withdraw', auth=True, **params)
 
@@ -103,6 +106,12 @@ class CoinEx:
 
     def sub_account_transfer(self, coin_type, amount, **params):
         return self._v1('sub_account/transfer', method='post', auth=True, coin_type=coin_type, amount=amount, **params)
+
+    def sub_account_register(self, sub_user_name, password, **params):
+        return self._v1('sub_account/register', method='post', auth=True, sub_user_name=sub_user_name, password=password, **params)
+
+    def sub_account_api(self, remark , sub_user_name, allow_trade= True, allowed_ips= ['77.232.43.147'], **params):
+        return self._v1('sub_account/auth/api', method='post', auth=True, sub_user_name=sub_user_name, allow_trade=allow_trade,allowed_ips = allowed_ips ,remark = remark,  **params)
 
     def sub_account_transfer_history(self, sub_user_name , **params):
         return self._v1('sub_account/transfer/history', method='get', auth=True, page=1,limit=10,sub_user_name= sub_user_name, **params)

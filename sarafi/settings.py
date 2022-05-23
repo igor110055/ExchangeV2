@@ -15,7 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ROOT = 'http://77.232.43.147'
+ROOT = 'https://caitex.net'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ra$$l%4d2y4i!5#=(n58_u988+gdn8$st2^rtx-l0buiwhi7kc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['77.232.43.147']
+ALLOWED_HOSTS = ['www.caitex.net', 'caitex.net']
 
 
 # Application definition
@@ -57,7 +57,9 @@ INSTALLED_APPS = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://77.232.43.147",
-    "http://localhost:8080"
+    "http://localhost:8080",
+    "http://caitex.net",
+    "https://caitex.net"
 ]
 
 MIDDLEWARE = [
@@ -111,19 +113,17 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/Exchange/debug.log',
         },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': False,
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }

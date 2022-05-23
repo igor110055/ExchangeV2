@@ -13,10 +13,6 @@ urlpatterns = [
    path('login' , views.login.as_view() , name='mylogin'),
    path('loginsms' , views.loginsms.as_view() , name='loginsms'),
    path('welcomesms' , views.welcomesms.as_view() , name='welcomesms'),
-   path('posts' , views.posts.as_view() , name='posts'),
-   path('news' , views.news.as_view() , name='news'), 
-   path('topsticker' , views.topsticker.as_view() , name='topsticker'), 
-   path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'), 
    path('userinfo' , views.usersinfo.as_view() , name='userinfo'), 
    path('rulev' , views.rulev.as_view() , name='rulev'),
    path('general' , views.general.as_view() , name='general'),
@@ -53,11 +49,7 @@ urlpatterns = [
    path('protrades/<int:id>' , views.protrades.as_view() , name='protrades'),
    path('fasttorial/<int:id>' , views.fasttorial.as_view() , name='fasttorial'),
    path('perpetualrequest' , views.perpetualrequest.as_view() , name='perpetualrequest'),
-   path('mainpageposts' , views.mainpageposts.as_view() , name='mainpageposts'),
-   path('topsticker' , views.topsticker.as_view() , name='topsticker'),
-   path('bottomsticker' , views.bottomsticker.as_view() , name='bottomsticker'),
-   path('otherpages' , views.otherpages.as_view() , name='otherpages'),
-   path('details' , views.details.as_view() , name='details'),
+   path('pages/<str:id>' , views.pages.as_view() , name='pages'),
    path('withdraw' , views.withdraw.as_view() , name='withdraw'),
    path('buy' , views.buy.as_view() , name='buy'),
    path('sell' , views.sell.as_view() , name='sell'),
@@ -113,6 +105,7 @@ urlpatterns = [
    path('oltradeinfo2' , views.oltradeinfo2.as_view() , name='oltradeinfo2'),
    path('oltradeinfo3' , views.oltradeinfo3.as_view() , name='oltradeinfo3'),
    path('cp_balance' , views.cp_balance.as_view() , name='cp_balance'),
+   path('cp_credit' , views.cp_credit.as_view() , name='cp_credit'),
    path('cp_borrow' , views.cp_borrow.as_view() , name='cp_borrow'),
    path('cp_repay' , views.cp_repay.as_view() , name='cp_repay'),
    path('cp_borrowlist' , views.cp_borrowlist.as_view() , name='cp_borrowlist'),
@@ -167,4 +160,8 @@ urlpatterns = [
 #  Perpetual Trades  ------------ >
 
 
+#  < ------------ Bots
+   path('grid' , views.grid.as_view() , name='grid'),
+   path('grid/<int:id>' , views.grid.as_view() , name='grid'),
+#  Bots  ------------ >
 ]

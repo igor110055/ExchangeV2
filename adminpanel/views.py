@@ -43,6 +43,7 @@ def sendemail(user , date = '' , title = '' , text = '') :
     )
 
 def sms(user , date = False , text = False , pattern='gf9zbtg61v'):
+    pass
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
     if pattern == 'r4hxan3byx' or pattern == 'tfpvvl8beg'  :
@@ -54,16 +55,16 @@ def sms(user , date = False , text = False , pattern='gf9zbtg61v'):
     "name": "کاربر",
     }
 
-    bulk_id = sms.send_pattern(
-        f"{pattern}",    # pattern code
-        "+983000505",      # originator
-        f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
-        pattern_values,  # pattern values
-    )
+#    bulk_id = sms.send_pattern(
+#        f"{pattern}",    # pattern code
+#        "+983000505",      # originator
+#        f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
+#        pattern_values,  # pattern values
+#    )
 
-    message = sms.get_message(bulk_id)
-    print(message)
-    print(f"+98999999999")
+#    message = sms.get_message(bulk_id)
+#    print(message)
+#    print(f"+98999999999")
     return True
 
 def notification (user , date = datetime.now(), title = '' , text = '',pattern='gf9zbtg61v'):
@@ -74,6 +75,7 @@ def notification (user , date = datetime.now(), title = '' , text = '',pattern='
     except:
         pass
     sendemail(user=user  , date=date, title=title, text = text)
+
 
 class staff(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -228,7 +230,7 @@ class bankcards(APIView):
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
-                notification(user = user.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = user.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -265,10 +267,10 @@ class cp_history(APIView):
 
     def get(self, request, id , format=None):
         if id == 'all':
-            coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+            coinex = CoinEx('5029126977474528844A7141120BDAC8', 'E5D886E4211A1F362007A5D6915A843C0EC78B054F45C146')
             res = coinex.sub_account_transfer_history()
             return Response(res)
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        coinex = CoinEx('5029126977474528844A7141120BDAC8', 'E5D886E4211A1F362007A5D6915A843C0EC78B054F45C146')
         res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=User.objects.get(id = id)).name)
         print(res)
         return Response(res)
@@ -307,7 +309,7 @@ class bankaccounts(APIView):
                 user = UserInfo.objects.get(user = req.user)
                 user.level = 1
                 user.save()
-                notification(user = user.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = user.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             req = VerifyBankAccountsRequest.objects.get(id = id)
             req.delete()
             return Response(status=status.HTTP_201_CREATED)
@@ -364,7 +366,7 @@ class verifymelli(APIView):
             user = UserInfo.objects.get(user = request.data['user'])
             user.level = 1
             user.save()
-            notification(user = user.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+            notification(user = user.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
         id = request.data['id']
         req = VerifyMelliRequest.objects.get(id = id)
         req.action = True
@@ -409,7 +411,7 @@ class verifyaccept(APIView):
                 user = UserInfo.objects.get(user = request.data['user'])
                 user.level = 1
                 user.save()
-                notification(user = user.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = user.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
         id = request.data['id']
         req = VerifyAcceptRequest.objects.get(id = id)
         req.action = True
@@ -593,7 +595,7 @@ class perpetualreqccept(APIView):
                 user = UserInfo.objects.get(user = user)
                 user.level = 1
                 user.save()
-                notification(user = user.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = user.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
         pe = PerpetualRequest.objects.get(id = id)
         pe.delete()
         return Response(status=status.HTTP_201_CREATED)

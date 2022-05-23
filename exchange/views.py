@@ -17,10 +17,10 @@ from rest_framework import request, serializers
 from django.http import HttpResponse , Http404 
 from rest_framework import status
 from rest_framework import authentication
-from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpDepositRequestSerializer, CpWalletSerializer, ExchangeSerializer, GeneralSerializer, LevelFeeSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer
+from .serializers import BottomStickerSerializer, BuySerializer, BuyoutSerializer, CpCurrenciesSerializer, CpDepositRequestSerializer, CpWalletSerializer, ExchangeSerializer, GeneralSerializer, LevelFeeSerializer, LeverageSerializer, NewsSerializer, PostsSerializer, ProTradesBuyOrderSerializer, ProTradesSellOrderSerializer , MainTradesBuyOrderSerializer, MainTradesSellOrderSerializer, ProTradesSerializer, MainTradesSerializer, NotificationSerializer, BankAccountsSerializer, SellSerializer, TopStickerSerializer, VerifyAcceptRequestSerializer, VerifyBankAccountsRequest , PriceSerializer , StaffSerializer, UserInfoSerializer, VerifyBankAccountsRequestSerializer, VerifyMelliRequestSerializer , WalletSerializer , CurrenciesSerializer ,VerifySerializer, BankCardsSerializer, TransactionsSerializer, SettingsSerializer, SubjectsSerializer, TicketsSerializer, PagesSerializer , UserSerializer , ForgetSerializer, VerifyBankRequestSerializer, WithdrawSerializer, selloutSerializer, GridSerializer
 from rest_framework.views import APIView 
 from rest_framework.response import Response
-from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, LevelFee, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, ProfitList, Referal, Review, SmsVerified, TopSticker, VerifyAcceptRequest, buyapp, buyoutrequest, buyrequest, exchangerequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, selloutrequest, sellrequest, transactionid
+from .models import BottomSticker, General, Indexprice , Cp_Currencies, Cp_Wallet, Cp_Withdraw, LevelFee, Leverage, News, Perpetual, PerpetualRequest, Posts, PriceHistory, ProfitList, Referal, Review, SmsVerified, TopSticker, VerifyAcceptRequest, buyapp, buyoutrequest, buyrequest, exchangerequest, mobilecodes, ProTradesSellOrder, MainTradesSellOrder,ProTradesBuyOrder, MainTradesBuyOrder, ProTrades, MainTrades, Notification , VerifyBankAccountsRequest , BankAccounts, Price, Staff,  UserInfo , Currencies, VerifyMelliRequest , Wallet , Verify , BankCards, Transactions, Settings, Subjects, Tickets, Pages , Forgetrequest , VerifyBankRequest, selloutrequest, sellrequest, transactionid, Grid
 from django.contrib.auth.models import AbstractUser , User, UserManager
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -66,6 +66,7 @@ def sendemail(user , date = '' , title = '' , text = '') :
     )
 
 def sms(user , date = False , text = False , pattern = 'gf9zbtg61v'):
+    pass
     sms = Client("qsVtNKDEKtFZ9wgS4o1Vw81Pjt-C3m469UJxCsUqtBA=")
 
     if pattern == 'r4hxan3byx' or pattern == 'tfpvvl8beg'  :
@@ -77,16 +78,16 @@ def sms(user , date = False , text = False , pattern = 'gf9zbtg61v'):
     "name": "کاربر",
     }
 
-    bulk_id = sms.send_pattern(
-        f"{pattern}",    # pattern code
-        "+983000505",      # originator
-        f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
-        pattern_values,  # pattern values
-    )
+#    bulk_id = sms.send_pattern(
+#        f"{pattern}",    # pattern code
+#        "+983000505",      # originator
+#        f"+98{UserInfo.objects.get(user = user).mobile}",  # recipient
+#        pattern_values,  # pattern values
+#    )
 
-    message = sms.get_message(bulk_id)
-    print(message)
-    print(f"+98999999999")
+#    message = sms.get_message(bulk_id)
+#    print(message)
+#    print(f"+98999999999")
     return True
 
 def notification (user , date = '', title = '' , text = '', pattern='gf9zbtg61v'):
@@ -150,11 +151,11 @@ class login(APIView):
                                 Res = {"data": data, "auth_token": token}
                                 if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
                                     if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
-                                        notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text = 'با موفقیت به حساب خود وارد شدید' ,  pattern='gf9zbtg61v')
+                                        notification(user = User.objects.get(username = reqBody['username']), title='Title', text = 'با موفقیت به حساب خود وارد شدید' ,  pattern='gf9zbtg61v')
                                 if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
                                     ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
                                     ui.save()
-                                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax', text = 'با موفقیت به حساب خود وارد شدید' , pattern='gf9zbtg61v')
+                                    notification(user = User.objects.get(username = reqBody['username']), title='Title', text = 'با موفقیت به حساب خود وارد شدید' , pattern='gf9zbtg61v')
                                 use = UserInfo.objects.get(user=Account)
                                 use.last_visit=timezone.now()
                                 use.save()
@@ -178,14 +179,14 @@ class login(APIView):
                         "verification-code": f"{vcode}",
                         }
 
-                        bulk_id = sms.send_pattern(
-                            "s1a8zjq33u",    # pattern code
-                            "+983000505",      # originator
-                            f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
-                            pattern_values,  # pattern values
-                        )
+#                        bulk_id = sms.send_pattern(
+#                            "s1a8zjq33u",    # pattern code
+#                            "+983000505",      # originator
+#                            f"+98{UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile}",  # recipient
+#                            pattern_values,  # pattern values
+#                        )
 
-                        message = sms.get_message(bulk_id)
+#                        message = sms.get_message(bulk_id)
                         return Response(1)
                 else:
                     data = {}
@@ -211,11 +212,11 @@ class login(APIView):
                             Res = {"data": data, "auth_token": token}
                             if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
                                 if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
-                                    notification(user = User.objects.get(username = reqBody['username']), title='Amizax',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
+                                    notification(user = User.objects.get(username = reqBody['username']), title='Title',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
                             if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
                                 ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='')
                                 ui.save()
-                                notification(user = User.objects.get(username = reqBody['username']), title='Amizax',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
+                                notification(user = User.objects.get(username = reqBody['username']), title='Title',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
                             use = UserInfo.objects.get(user=Account)
                             use.last_visit=timezone.now()
                             use.save()
@@ -250,11 +251,11 @@ class login(APIView):
                         Res = {"data": data, "auth_token": token}
                         if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))>0:
                             if UserInfo.objects.get(user = User.objects.get(username = reqBody['username'])).mobile:
-                                notification(user = User.objects.get(username = reqBody['username']), title='Amizax',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
+                                notification(user = User.objects.get(username = reqBody['username']), title='Title',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
                         if len(UserInfo.objects.filter(user = User.objects.get(username = reqBody['username'])))<1:
                             ui = UserInfo(user = User.objects.get(username = reqBody['username']),first_name='',last_name='',phone='')
                             ui.save()
-                            notification(user = User.objects.get(username = reqBody['username']), title='Amizax',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
+                            notification(user = User.objects.get(username = reqBody['username']), title='Title',text = 'با موفقیت به حساب خود وارد شدید', pattern='gf9zbtg61v')
                         use = UserInfo.objects.get(user=Account)
                         use.last_visit=timezone.now()
                         use.save()
@@ -290,7 +291,7 @@ class addreferal(APIView):
             return Response(status=status.HTTP_200_OK)
 class welcomesms(APIView):
     def get(self, request, format=None):
-            notification(user = request.user, title='Amizax', text='خود وارد شدید Amizax با موفقیت به حساب  ')
+            notification(user = request.user, title='Title', text='خود وارد شدید Title با موفقیت به حساب  ')
             return Response(status=status.HTTP_200_OK)
 
 
@@ -303,7 +304,7 @@ description = "توضیحات مربوط به تراکنش را در این قس
 email = 'email@example.com'  # Optional
 mobile = '09123456789'  # Optional
 # Important: need to edit for realy server.
-CallbackURL = 'https://amizax.com/api/v1/verifys/'
+CallbackURL = 'https://Title.com/api/v1/verifys/'
 
 class send_request(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
@@ -337,7 +338,7 @@ class send_request2(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self , request , format=None):
-        CallbackURL2 = 'https://amizax.com/api/v1/buyappback/'
+        CallbackURL2 = 'https://Title.com/api/v1/buyappback/'
         uid = str(uuid.uuid4())
         amount = 0
         if int(request.data['option']) == 1:
@@ -393,7 +394,7 @@ def verifys(request, transid):
                     wa.save()
                 tra = Transactions(user = user, amount= transactioni.amount, act = 1, currency = Currencies.objects.get(id = 1))
                 tra.save()
-                return redirect('https://amizax.com/success')
+                return redirect('https://Title.com/success')
             elif t_status == 101:
                 return HttpResponse('Transaction submitted : ' + str(
                     req.json()['data']['message']
@@ -434,7 +435,7 @@ def buyappback(request, transid):
                 elif int(transactioni.amount) == 500000000:
                     type = 3
                 buyapp(user = user , type = type)
-                return redirect('https://amizax.com/success')
+                return redirect('https://Title.com/success')
             elif t_status == 101:
                 return HttpResponse('Transaction submitted : ' + str(
                     req.json()['data']['message']
@@ -473,7 +474,7 @@ class rulev(APIView):
             per = UserInfo.objects.get(user = request.user)
             per.level = 1
             per.save()
-            notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+            notification(user = request.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
         return Response(status=status.HTTP_201_CREATED)
 
 class general(APIView):
@@ -497,11 +498,21 @@ class usersinfo(APIView):
 
     def get(self , request , format=None):
         if len(Notification.objects.filter(user = request.user)) < 1 : 
-            note = Notification(user = request.user , title = 'خوش آمدید' , text = 'به AMIZAX خوش آمدید') 
+            note = Notification(user = request.user , title = 'خوش آمدید' , text = 'به Title خوش آمدید') 
             note.save()
-        userinfo =  self.get_object(request.user)
-        serializer = UserInfoSerializer(userinfo , many=True)
-        return Response(serializer.data)
+        if not len(Perpetual.objects.filter(user = request.user)) :
+            coinex = CoinEx('5029126977474528844A7141120BDAC8', 'E5D886E4211A1F362007A5D6915A843C0EC78B054F45C146' )
+            res = coinex.sub_account_register(sub_user_name = f'user{request.user.id}' , password = '0441@Abc')
+            api = coinex.sub_account_api(sub_user_name = f'user{request.user.id}' , remark = f'user{request.user.id}')
+            per = Perpetual(user = request.user , name = f'user{request.user.id}' , secretkey = api['secret_key'] , apikey = api['access_id'])
+            per.save()
+            userinfo =  self.get_object(request.user)
+            serializer = UserInfoSerializer(userinfo , many=True)
+            return Response(serializer.data)
+        else:
+            userinfo =  self.get_object(request.user)
+            serializer = UserInfoSerializer(userinfo , many=True)
+            return Response(serializer.data)
     
     def post(self, request , format=None):
         if len(UserInfo.objects.filter(user = request.user)) < 1:
@@ -515,7 +526,7 @@ class usersinfo(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-            notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+            notification(user = request.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             note = Notification(user = request.user , title = ' اطلاعات شما با موفقیت ثبت شد' , text = 'برای شروع معاملات لطفا احراز هویت را انجام دهید') 
             note.save()
             return Response( status=status.HTTP_201_CREATED)
@@ -532,7 +543,7 @@ class usersinfo(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-                notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = request.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             return Response( status=status.HTTP_201_CREATED)
 
     def put(self, request , format=None):
@@ -976,16 +987,16 @@ class mobileverify(APIView):
         "verification-code": f"{vcode}",
         }
 
-        bulk_id = sms.send_pattern(
-            "s1a8zjq33u",    # pattern code
-            "+983000505",      # originator
-            f"+98{request.data['number']}",  # recipient
-            pattern_values,  # pattern values
-        )
+#        bulk_id = sms.send_pattern(
+#            "s1a8zjq33u",    # pattern code
+ #           "+983000505",      # originator
+  #          f"+98{request.data['number']}",  # recipient
+   #         pattern_values,  # pattern values
+    #    )
 
-        message = sms.get_message(bulk_id)
-        print(message)
-        print(f"+98{request.data['number']}")
+     #   message = sms.get_message(bulk_id)
+      #  print(message)
+       # print(f"+98{request.data['number']}")
         return Response(status=status.HTTP_200_OK )
 
     def post(self , request):
@@ -1002,7 +1013,7 @@ class mobileverify(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-                notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = request.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -1019,7 +1030,7 @@ class regemailverify(APIView):
         
         send_mail(
             'Subject here',
-            f'به شرکت سرمایه گذاری Amizax خوش آمدید کد فعالسازی : /n برای تایید حساب خود روی لینک زیر کلیک کنید /n https://www.amizax.com/api/v1/email/{vcode} ',
+            f'به شرکت سرمایه گذاری Title خوش آمدید کد فعالسازی : /n برای تایید حساب خود روی لینک زیر کلیک کنید /n https://www.Title.com/api/v1/email/{vcode} ',
             'info@ramabit.com',
             [f'{request.data["email"]}'],
             fail_silently=False,
@@ -1039,7 +1050,7 @@ class regemailverify(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-                notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = request.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -1057,7 +1068,7 @@ class emailverify(APIView):
         
         send_mail(
             'Subject here',
-            f'به شرکت سرمایه گذاری Amizax خوش آمدید کد فعالسازی : {vcode} ',
+            f'به شرکت سرمایه گذاری Title خوش آمدید کد فعالسازی : {vcode} ',
             'info@ramabit.com',
             [f'{request.data["email"]}'],
             fail_silently=False,
@@ -1077,7 +1088,7 @@ class emailverify(APIView):
                 per = UserInfo.objects.get(user = request.user)
                 per.level = 1
                 per.save()
-                notification(user = request.user ,title='Amizax',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
+                notification(user = request.user ,title='Title',text='حساب شما با موفقیت تایید شد',date= datetime.now() , pattern= 'qiep09qzea')
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"error": "کد وارد شده معتبر نیست"} , status=status.HTTP_400_BAD_REQUEST)
@@ -2078,6 +2089,7 @@ class oltradeinfo(APIView):
         list = r.json()['data']['ticker']
         list2 = {}
         for item in Leverage.objects.all():
+            list[item.symbol]['leverage'] = item.leverage
             list2[item.symbol] = list[item.symbol]
         return Response(list2)
 
@@ -2123,6 +2135,24 @@ class cp_balance(APIView):
         coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
         return Response(coinex.margin_account(market =  request.data['sym']))
 
+class cp_credit(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+    def get(self , request, format=None):  
+        r = requests.get(url = 'https://api.coinex.com/v1/market/ticker/all')
+        lists = r.json()['data']['ticker']
+        coinex = CoinEx(Perpetual.objects.get(user=request.user).apikey, Perpetual.objects.get(user=request.user).secretkey )
+        res = coinex.balance_info()
+        result = 0.0
+        if 'USDT' in res.keys() :
+            result = result +( float(res['USDT']['available']) + float(res['USDT']['frozen']))
+        for item in Cp_Currencies.objects.all():
+            if item.brand == 'USDT':
+                continue
+            if item.brand in res.keys() :
+                result = result +( (float(res[item.brand]['available']) + float(res[item.brand]['frozen'])) * float(lists[item.brand + 'USDT']['last']))
+        return Response(result)
+
 class cp_borrow(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
@@ -2155,7 +2185,7 @@ class cp_ticker(APIView):
             return Response({'ticker':{'buy' : float(r) * General.objects.get(id =1).USDTpercent2 / 100, 'last' : float(r) * General.objects.get(id =1).USDTpercent2 / 100}})
         r = requests.get(url = 'https://api.coinex.com/v1/common/currency/rate')
         r = float(r.json()['data']['USDT_to_USD'])
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        coinex = CoinEx('5029126977474528844A7141120BDAC8', 'E5D886E4211A1F362007A5D6915A843C0EC78B054F45C146')
         n = coinex.market_ticker(market =  request.data['sym']+'USDT')
         n['ticker']['last'] = float(n['ticker']['last']) / r
         return Response(n)
@@ -2163,8 +2193,11 @@ class cp_ticker(APIView):
 class cp_address(APIView):
     def post(self , request, format=None):
         coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7' )
+        if '-' in request.data['sym']:
+            sym = request.data['sym'].split("-")[0]
+            smart = request.data['sym'].split("-")[1]
+            return Response(coinex.balance_deposit_address(coin_type =  sym , smart_contract_name = smart))
         return Response(coinex.balance_deposit_address(coin_type =  request.data['sym']))
-
 class cp_mg_transfer(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
     permission_classes = [IsAuthenticated]
@@ -2422,11 +2455,11 @@ class cp_history(APIView):
     
     def get(self, request, id , format=None):
         if id == 'false':
-            coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+            coinex = CoinEx('5029126977474528844A7141120BDAC8', 'E5D886E4211A1F362007A5D6915A843C0EC78B054F45C146')
             res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=request.user).name)
             return Response(res)
         brand = Cp_Currencies.objects.get(name = id).brand
-        coinex = CoinEx('56255CA42286443EB7D3F6DB44633C25', '30C28552C5B3337B5FC0CA16F2C50C4988D47EA67D03C5B7')
+        coinex = CoinEx('5029126977474528844A7141120BDAC8', 'E5D886E4211A1F362007A5D6915A843C0EC78B054F45C146')
         res = coinex.sub_account_transfer_history(sub_user_name= Perpetual.objects.get(user=request.user).name, coin_type=brand)
         print(res)
         return Response(res)
@@ -2591,125 +2624,9 @@ class cpp_cancel_order(APIView):
         result = robot.close_market(market = request.data['sym'],id = request.data['id'])
         return Response(result)
 
-
-class topsticker(APIView):
-    def get():
-        query = TopSticker.objects.all()
-        serializer = TopStickerSerializer(query , many =True)
-        return Response(serializer.data)
-
-class bottomsticker(APIView):
-    def get():
-        query = BottomSticker.objects.all()
-        serializer = BottomStickerSerializer(query , many =True)
-        return Response(serializer.data)
-
-class posts(APIView):
-    def get():
-        query = Posts.objects.all()
-        serializer = PostsSerializer(query , many =True)
-        return Response(serializer.data)
-
-class news(APIView):
-    def get():
-        query = News.objects.all()
-        serializer = NewsSerializer(query , many =True)
-        return Response(serializer.data)
-
-
-
-
-class topsticker(APIView):
-    def get(self , request , format=None):
-        pages = Pages.objects.filter(position = 'top')
-        serializer = PagesSerializer(pages , many=True)
-        return Response(serializer.data)
-
-    def post(self , request , format=None):
-        serializer = PagesSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            print(serializer.errors)
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self , request , format=None):
-        serializer = Pages.objects.get(id=request.data['id'])
-        serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-class bottomsticker(APIView):
-    def get(self , request , format=None):
-        pages = Pages.objects.filter(position = 'bottom')
-        serializer = PagesSerializer(pages , many=True)
-        return Response(serializer.data)
-        
-    def post(self , request , format=None):
-        serializer = PagesSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            print(serializer.errors)
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self , request , format=None):
-        serializer = Pages.objects.get(id=request.data['id'])
-        serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-
-class mainpageposts(APIView):
-    def get(self , request , format=None):
-        pages = Pages.objects.filter(position = 'mainposts')
-        serializer = PagesSerializer(pages , many=True)
-        return Response(serializer.data)
-        
-    def post(self , request , format=None):
-        serializer = PagesSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            print(serializer.errors)
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self , request , format=None):
-        serializer = Pages.objects.get(id=request.data['id'])
-        serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class otherpages(APIView):
-    def get(self , request , format=None):
-        pages = Pages.objects.filter(position = 'others')
-        serializer = PagesSerializer(pages , many=True)
-        return Response(serializer.data)
-        
-    def post(self , request , format=None):
-        serializer = PagesSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            print(serializer.errors)
-            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self , request , format=None):
-        serializer = Pages.objects.get(id=request.data['id'])
-        serializer.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def put(self , request , format=None):
-        pages = Pages.objects.filter(position = 'others', name=request.data['name'])
-        serializer = PagesSerializer(pages , many=True)
-        return Response(serializer.data)
-
-class details(APIView):
-    def get(self , request , format=None):
-        pages = Pages.objects.filter(position = 'details')
+class pages(APIView):
+    def get(self, request, id, format=None):
+        pages = Pages.objects.filter(position = id)
         serializer = PagesSerializer(pages , many=True)
         return Response(serializer.data)
         
@@ -2740,3 +2657,29 @@ class levelfee(APIView):
         user = LevelFee.objects.filter(id = UserInfo.objects.get(user = request.user).level)
         serializer = LevelFeeSerializer(user , many=True)
         return Response(serializer.data)
+
+
+
+
+
+# < ------------   Bots  ------------ >
+
+class grid(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, authentication.TokenAuthentication ]
+    permission_classes = [IsAuthenticated]
+
+    def get(self , request, format=None):
+        query =  Grid.objects.filter(user = request.user)
+        serializer = GridSerializer(query , many=True)
+        return Response(serializer.data , status=status.HTTP_201_CREATED)
+
+    
+    def post(self, request, *args, **kwargs):
+        request.data['user'] = request.user.id
+        serializer = GridSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)

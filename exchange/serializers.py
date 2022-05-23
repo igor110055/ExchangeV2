@@ -1,7 +1,7 @@
 from chat.models import ChatSession
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, CpDepositRequest, General, LevelFee, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, ProfitList, TopSticker, VerifyAcceptRequest , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, WithdrawRequest, buyoutrequest, buyrequest, exchangerequest, selloutrequest, sellrequest
+from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, CpDepositRequest, General, LevelFee, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, ProfitList, TopSticker, VerifyAcceptRequest , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, WithdrawRequest, buyoutrequest, buyrequest, exchangerequest, selloutrequest, sellrequest, Grid
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,6 +25,19 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "get_otp",
             "referalid",
             "get_referal"
+        )
+
+class GridSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Grid
+        fields = (
+            "user",
+            "upper",
+            "lower",
+            "grid",
+            "total",
+            "market",
+            "get_age"
         )
 
 class PriceSerializer(serializers.ModelSerializer):

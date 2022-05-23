@@ -95,8 +95,8 @@ class CoinEx:
     def balance_coin_deposit_list(self, **params):
         return self._v1('balance/coin/deposit', auth=True, **params)
 
-    def balance_deposit_address(self, coin_type, **params):
-        return self._v1('balance/deposit/address/{}'.format(coin_type), auth=True, **params)
+    def balance_deposit_address(self, coin_type, smart_contract_name , **params):
+        return self._v1('balance/deposit/address/{}'.format(coin_type), smart_contract_name = smart_contract_name , auth=True, **params)
 
     def balance_deposit_address_new(self, coin_type, **params):
         return self._v1('balance/deposit/address/{}'.format(coin_type), method='post', auth=True, **params)
