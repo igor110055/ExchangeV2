@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ra$$l%4d2y4i!5#=(n58_u988+gdn8$st2^rtx-l0buiwhi7kc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.caitex.net', 'caitex.net']
+ALLOWED_HOSTS = ['www.caitex.net', 'caitex.net', 'localhost']
 
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'solo',
     'corsheaders',
     'djoser',
     'exchange',
@@ -52,7 +53,10 @@ INSTALLED_APPS = [
     'chat',
     'pyotp',
     'django_otp',
-    'django_otp.plugins.otp_totp'
+    'django_otp.plugins.otp_totp',
+    'config',
+    'request'
+
 ]
 
 CORS_ALLOWED_ORIGINS = [

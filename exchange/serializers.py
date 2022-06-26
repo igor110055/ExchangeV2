@@ -1,9 +1,22 @@
 from chat.models import ChatSession
+from request.models import DepositRequest, WithdrawRequest as WR
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, CpDepositRequest, General, LevelFee, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, ProfitList, TopSticker, VerifyAcceptRequest , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, WithdrawRequest, buyoutrequest, buyrequest, exchangerequest, selloutrequest, sellrequest, Grid
 
+class DepositSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = DepositRequest
+        fields = "__all__"  
+
+class WithdrawSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = WR
+        fields = "__all__"  
+
 class UserInfoSerializer(serializers.ModelSerializer):
+    withdraw_set = WithdrawSerializer(many=True, source="_withdraws") 
+    deposit_set = DepositSerializer(many=True, source="_deposits") 
     class Meta:
         model = UserInfo
         fields = (
@@ -24,7 +37,9 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "get_mellip",
             "get_otp",
             "referalid",
-            "get_referal"
+            "get_referal",
+            "withdraw_set",
+            "deposit_set",
         )
 
 class GridSerializer(serializers.ModelSerializer):
@@ -196,12 +211,7 @@ class WalletSerializer(serializers.ModelSerializer):
 class CurrenciesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Currencies
-        fields = (
-            "id",
-            "name",
-            "brand",
-            "get_image"
-        )
+        fields = "__all__"
 class VerifySerializer(serializers.ModelSerializer):
     class Meta:
         model = Verify

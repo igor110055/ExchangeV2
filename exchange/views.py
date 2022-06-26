@@ -501,14 +501,19 @@ class usersinfo(APIView):
             note = Notification(user = request.user , title = 'خوش آمدید' , text = 'به Title خوش آمدید') 
             note.save()
         if not len(Perpetual.objects.filter(user = request.user)) :
-            coinex = CoinEx('5029126977474528844A7141120BDAC8', 'E5D886E4211A1F362007A5D6915A843C0EC78B054F45C146' )
-            res = coinex.sub_account_register(sub_user_name = f'user{request.user.id}' , password = '0441@Abc')
-            api = coinex.sub_account_api(sub_user_name = f'user{request.user.id}' , remark = f'user{request.user.id}')
-            per = Perpetual(user = request.user , name = f'user{request.user.id}' , secretkey = api['secret_key'] , apikey = api['access_id'])
-            per.save()
+            try:
+                coinex = CoinEx('5029126977474528844A7141120BDAC8', 'E5D886E4211A1F362007A5D6915A843C0EC78B054F45C146' )
+                res = coinex.sub_account_register(sub_user_name = f'user{request.user.id}' , password = '0441@Abc')
+                api = coinex.sub_account_api(sub_user_name = f'user{request.user.id}' , remark = f'user{request.user.id}')
+                per = Perpetual(user = request.user , name = f'user{request.user.id}' , secretkey = api['secret_key'] , apikey = api['access_id'])
+                per.save()
+            except Exception as e:
+                print(e)
+
             userinfo =  self.get_object(request.user)
             serializer = UserInfoSerializer(userinfo , many=True)
             return Response(serializer.data)
+                
         else:
             userinfo =  self.get_object(request.user)
             serializer = UserInfoSerializer(userinfo , many=True)

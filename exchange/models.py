@@ -70,6 +70,11 @@ class UserInfo(models.Model):
     class meta:
         ordering = ('-date_joined',)
         
+    def _deposits(self):
+        return self.user.depositrequest_set
+    def _withdraws(self):
+        return self.user.withdrawrequest_set
+
     def __str__(self):
         return self.user.username
 
@@ -477,6 +482,11 @@ class Currencies(models.Model):
     name = models.CharField(max_length=100 ,verbose_name=" نام ارز")
     brand = models.CharField(max_length=100 ,null=True,verbose_name=" نماد ارز")
     pic = models.ImageField(upload_to='cur' , null = True)
+
+    symbol = models.CharField(max_length=50, verbose_name="Symbol", help_text="BTC, ETH ...", blank=True)
+    alfaname = models.CharField(max_length=50, verbose_name="AlfaCoin name", help_text="bitcoin, ethereum", blank=True)
+    active = models.BooleanField(default=True, verbose_name="Show in website", blank=True)
+
     class Meta:
         verbose_name = ' ارز '
         verbose_name_plural = ' ارز ها'
