@@ -1,24 +1,14 @@
-from typing import Text
 from django.db import models
-from io import BytesIO
-from PIL import Image
 from django.contrib.auth.models import User
-from django.db.models.query_utils import select_related_descend
 from django.utils import timezone
 import uuid
-from django.core.files import File
-from django.utils.translation import deactivate
-from requests.api import post
 from jsonfield import JSONField
 from datetime import date, datetime    
 import django
 from sarafi.settings import ROOT, SECRET_KEY
 from django.dispatch import receiver
-from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail  
-from django.utils.timezone import utc
-import pyotp
 import base32_lib
 
 @receiver(reset_password_token_created)
@@ -72,8 +62,12 @@ class UserInfo(models.Model):
         
     def _deposits(self):
         return self.user.depositrequest_set
+        
     def _withdraws(self):
         return self.user.withdrawrequest_set
+
+    def _wallet_set(self):
+        return self.user.wallet_set.all()
 
     def __str__(self):
         return self.user.username

@@ -4,6 +4,17 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import  BottomSticker, Cp_Currencies, Cp_Wallet, Cp_Withdraw, CpDepositRequest, General, LevelFee, Leverage, MainTradesBuyOrder, MainTradesSellOrder, News, PerpetualRequest, Posts, ProTradesBuyOrder, ProTradesSellOrder , ProTrades , MainTrades, Notification, ProfitList, TopSticker, VerifyAcceptRequest , VerifyMelliRequest , BankAccounts , VerifyBankAccountsRequest , Price , Currencies, Forgetrequest, UserInfo, Wallet, Verify, BankCards, Transactions, Settings , Subjects , Tickets, Pages, VerifyBankRequest, Staff, WithdrawRequest, buyoutrequest, buyrequest, exchangerequest, selloutrequest, sellrequest, Grid
 
+class WalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wallet
+        fields = (
+            "id",
+            "currency",
+            "amount",
+            "address",
+            "get_currency"
+        )
+        depth=2
 class DepositSerializer(serializers.ModelSerializer):
     class Meta: 
         model = DepositRequest
@@ -17,6 +28,7 @@ class WithdrawSerializer(serializers.ModelSerializer):
 class UserInfoSerializer(serializers.ModelSerializer):
     withdraw_set = WithdrawSerializer(many=True, source="_withdraws") 
     deposit_set = DepositSerializer(many=True, source="_deposits") 
+    wallet_set = WalletSerializer(many=True, source="_wallet_set") 
     class Meta:
         model = UserInfo
         fields = (
@@ -40,6 +52,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "get_referal",
             "withdraw_set",
             "deposit_set",
+            "wallet_set"
         )
 
 class GridSerializer(serializers.ModelSerializer):
